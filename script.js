@@ -436,7 +436,12 @@ function updateSendButton(thinking) {
 
 function scrollToBottom() {
     const messagesDiv = document.getElementById('chatMessages');
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // Use requestAnimationFrame to ensure DOM has updated before scrolling
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    });
 }
 
 function showPreviewNotification(data) {

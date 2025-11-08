@@ -21,6 +21,7 @@
             <div class="branch-indicator" id="branchIndicator">
                 <span class="branch-icon">🌿</span>
                 <span class="branch-name" id="branchName">Loading...</span>
+                <button class="refresh-worktree-btn" onclick="showRefreshModal()" title="Reset worktree to main">🔄</button>
             </div>
             <button class="cta-button-small">Get Started</button>
         </nav>
@@ -370,7 +371,7 @@
             <div id="previewNotification" class="preview-notification hidden">
                 <div class="preview-content">
                     <p><strong>🎉 Preview Ready!</strong></p>
-                    <p>Your changes are ready to view. Click "View Preview" to see them, then use "Apply Changes" in the preview to update your site.</p>
+                    <p>Your changes are ready to view. Click "View Preview" to see them!</p>
                     <div class="preview-actions-row">
                         <button onclick="viewPreview()" class="preview-btn">View Preview</button>
                     </div>
@@ -379,14 +380,8 @@
 
             <div class="chat-messages" id="chatMessages">
                 <div class="message assistant">
-                    <p>Hi! I'm your AI assistant. I can help you customize this website. Try asking me to:</p>
-                    <ul>
-                        <li>Change colors or fonts</li>
-                        <li>Add new sections</li>
-                        <li>Modify content</li>
-                        <li>Update styling</li>
-                    </ul>
-                    <p>What would you like to change?</p>
+                    <p>Hi! I'm your AI assistant. I can help you explore or improve this website!</p>
+                    <p>How can I help you today?</p>
                 </div>
             </div>
 
