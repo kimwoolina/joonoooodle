@@ -184,13 +184,13 @@ function displayRequestsList() {
                             <p><strong>Species:</strong> ${request.treeInfo.species}</p>
                             <p><strong>Location:</strong> ${request.treeInfo.location}</p>
                         </div>
-                        <div class="card-footer">
-                            <span class="submit-date">Submitted: ${date}</span>
-                        </div>
                     </div>
                     <div class="card-map">
                         <div id="${mapId}" class="card-map-small"></div>
                     </div>
+                </div>
+                <div class="card-footer">
+                    <span class="submit-date">Submitted: ${date}</span>
                 </div>
             </div>
         `;
