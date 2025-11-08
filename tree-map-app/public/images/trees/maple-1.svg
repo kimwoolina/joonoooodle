@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="sky-maple-1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="tree-maple-1" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#DC143C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#900000;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#sky-maple-1)"/>
+
+  <!-- Ground -->
+  <rect y="450" width="800" height="150" fill="#8B7355"/>
+
+  <!-- Tree trunk -->
+  <rect x="380" y="350" width="40" height="150" fill="#4A3728"/>
+
+  <!-- Tree foliage (shape varies by type) -->
+  
+  <polygon points="400,180 320,280 350,350 450,350 480,280" fill="url(#tree-maple-1)"/>
+  <circle cx="400" cy="250" r="70" fill="url(#tree-maple-1)" opacity="0.9"/>
+
+  <!-- Label -->
+  <text x="400" y="550" font-family="Arial, sans-serif" font-size="28" fill="#2C3E50" text-anchor="middle" font-weight="bold">단풍나무 (Japanese Maple)</text>
+</svg>
