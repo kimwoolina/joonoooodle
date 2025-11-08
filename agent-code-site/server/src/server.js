@@ -26,15 +26,14 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 
-// Get demo site path
+// Get site paths
 const demoSitePath = path.resolve(__dirname, '../../demo-site');
+const mainSitePath = path.resolve(__dirname, '../../main-site');
 
-// Serve demo site files statically for preview
-app.use('/demo', express.static(demoSitePath));
+// File service for managing main site files
+const fileService = new FileService(mainSitePath);
 
-// File service for managing demo site files
-const fileService = new FileService(demoSitePath);
-
+// API routes (must come before static file serving)
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -60,6 +59,13 @@ app.get('/api/files/*', async (req, res) => {
     res.status(404).json({ error: 'File not found' });
   }
 });
+
+// Static file serving (must come after API routes)
+// Serve demo site files statically for preview
+app.use('/demo', express.static(demoSitePath));
+
+// Serve main site at root path (this should be last)
+app.use('/', express.static(mainSitePath));
 
 // WebSocket connection handling
 io.on('connection', (socket) => {
