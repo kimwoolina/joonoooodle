@@ -323,7 +323,14 @@ function showThinkingIndicator() {
     const thinking = document.createElement('div');
     thinking.id = 'thinkingIndicator';
     thinking.className = 'message thinking';
-    thinking.textContent = 'AI is thinking...';
+    thinking.innerHTML = `
+        <span>AI is thinking</span>
+        <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
     messagesDiv.appendChild(thinking);
     scrollToBottom();
 }
