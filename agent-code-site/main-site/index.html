@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>서울 나무 민원 시스템</title>
+    <title id="page-title">서울 나무 민원 시스템</title>
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -20,30 +20,278 @@
             background: #f5f7fa;
         }
 
+        /* 헤더 */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px 20px;
-            text-align: center;
+            padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .header p {
-            font-size: 16px;
+        .header-title h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            font-size: 14px;
             opacity: 0.9;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .lang-selector {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .lang-selector:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .new-request-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .new-request-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* 컨테이너 */
         .container {
             max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
         }
 
+        /* 페이지 뷰 */
+        .page-view {
+            display: none;
+        }
+
+        .page-view.active {
+            display: block;
+        }
+
+        /* 민원 목록 페이지 */
+        .requests-list-page {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .list-header {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover {
+            background: #f8f9fa;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .requests-table {
+            width: 100%;
+        }
+
+        .requests-table thead {
+            background: #f8f9fa;
+        }
+
+        .requests-table th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .requests-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f3f5;
+            font-size: 14px;
+        }
+
+        .requests-table tbody tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .requests-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .request-title {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .request-tree-id {
+            color: #6c757d;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        /* 민원 상세 페이지 */
+        .detail-page {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .detail-header {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        .detail-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .detail-body {
+            padding: 30px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .detail-value {
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .detail-description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* 민원 작성 페이지 (기존 스타일 유지) */
         .main-card {
             background: white;
             border-radius: 12px;
@@ -116,7 +364,6 @@
             font-size: 14px;
         }
 
-        /* 선택된 나무 정보 */
         .selected-tree-banner {
             background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
             border: 2px solid #3b82f6;
@@ -150,7 +397,6 @@
             color: #1e293b;
         }
 
-        /* 민원 폼 */
         .form-section {
             margin-bottom: 30px;
         }
@@ -234,69 +480,20 @@
             transform: none;
         }
 
-        /* 민원 리스트 */
-        .requests-section {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 3px solid #f1f5f9;
-        }
-
-        .requests-section h3 {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .request-card {
+        .no-tree-notice {
             background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-bottom: 15px;
+            border: 2px dashed #cbd5e1;
             border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
         }
 
-        .request-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .no-tree-notice .icon {
+            font-size: 40px;
             margin-bottom: 10px;
         }
-
-        .request-type {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .request-date {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .request-description {
-            color: #475569;
-            font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .request-contact {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-processing { background: #dbeafe; color: #1e40af; }
-        .status-completed { background: #d1fae5; color: #065f46; }
 
         .health-badge {
             display: inline-block;
@@ -318,27 +515,10 @@
             font-size: 14px;
         }
 
-        .alert-info {
-            background: #cfe2ff;
-            color: #084298;
-            border: 1px solid #b6d4fe;
-        }
-
         .alert-warning {
             background: #fff3cd;
             color: #664d03;
             border: 1px solid #ffecb5;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #94a3b8;
-        }
-
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 10px;
         }
 
         /* 범례 */
@@ -375,451 +555,231 @@
             box-shadow: 0 0 0 1px #333;
         }
 
-        .no-tree-notice {
-            background: #f8f9fa;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 30px;
+        /* 푸터 */
+        .footer {
+            background: #2d3748;
+            color: #cbd5e1;
+            padding: 20px;
             text-align: center;
-            color: #64748b;
-            margin-bottom: 25px;
+            margin-top: 50px;
         }
 
-        .no-tree-notice .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+        .footer p {
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
+    <!-- 헤더 -->
     <div class="header">
-        <h1>🌳 서울 나무 민원 시스템</h1>
-        <p>지도에서 나무를 선택하여 민원을 작성하세요</p>
+        <div class="header-content">
+            <div class="header-title">
+                <h1 id="header-title">🌳 서울 나무 민원 시스템</h1>
+                <p id="header-subtitle">Tree Support Request System</p>
+            </div>
+            <div class="header-actions">
+                <select class="lang-selector" id="langSelector" onchange="changeLanguage(this.value)">
+                    <option value="ko">한국어 (Korean)</option>
+                    <option value="en">English</option>
+                </select>
+                <button class="new-request-btn" id="newRequestBtn" onclick="showPage('create')">
+                    <span class="text-new-request">민원 작성</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div class="container">
-        <div class="main-card">
-            <div class="card-header">
-                <h2>민원 작성</h2>
-                <p>나무 관리, 유지보수, 긴급 조치 등의 민원을 접수합니다</p>
+        <!-- 민원 목록 페이지 -->
+        <div id="listPage" class="page-view active">
+            <div class="requests-list-page">
+                <div class="list-header">
+                    <h2 id="list-title">민원 목록</h2>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="filterRequests('all')">
+                            <span class="text-all">전체</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterRequests('pending')">
+                            <span class="text-pending">접수 대기</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterRequests('processing')">
+                            <span class="text-processing">처리 중</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterRequests('completed')">
+                            <span class="text-completed">완료</span>
+                        </button>
+                    </div>
+                </div>
+
+                <table class="requests-table" id="requestsTable">
+                    <thead>
+                        <tr>
+                            <th class="text-th-title">제목</th>
+                            <th class="text-th-type">유형</th>
+                            <th class="text-th-status">상태</th>
+                            <th class="text-th-date">작성일</th>
+                            <th class="text-th-author">작성자</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <!-- 민원 목록이 여기에 표시됩니다 -->
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <div class="card-body">
-                <!-- 지도 위젯 -->
-                <div class="map-widget">
-                    <div class="map-widget-header">
-                        <h3>📍 나무 선택</h3>
-                        <p>지도에서 나무를 클릭하여 민원 대상 나무를 선택하세요</p>
-                    </div>
-                    <div class="search-bar">
-                        <input type="text" id="search" placeholder="나무 ID 또는 주소로 검색..." />
-                    </div>
-                    <div style="position: relative;">
-                        <div id="map"></div>
-                        <div class="legend">
-                            <h4>건강 상태</h4>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #28a745;"></div>
-                                <span>우수 (9-10)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #17a2b8;"></div>
-                                <span>양호 (7-8)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #ffc107;"></div>
-                                <span>보통 (5-6)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #dc3545;"></div>
-                                <span>불량 (1-4)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 선택된 나무 정보 또는 안내 -->
-                <div id="tree-selection-area">
-                    <div class="no-tree-notice">
-                        <div class="icon">🗺️</div>
-                        <h4>나무를 선택해주세요</h4>
-                        <p>위 지도에서 나무를 클릭하면 해당 나무 정보가 자동으로 입력됩니다</p>
-                    </div>
-                </div>
-
-                <!-- 민원 작성 폼 -->
-                <form id="requestForm" onsubmit="submitRequest(event)">
-                    <div class="form-section">
-                        <h3>민원 정보</h3>
-
-                        <div class="form-group">
-                            <label>민원 유형 <span class="required">*</span></label>
-                            <select id="requestType" required>
-                                <option value="">선택하세요</option>
-                                <option value="maintenance">일반 유지보수</option>
-                                <option value="emergency">긴급 조치 필요</option>
-                                <option value="disease">병충해 의심</option>
-                                <option value="pruning">가지치기 요청</option>
-                                <option value="removal">제거 요청</option>
-                                <option value="other">기타</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>상세 설명 <span class="required">*</span></label>
-                            <textarea id="description" required placeholder="문제 상황을 자세히 설명해주세요..."></textarea>
-                            <div class="form-hint">가능한 한 자세히 설명해 주시면 빠른 처리에 도움이 됩니다</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3>연락처 정보</h3>
-
-                        <div class="form-group">
-                            <label>이름 <span class="required">*</span></label>
-                            <input type="text" id="contactName" required placeholder="홍길동" />
-                        </div>
-
-                        <div class="form-group">
-                            <label>전화번호 <span class="required">*</span></label>
-                            <input type="tel" id="contactPhone" required placeholder="010-1234-5678" />
-                        </div>
-
-                        <div class="form-group">
-                            <label>이메일</label>
-                            <input type="email" id="contactEmail" placeholder="example@email.com (선택사항)" />
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                        민원 제출하기
+        <!-- 민원 상세 페이지 -->
+        <div id="detailPage" class="page-view">
+            <div class="detail-page">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showPage('list')">
+                        <span class="text-back">← 목록으로</span>
                     </button>
-                </form>
+                    <h2 class="detail-title" id="detailTitle"></h2>
+                    <div class="detail-meta">
+                        <span id="detailDate"></span>
+                        <span id="detailAuthor"></span>
+                        <span id="detailStatus"></span>
+                    </div>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-section">
+                        <h3 class="text-section-tree-info">나무 정보</h3>
+                        <div class="detail-grid" id="detailTreeInfo">
+                            <!-- 나무 정보가 여기에 표시됩니다 -->
+                        </div>
+                    </div>
 
-                <!-- 선택된 나무의 민원 리스트 -->
-                <div id="tree-requests-section" style="display: none;">
-                    <!-- 민원 리스트가 여기 표시됩니다 -->
+                    <div class="detail-section">
+                        <h3 class="text-section-request-info">민원 내용</h3>
+                        <div class="detail-description" id="detailDescription"></div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3 class="text-section-contact">연락처</h3>
+                        <div class="detail-grid" id="detailContact">
+                            <!-- 연락처 정보가 여기에 표시됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 민원 작성 페이지 -->
+        <div id="createPage" class="page-view">
+            <div class="main-card">
+                <div class="card-header">
+                    <button class="back-btn" onclick="showPage('list')">
+                        <span class="text-back">← 목록으로</span>
+                    </button>
+                    <h2 class="text-create-title">민원 작성</h2>
+                    <p class="text-create-subtitle">나무 관리, 유지보수, 긴급 조치 등의 민원을 접수합니다</p>
+                </div>
+
+                <div class="card-body">
+                    <!-- 지도 위젯 -->
+                    <div class="map-widget">
+                        <div class="map-widget-header">
+                            <h3 class="text-map-title">📍 나무 선택</h3>
+                            <p class="text-map-subtitle">지도에서 나무를 클릭하여 민원 대상 나무를 선택하세요</p>
+                        </div>
+                        <div class="search-bar">
+                            <input type="text" id="search" class="text-search-placeholder" placeholder="나무 ID 또는 주소로 검색..." />
+                        </div>
+                        <div style="position: relative;">
+                            <div id="map"></div>
+                            <div class="legend">
+                                <h4 class="text-legend-title">건강 상태</h4>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #28a745;"></div>
+                                    <span class="text-legend-excellent">우수 (9-10)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #17a2b8;"></div>
+                                    <span class="text-legend-good">양호 (7-8)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #ffc107;"></div>
+                                    <span class="text-legend-fair">보통 (5-6)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #dc3545;"></div>
+                                    <span class="text-legend-poor">불량 (1-4)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 선택된 나무 정보 -->
+                    <div id="tree-selection-area">
+                        <div class="no-tree-notice">
+                            <div class="icon">🗺️</div>
+                            <h4 class="text-no-tree-title">나무를 선택해주세요</h4>
+                            <p class="text-no-tree-subtitle">위 지도에서 나무를 클릭하면 해당 나무 정보가 자동으로 입력됩니다</p>
+                        </div>
+                    </div>
+
+                    <!-- 민원 작성 폼 -->
+                    <form id="requestForm" onsubmit="submitRequest(event)">
+                        <div class="form-section">
+                            <h3 class="text-form-request-info">민원 정보</h3>
+
+                            <div class="form-group">
+                                <label class="text-label-type">민원 유형 <span class="required">*</span></label>
+                                <select id="requestType" required>
+                                    <option value="" class="text-select-placeholder">선택하세요</option>
+                                    <option value="maintenance" class="text-type-maintenance">일반 유지보수</option>
+                                    <option value="emergency" class="text-type-emergency">긴급 조치 필요</option>
+                                    <option value="disease" class="text-type-disease">병충해 의심</option>
+                                    <option value="pruning" class="text-type-pruning">가지치기 요청</option>
+                                    <option value="removal" class="text-type-removal">제거 요청</option>
+                                    <option value="other" class="text-type-other">기타</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-label-description">상세 설명 <span class="required">*</span></label>
+                                <textarea id="description" required class="text-description-placeholder" placeholder="문제 상황을 자세히 설명해주세요..."></textarea>
+                                <div class="form-hint text-hint-description">가능한 한 자세히 설명해 주시면 빠른 처리에 도움이 됩니다</div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="text-form-contact">연락처 정보</h3>
+
+                            <div class="form-group">
+                                <label class="text-label-name">이름 <span class="required">*</span></label>
+                                <input type="text" id="contactName" required class="text-name-placeholder" placeholder="홍길동" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-label-phone">전화번호 <span class="required">*</span></label>
+                                <input type="tel" id="contactPhone" required class="text-phone-placeholder" placeholder="010-1234-5678" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-label-email">이메일</label>
+                                <input type="email" id="contactEmail" class="text-email-placeholder" placeholder="example@email.com (선택사항)" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                            <span class="text-submit">민원 제출하기</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 푸터 -->
+    <div class="footer">
+        <p id="footer-text">© 2025 Seoul Tree Support System. All rights reserved.</p>
+    </div>
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script>
-        let map;
-        let treesData = [];
-        let selectedTree = null;
-        let markers = {};
-        let requestsData = [];
-
-        // 지도 초기화
-        function initMap() {
-            map = L.map('map').setView([37.5665, 126.9780], 11);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-        }
-
-        // 나무 데이터 로드
-        async function loadTreeData() {
-            try {
-                const response = await fetch('/api/trees');
-                treesData = await response.json();
-                displayTreesOnMap();
-            } catch (error) {
-                console.error('Failed to load tree data:', error);
-                // Fallback: 샘플 데이터
-                treesData = generateSampleData();
-                displayTreesOnMap();
-            }
-        }
-
-        // 민원 데이터 로드 (샘플)
-        function loadRequestsData() {
-            // 실제로는 서버에서 로드
-            requestsData = generateSampleRequests();
-        }
-
-        // 건강 상태에 따른 마커 색상
-        function getMarkerColor(healthScore) {
-            if (healthScore >= 9) return '#28a745';
-            if (healthScore >= 7) return '#17a2b8';
-            if (healthScore >= 5) return '#ffc107';
-            return '#dc3545';
-        }
-
-        // 지도에 나무 표시
-        function displayTreesOnMap() {
-            treesData.forEach(tree => {
-                const color = getMarkerColor(tree.condition.healthScore);
-
-                const marker = L.circleMarker([tree.location.coordinates.lat, tree.location.coordinates.lng], {
-                    radius: 6,
-                    fillColor: color,
-                    color: '#fff',
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                });
-
-                marker.on('click', () => selectTree(tree));
-                marker.addTo(map);
-                markers[tree.id] = marker;
-            });
-        }
-
-        // 나무 선택
-        function selectTree(tree) {
-            selectedTree = tree;
-
-            // 기존 선택 해제
-            Object.values(markers).forEach(m => m.setStyle({ weight: 2 }));
-
-            // 새로운 선택 강조
-            if (markers[tree.id]) {
-                markers[tree.id].setStyle({ weight: 4 });
-                map.setView([tree.location.coordinates.lat, tree.location.coordinates.lng], 15);
-            }
-
-            displaySelectedTree(tree);
-            displayTreeRequests(tree);
-
-            // 제출 버튼 활성화
-            document.getElementById('submitBtn').disabled = false;
-        }
-
-        // 선택된 나무 정보 표시
-        function displaySelectedTree(tree) {
-            const healthClass = tree.condition.healthScore >= 9 ? 'excellent' :
-                              tree.condition.healthScore >= 7 ? 'good' :
-                              tree.condition.healthScore >= 5 ? 'fair' : 'poor';
-
-            const html = `
-                <div class="selected-tree-banner">
-                    <h4>✅ 선택된 나무</h4>
-                    <div class="tree-info-grid">
-                        <div class="tree-info-item">
-                            <div class="tree-info-label">나무 ID</div>
-                            <div class="tree-info-value">${tree.id}</div>
-                        </div>
-                        <div class="tree-info-item">
-                            <div class="tree-info-label">종류</div>
-                            <div class="tree-info-value">${tree.species.common_ko}</div>
-                        </div>
-                        <div class="tree-info-item">
-                            <div class="tree-info-label">건강 점수</div>
-                            <div class="tree-info-value">
-                                <span class="health-badge health-${healthClass}">${tree.condition.healthScore}/10</span>
-                            </div>
-                        </div>
-                        <div class="tree-info-item">
-                            <div class="tree-info-label">위치</div>
-                            <div class="tree-info-value">${tree.location.district_ko}, ${tree.location.neighborhood_ko}</div>
-                        </div>
-                        <div class="tree-info-item">
-                            <div class="tree-info-label">높이</div>
-                            <div class="tree-info-value">${tree.physical.height}m</div>
-                        </div>
-                        <div class="tree-info-item">
-                            <div class="tree-info-label">위험도</div>
-                            <div class="tree-info-value">${tree.condition.hazardRating}</div>
-                        </div>
-                    </div>
-                    ${tree.condition.healthScore < 7 ? `
-                    <div class="alert alert-warning" style="margin-top: 15px; margin-bottom: 0;">
-                        <strong>⚠️ 주의:</strong> 이 나무는 건강 상태가 좋지 않습니다. 전문가 검토가 필요할 수 있습니다.
-                    </div>
-                    ` : ''}
-                </div>
-            `;
-
-            document.getElementById('tree-selection-area').innerHTML = html;
-        }
-
-        // 선택된 나무의 민원 리스트 표시
-        function displayTreeRequests(tree) {
-            const treeRequests = requestsData.filter(req => req.treeId === tree.id);
-
-            const section = document.getElementById('tree-requests-section');
-
-            if (treeRequests.length === 0) {
-                section.innerHTML = `
-                    <div class="requests-section">
-                        <h3>🤖 ${tree.species.common_ko} (${tree.id}) 관련 민원 기록</h3>
-                        <div class="empty-state">
-                            <div class="icon">📋</div>
-                            <p>이 나무에 대한 민원 기록이 없습니다</p>
-                        </div>
-                        <div class="alert alert-info">
-                            <strong>💡 AI 분석:</strong> 최근 유지보수: ${tree.condition.lastInspection} |
-                            권장 조치: ${tree.condition.maintenanceNeeds.length > 0 ? tree.condition.maintenanceNeeds.join(', ') : '없음'}
-                        </div>
-                    </div>
-                `;
-            } else {
-                const requestsHtml = treeRequests.map(req => `
-                    <div class="request-card">
-                        <div class="request-header">
-                            <span class="request-type">${getRequestTypeLabel(req.type)}</span>
-                            <span class="request-date">${formatDate(req.timestamp)}</span>
-                            <span class="status-badge status-${req.status || 'pending'}">${getStatusLabel(req.status || 'pending')}</span>
-                        </div>
-                        <div class="request-description">${req.description}</div>
-                        <div class="request-contact">담당자: ${req.contact.name} | ${req.contact.phone}</div>
-                    </div>
-                `).join('');
-
-                section.innerHTML = `
-                    <div class="requests-section">
-                        <h3>🤖 ${tree.species.common_ko} (${tree.id}) 관련 민원 기록 (${treeRequests.length}건)</h3>
-                        ${requestsHtml}
-                        <div class="alert alert-info">
-                            <strong>💡 AI 분석:</strong> 최근 유지보수: ${tree.condition.lastInspection} |
-                            권장 조치: ${tree.condition.maintenanceNeeds.length > 0 ? tree.condition.maintenanceNeeds.join(', ') : '없음'}
-                        </div>
-                    </div>
-                `;
-            }
-
-            section.style.display = 'block';
-        }
-
-        // 민원 제출
-        function submitRequest(event) {
-            event.preventDefault();
-
-            if (!selectedTree) {
-                alert('나무를 먼저 선택해주세요!');
-                return;
-            }
-
-            const requestData = {
-                treeId: selectedTree.id,
-                type: document.getElementById('requestType').value,
-                description: document.getElementById('description').value,
-                contact: {
-                    name: document.getElementById('contactName').value,
-                    phone: document.getElementById('contactPhone').value,
-                    email: document.getElementById('contactEmail').value
-                },
-                timestamp: new Date().toISOString(),
-                status: 'pending'
-            };
-
-            console.log('민원 제출:', requestData);
-
-            // 샘플: 민원 데이터에 추가
-            requestsData.push(requestData);
-
-            // 서버에 전송 (구현 필요)
-            alert(`민원이 성공적으로 접수되었습니다!\n\n나무: ${selectedTree.id} - ${selectedTree.species.common_ko}\n담당자가 검토 후 연락드리겠습니다.`);
-
-            // 폼 초기화
-            document.getElementById('requestForm').reset();
-
-            // 민원 리스트 갱신
-            displayTreeRequests(selectedTree);
-        }
-
-        // 유틸리티 함수
-        function getRequestTypeLabel(type) {
-            const labels = {
-                'maintenance': '일반 유지보수',
-                'emergency': '긴급 조치',
-                'disease': '병충해 의심',
-                'pruning': '가지치기',
-                'removal': '제거 요청',
-                'other': '기타'
-            };
-            return labels[type] || type;
-        }
-
-        function getStatusLabel(status) {
-            const labels = {
-                'pending': '접수 대기',
-                'processing': '처리 중',
-                'completed': '완료'
-            };
-            return labels[status] || status;
-        }
-
-        function formatDate(isoString) {
-            const date = new Date(isoString);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        }
-
-        // 샘플 데이터 생성
-        function generateSampleData() {
-            return [
-                {
-                    id: 'TREE-0001',
-                    species: { common: 'Ginkgo', common_ko: '은행나무', scientific: 'Ginkgo biloba' },
-                    location: {
-                        coordinates: { lat: 37.5665, lng: 126.9780 },
-                        district_ko: '종로구',
-                        neighborhood_ko: '광화문'
-                    },
-                    physical: { height: 15.5, canopySpread: 8.2 },
-                    condition: {
-                        healthScore: 9,
-                        structuralCondition: 'Excellent',
-                        hazardRating: 'None',
-                        lastInspection: '2025-10-15',
-                        notes: 'Healthy specimen',
-                        maintenanceNeeds: []
-                    },
-                    photos: []
-                }
-            ];
-        }
-
-        function generateSampleRequests() {
-            return [
-                {
-                    treeId: 'TREE-0001',
-                    type: 'pruning',
-                    description: '가지가 보도를 가리고 있어 가지치기가 필요합니다.',
-                    contact: { name: '김철수', phone: '010-1234-5678' },
-                    timestamp: '2025-10-20T09:30:00Z',
-                    status: 'completed'
-                },
-                {
-                    treeId: 'TREE-0001',
-                    type: 'maintenance',
-                    description: '나무 뿌리가 인도를 들어올리고 있습니다.',
-                    contact: { name: '이영희', phone: '010-9876-5432' },
-                    timestamp: '2025-11-01T14:20:00Z',
-                    status: 'processing'
-                }
-            ];
-        }
-
-        // 검색 기능
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('search');
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                if (query.length < 2) return;
-
-                const found = treesData.find(tree =>
-                    tree.id.toLowerCase().includes(query) ||
-                    tree.location.district_ko.includes(query) ||
-                    tree.location.neighborhood_ko.includes(query)
-                );
-
-                if (found) {
-                    selectTree(found);
-                }
-            });
-        });
-
-        // 초기화
-        initMap();
-        loadTreeData();
-        loadRequestsData();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
