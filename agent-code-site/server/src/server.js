@@ -273,6 +273,54 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Handle apply changes and submit for approval
+  socket.on('request:apply-and-submit', async () => {
+    try {
+      const username = sessionService.getUsername(socket.id);
+      const featureBranchName = sessionService.getActiveBranch(socket.id);
+
+      if (!username || !featureBranchName) {
+        socket.emit('error', { error: 'No active feature to apply' });
+        return;
+      }
+
+      // Get user's branch name
+      const userBranchName = `user-${username.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+
+      // Ensure user worktree exists
+      await gitService.createUserWorktree(username);
+
+      // Merge feature branch into user's branch
+      await gitService.mergeToUserBranch(featureBranchName, userBranchName);
+
+      // Get conversation history for metadata
+      const conversationHistory = sessionService.getConversationHistory(socket.id);
+
+      // Add to approval queue with metadata
+      const request = await queueService.addRequest({
+        username,
+        branchName: userBranchName,
+        featureBranch: featureBranchName,
+        description: 'Applied feature changes',
+        conversationHistory,
+      });
+
+      socket.emit('request:applied', {
+        requestId: request.id,
+        message: 'Changes applied to your site and submitted for admin approval!',
+      });
+
+      // Clear active branch from session
+      sessionService.setActiveBranch(socket.id, null);
+
+      // Cleanup feature branch
+      await gitService.removeWorktree(featureBranchName);
+    } catch (error) {
+      console.error('Error applying and submitting request:', error);
+      socket.emit('error', { error: error.message });
+    }
+  });
+
   // Handle submit for approval
   socket.on('request:submit', async (data) => {
     try {

@@ -702,6 +702,19 @@ function connectSocket() {
     socket.on('request:submitted', (data) => {
         addSystemMessage(data.message || 'Request submitted for admin approval!');
     });
+
+    socket.on('request:applied', (data) => {
+        addSystemMessage(data.message || 'Changes applied to your site and submitted for admin approval!');
+
+        // Close the preview and confirm modals
+        closePreview();
+        closeConfirmModal();
+
+        // Reload to show the updated user site
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    });
 }
 
 function toggleChat() {

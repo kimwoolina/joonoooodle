@@ -48,11 +48,13 @@ export class QueueService {
     branchName,
     description,
     conversationHistory,
+    featureBranch,
   }) {
     const request = {
       id: this.generateId(),
       username,
       branchName,
+      featureBranch: featureBranch || null,
       description,
       conversationHistory: conversationHistory || [],
       timestamp: new Date().toISOString(),
