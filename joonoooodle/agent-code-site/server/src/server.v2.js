@@ -22,7 +22,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: '*', // Allow all origins (for local file:// access)
     methods: ['GET', 'POST']
   }
 });
@@ -56,41 +56,38 @@ app.get('/api/health', (req, res) => {
 // Serve main site (from main branch)
 app.use('/site', express.static(mainSitePath));
 
-// Serve preview for specific branch
-app.get('/preview/:branchName', async (req, res) => {
+// Serve preview files for a specific branch
+app.get('/preview/:branchName*', async (req, res) => {
   try {
-    const { branchName } = req.params;
+    const fullPath = req.params[0]; // Everything after /preview/:branchName
+    const pathParts = req.path.split('/').filter(p => p); // ['preview', 'branchName', 'file.html']
+
+    if (pathParts.length < 2) {
+      return res.status(400).send('Invalid preview path');
+    }
+
+    const branchName = pathParts[1];
+    const filePath = pathParts.slice(2).join('/') || 'index.html';
+
+    console.log(`Preview request: branch=${branchName}, file=${filePath}`);
 
     // Checkout the branch temporarily
     const currentBranch = await gitService.getCurrentBranch();
     await gitService.checkoutBranch(branchName);
 
-    // Serve the index.html from that branch
-    res.sendFile(path.join(mainSitePath, 'index.html'));
-
-    // Switch back to original branch
-    await gitService.checkoutBranch(currentBranch);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to load preview' });
-  }
-});
-
-// Serve preview assets for specific branch
-app.use('/preview-assets/:branchName', async (req, res, next) => {
-  try {
-    const { branchName } = req.params;
-
-    // Checkout the branch
-    const currentBranch = await gitService.getCurrentBranch();
-    await gitService.checkoutBranch(branchName);
-
-    // Serve static files
-    express.static(mainSitePath)(req, res, () => {
-      // Switch back
-      gitService.checkoutBranch(currentBranch).then(() => next());
+    // Serve the requested file from that branch
+    const fileFullPath = path.join(mainSitePath, filePath);
+    res.sendFile(fileFullPath, (err) => {
+      // Switch back to original branch
+      gitService.checkoutBranch(currentBranch);
+      if (err && !res.headersSent) {
+        console.error(`Failed to serve ${filePath}:`, err.message);
+        res.status(404).send('File not found');
+      }
     });
   } catch (error) {
-    next(error);
+    console.error('Preview error:', error);
+    res.status(500).json({ error: 'Failed to load preview' });
   }
 });
 
@@ -136,8 +133,8 @@ io.on('connection', (socket) => {
           .slice(0, 3)
           .join('-');
 
-        // Create new branch
-        branchName = await gitService.createFeatureBranch(username, slug);
+        // Create new branch with session ID for uniqueness
+        branchName = await gitService.createFeatureBranch(username, slug, socket.id);
         sessionService.setActiveBranch(socket.id, branchName);
 
         console.log(`Created feature branch: ${branchName}`);

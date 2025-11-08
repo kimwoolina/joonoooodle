@@ -15,17 +15,26 @@ export class GitService {
    * @param {string} featureSlug - URL-friendly feature description
    * @returns {Promise<string>} - Branch name
    */
-  async createFeatureBranch(username, featureSlug) {
+  async createFeatureBranch(username, featureSlug, sessionId = null) {
     const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '-');
     const sanitizedFeature = featureSlug.toLowerCase().replace(/[^a-z0-9]/g, '-');
-    const branchName = `user-${sanitizedUsername}-${sanitizedFeature}`;
+
+    // Add timestamp or session ID to make branch name unique
+    const uniqueId = sessionId ? sessionId.slice(0, 8) : Date.now().toString().slice(-8);
+    const branchName = `user-${sanitizedUsername}-${sanitizedFeature}-${uniqueId}`;
 
     try {
       // Ensure we're on main branch
       await this.execGit('checkout main');
 
-      // Pull latest changes
-      await this.execGit('pull origin main');
+      // Pull latest changes only if origin exists
+      try {
+        await this.execGit('remote get-url origin');
+        await this.execGit('pull origin main');
+      } catch {
+        // No origin configured, skip pull (local repo only)
+        console.log('No remote origin configured, skipping pull');
+      }
 
       // Create and checkout new branch
       await this.execGit(`checkout -b ${branchName}`);
@@ -75,8 +84,14 @@ export class GitService {
       // Checkout main
       await this.execGit('checkout main');
 
-      // Pull latest
-      await this.execGit('pull origin main');
+      // Pull latest only if origin exists
+      try {
+        await this.execGit('remote get-url origin');
+        await this.execGit('pull origin main');
+      } catch {
+        // No origin configured, skip pull
+        console.log('No remote origin configured, skipping pull');
+      }
 
       // Merge feature branch
       await this.execGit(`merge ${branchName} --no-ff -m "Merge ${branchName} (approved by ${approvedBy})"`);
