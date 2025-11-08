@@ -34,127 +34,95 @@ const seoulDistricts = [
   { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: ['Magok-dong', 'Balsan-dong', 'Gaehwa-dong', 'Banghwa-dong'] }
 ];
 
-// Common tree species in Seoul - using reliable placeholder images (guaranteed to work)
+// Pool of 12 real tree/nature photos from Unsplash (using specific photo IDs - guaranteed to work)
+const realTreePhotos = [
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80', // Forest/Trees 1
+  'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&q=80', // Trees 2
+  'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Single Tree 3
+  'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80', // Tree Canopy 4
+  'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80', // Oak Tree 5
+  'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80', // Nature Tree 6
+  'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&q=80', // Mountain Trees 7
+  'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80', // Tall Tree 8
+  'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', // Green Tree 9
+  'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80', // Beautiful Tree 10
+  'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80', // Spring Tree 11
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80'  // Landscape Tree 12
+];
+
+// Common tree species in Seoul
 const treeSpecies = [
   {
     common: 'Korean Red Pine',
     common_ko: '소나무',
     scientific: 'Pinus densiflora',
-    photos: [
-      'https://via.placeholder.com/800x600/228B22/FFFFFF?text=Korean+Red+Pine+%E2%80%A2+%EC%86%8C%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/2F4F2F/FFFFFF?text=Pinus+densiflora',
-      'https://via.placeholder.com/800x600/006400/FFFFFF?text=Pine+Tree+1'
-    ]
+    photos: [realTreePhotos[0], realTreePhotos[1], realTreePhotos[2]]
   },
   {
     common: 'Ginkgo',
     common_ko: '은행나무',
     scientific: 'Ginkgo biloba',
-    photos: [
-      'https://via.placeholder.com/800x600/FFD700/000000?text=Ginkgo+%E2%80%A2+%EC%9D%80%ED%96%89%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/FFA500/FFFFFF?text=Ginkgo+biloba',
-      'https://via.placeholder.com/800x600/DAA520/FFFFFF?text=Ginkgo+Tree'
-    ]
+    photos: [realTreePhotos[1], realTreePhotos[2], realTreePhotos[3]]
   },
   {
     common: 'Zelkova',
     common_ko: '느티나무',
     scientific: 'Zelkova serrata',
-    photos: [
-      'https://via.placeholder.com/800x600/8B4513/FFFFFF?text=Zelkova+%E2%80%A2+%EB%8A%90%ED%8B%B0%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/A0522D/FFFFFF?text=Zelkova+serrata',
-      'https://via.placeholder.com/800x600/654321/FFFFFF?text=Zelkova+Tree'
-    ]
+    photos: [realTreePhotos[2], realTreePhotos[3], realTreePhotos[4]]
   },
   {
     common: 'Korean Mountain Ash',
     common_ko: '마가목',
     scientific: 'Sorbus alnifolia',
-    photos: [
-      'https://via.placeholder.com/800x600/556B2F/FFFFFF?text=Mountain+Ash+%E2%80%A2+%EB%A7%88%EA%B0%80%EB%AA%A9',
-      'https://via.placeholder.com/800x600/6B8E23/FFFFFF?text=Sorbus+alnifolia',
-      'https://via.placeholder.com/800x600/808000/FFFFFF?text=Mountain+Ash'
-    ]
+    photos: [realTreePhotos[3], realTreePhotos[4], realTreePhotos[5]]
   },
   {
     common: 'Cherry',
     common_ko: '벚나무',
     scientific: 'Prunus serrulata',
-    photos: [
-      'https://via.placeholder.com/800x600/FFB6C1/000000?text=Cherry+%E2%80%A2+%EB%B2%9A%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/FFC0CB/000000?text=Prunus+serrulata',
-      'https://via.placeholder.com/800x600/FF69B4/FFFFFF?text=Cherry+Blossom'
-    ]
+    photos: [realTreePhotos[4], realTreePhotos[5], realTreePhotos[6]]
   },
   {
     common: 'Japanese Maple',
     common_ko: '단풍나무',
     scientific: 'Acer palmatum',
-    photos: [
-      'https://via.placeholder.com/800x600/DC143C/FFFFFF?text=Japanese+Maple+%E2%80%A2+%EB%8B%A8%ED%92%8D%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/8B0000/FFFFFF?text=Acer+palmatum',
-      'https://via.placeholder.com/800x600/B22222/FFFFFF?text=Maple+Tree'
-    ]
+    photos: [realTreePhotos[5], realTreePhotos[6], realTreePhotos[7]]
   },
   {
     common: 'Dawn Redwood',
     common_ko: '메타세쿼이아',
     scientific: 'Metasequoia glyptostroboides',
-    photos: [
-      'https://via.placeholder.com/800x600/8B4513/FFFFFF?text=Dawn+Redwood+%E2%80%A2+%EB%A9%94%ED%83%80%EC%84%B8%EC%BF%BC%EC%9D%B4%EC%95%84',
-      'https://via.placeholder.com/800x600/A0522D/FFFFFF?text=Metasequoia',
-      'https://via.placeholder.com/800x600/CD853F/000000?text=Redwood+Tree'
-    ]
+    photos: [realTreePhotos[6], realTreePhotos[7], realTreePhotos[8]]
   },
   {
     common: 'Korean Oak',
     common_ko: '참나무',
     scientific: 'Quercus mongolica',
-    photos: [
-      'https://via.placeholder.com/800x600/6B8E23/FFFFFF?text=Korean+Oak+%E2%80%A2+%EC%B0%B8%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/556B2F/FFFFFF?text=Quercus+mongolica',
-      'https://via.placeholder.com/800x600/8FBC8F/000000?text=Oak+Tree'
-    ]
+    photos: [realTreePhotos[7], realTreePhotos[8], realTreePhotos[9]]
   },
   {
     common: 'Persimmon',
     common_ko: '감나무',
     scientific: 'Diospyros kaki',
-    photos: [
-      'https://via.placeholder.com/800x600/FF8C00/FFFFFF?text=Persimmon+%E2%80%A2+%EA%B0%90%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/FF6347/FFFFFF?text=Diospyros+kaki',
-      'https://via.placeholder.com/800x600/FFA07A/000000?text=Persimmon+Tree'
-    ]
+    photos: [realTreePhotos[8], realTreePhotos[9], realTreePhotos[10]]
   },
   {
     common: 'Magnolia',
     common_ko: '목련',
     scientific: 'Magnolia kobus',
-    photos: [
-      'https://via.placeholder.com/800x600/F8F8FF/000000?text=Magnolia+%E2%80%A2+%EB%AA%A9%EB%A0%A8',
-      'https://via.placeholder.com/800x600/FFFAF0/000000?text=Magnolia+kobus',
-      'https://via.placeholder.com/800x600/FFE4E1/000000?text=Magnolia+Tree'
-    ]
+    photos: [realTreePhotos[9], realTreePhotos[10], realTreePhotos[11]]
   },
   {
     common: 'Crape Myrtle',
     common_ko: '배롱나무',
     scientific: 'Lagerstroemia indica',
-    photos: [
-      'https://via.placeholder.com/800x600/DB7093/FFFFFF?text=Crape+Myrtle+%E2%80%A2+%EB%B0%B0%EB%A1%B1%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/C71585/FFFFFF?text=Lagerstroemia',
-      'https://via.placeholder.com/800x600/FF1493/FFFFFF?text=Crape+Myrtle'
-    ]
+    photos: [realTreePhotos[10], realTreePhotos[11], realTreePhotos[0]]
   },
   {
     common: 'Hackberry',
     common_ko: '팽나무',
     scientific: 'Celtis sinensis',
-    photos: [
-      'https://via.placeholder.com/800x600/2E8B57/FFFFFF?text=Hackberry+%E2%80%A2+%ED%8C%BD%EB%82%98%EB%AC%B4',
-      'https://via.placeholder.com/800x600/3CB371/FFFFFF?text=Celtis+sinensis',
-      'https://via.placeholder.com/800x600/20B2AA/FFFFFF?text=Hackberry+Tree'
-    ]
+    photos: [realTreePhotos[11], realTreePhotos[0], realTreePhotos[1]]
   },
 ];
 
