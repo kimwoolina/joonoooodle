@@ -1,106 +1,56 @@
-.app-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 500;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.header {
+  background: #2d6a4f;
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  max-width: 100%;
 }
 
-.header-left {
+.header-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  border-radius: 12px;
+  gap: 0.75rem;
+  text-decoration: none;
   color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
-.header-title h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1.2;
+.tree-icon {
+  font-size: 2rem;
 }
 
-.subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.header-right {
+.header-nav {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  gap: 2rem;
 }
 
-.tree-count {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.count-label {
-  font-size: 11px;
-  color: #6b7280;
+.nav-link {
+  color: white;
+  text-decoration: none;
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  transition: opacity 0.2s ease;
 }
 
-.count-number {
-  font-size: 24px;
-  font-weight: 700;
-  color: #22c55e;
-  line-height: 1;
+.nav-link:hover {
+  opacity: 0.8;
 }
 
-/* Mobile responsive */
 @media (max-width: 768px) {
   .header-content {
-    padding: 12px 16px;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .header-title h1 {
-    font-size: 18px;
-  }
-
-  .subtitle {
-    font-size: 11px;
-  }
-
-  .logo {
-    width: 40px;
-    height: 40px;
-  }
-
-  .logo svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .count-number {
-    font-size: 20px;
+  .header-nav {
+    gap: 1rem;
   }
 }

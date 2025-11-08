@@ -18,3 +18,47 @@ body {
   position: relative;
   overflow: hidden;
 }
+
+/* Support and Admin Pages */
+.support-page,
+.admin-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #f3f4f6;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.support-header,
+.admin-header {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.support-header h1,
+.admin-header h1 {
+  color: #1f2937;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.back-button {
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #1f2937;
+}

@@ -4,7 +4,7 @@ import HealthMetrics from './HealthMetrics';
 import TreeInfo from './TreeInfo';
 import './DetailPanel.css';
 
-function DetailPanel({ tree, onClose }) {
+function DetailPanel({ tree, onClose, onRequestSupport }) {
   const [activeTab, setActiveTab] = useState('info');
 
   return (
@@ -20,6 +20,10 @@ function DetailPanel({ tree, onClose }) {
           </svg>
         </button>
       </div>
+
+      <button className="request-support-button" onClick={onRequestSupport}>
+        Request Support
+      </button>
 
       <div className="detail-panel-content">
         {/* Photo Gallery */}

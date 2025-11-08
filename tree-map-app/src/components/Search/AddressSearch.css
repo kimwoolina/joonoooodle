@@ -78,6 +78,23 @@
   cursor: not-allowed;
 }
 
+.request-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.request-button:hover {
+  background: #2563eb;
+}
+
 /* Suggestions Dropdown */
 .suggestions-dropdown {
   position: absolute;

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { geocodeAddress, findTreesNearLocation, getAddressSuggestions } from '../../utils/searchUtils';
 import './AddressSearch.css';
 
-function AddressSearch({ trees, onSearch }) {
+function AddressSearch({ trees, onSearch, onRequestSupport }) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -122,6 +122,13 @@ function AddressSearch({ trees, onSearch }) {
             disabled={isSearching || !query.trim()}
           >
             Search
+          </button>
+          <button
+            type="button"
+            className="request-button"
+            onClick={onRequestSupport}
+          >
+            Request Support
           </button>
         </div>
 

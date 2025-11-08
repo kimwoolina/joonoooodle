@@ -58,6 +58,24 @@
   background: #e5e7eb;
 }
 
+.request-support-button {
+  width: calc(100% - 40px);
+  margin: 16px 20px;
+  padding: 12px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.request-support-button:hover {
+  background: #2563eb;
+}
+
 .detail-panel-content {
   flex: 1;
   overflow-y: auto;
