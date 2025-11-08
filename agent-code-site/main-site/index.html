@@ -1588,9 +1588,27 @@
 
         // Check if user is logged in
         async function checkLogin() {
-            // Skip login check if we're in an iframe (preview mode)
+            // If we're in an iframe (preview mode)
             if (window.self !== window.top) {
-                console.log('Running in iframe, skipping login check');
+                console.log('Running in iframe (preview mode)');
+                console.log('Cookies in iframe:', document.cookie);
+
+                // Hide the chat widget in iframe
+                const chatWidget = document.getElementById('chatWidget');
+                if (chatWidget) {
+                    chatWidget.style.display = 'none';
+                }
+
+                // Try to get username from cookie in iframe
+                const cookie = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('agent_code_username='));
+                const username = cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+
+                if (username) {
+                    console.log('Preview loaded for user:', username);
+                    // Could show username somewhere in preview if needed
+                }
                 return;
             }
 
@@ -1638,6 +1656,14 @@
                 if (data.success) {
                     document.getElementById('usernameModal').style.display = 'none';
                     console.log('Logged in successfully as:', data.username);
+
+                    // Wait a moment for cookie to be set by browser, then connect to socket
+                    setTimeout(() => {
+                        if (typeof connectSocket === 'function') {
+                            console.log('Connecting socket after login...');
+                            connectSocket();
+                        }
+                    }, 100);
 
                     // Update branch indicator after successful login
                     await updateBranchIndicator();

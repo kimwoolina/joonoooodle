@@ -569,26 +569,31 @@ function formatDate(timestamp) {
 
 const SOCKET_URL = 'http://localhost:3000';
 let socket = null;
-let username = null;
 let sessionId = null;
 let currentBranch = null;
 let isThinking = false;
 let currentMessage = '';
 let isChatOpen = false;
 
+// Helper function to get username from cookie
+function getUsername() {
+    console.log('getUsername called, all cookies:', document.cookie);
+    const cookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('agent_code_username='));
+    const username = cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+    console.log('getUsername returning:', username);
+    return username;
+}
+
 // Initialize chat widget
 window.addEventListener('load', () => {
     // Check if user is logged in via cookie
-    fetch('/api/user/me', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.loggedIn) {
-                username = data.username;
-                // Connect to WebSocket
-                connectSocket();
-            }
-        })
-        .catch(err => console.error('Failed to check login status:', err));
+    const username = getUsername();
+    if (username) {
+        // Connect to WebSocket
+        connectSocket();
+    }
 });
 
 function setUsername() {
@@ -609,15 +614,22 @@ function setUsername() {
 }
 
 function connectSocket() {
-    if (socket) return; // Already connected
+    if (socket) {
+        console.log('Socket already exists, connected:', socket.connected);
+        return; // Already connected
+    }
 
+    console.log('Creating new socket connection to', SOCKET_URL);
     socket = io(SOCKET_URL);
 
     socket.on('connect', () => {
+        console.log('Socket connected!', socket.id);
         sessionId = socket.id;
         updateConnectionStatus(true);
 
         // Send username to server
+        const username = getUsername();
+        console.log('Sending username to server:', username);
         if (username) {
             socket.emit('user:set-name', { username });
         }
@@ -698,9 +710,11 @@ function toggleChat() {
         chatPanel.classList.remove('hidden');
         document.getElementById('chatInput').focus();
 
-        // Check if we need to show username modal
-        if (!username) {
-            document.getElementById('usernameModal').classList.remove('hidden');
+        // Connect socket if not already connected and user is logged in
+        const username = getUsername();
+        if (username && !socket) {
+            console.log('Connecting socket from toggleChat');
+            connectSocket();
         }
     } else {
         chatPanel.classList.add('hidden');
@@ -732,11 +746,24 @@ function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
 
-    if (!message || !socket) return;
+    console.log('sendChatMessage called', { message, socket, socketConnected: socket?.connected });
 
-    // Check if user has set username
+    if (!message) return;
+
+    // Check if socket exists and is connected
+    if (!socket || !socket.connected) {
+        console.log('Socket not connected, attempting to connect...');
+        if (!socket) {
+            connectSocket();
+        }
+        addSystemMessage('Connecting to server...');
+        return;
+    }
+
+    // Check if user is logged in
+    const username = getUsername();
     if (!username) {
-        document.getElementById('usernameModal').classList.remove('hidden');
+        addSystemMessage('Please log in to send messages');
         return;
     }
 

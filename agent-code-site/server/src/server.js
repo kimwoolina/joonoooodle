@@ -72,7 +72,7 @@ app.post('/api/user/login', async (req, res) => {
     // Set cookie with unique name
     res.cookie('agent_code_username', username, {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      httpOnly: true,
+      httpOnly: false, // Must be false so JavaScript can read it
       sameSite: 'lax',
       path: '/'
     });
