@@ -98,14 +98,20 @@ export function createAdminRouter(services) {
         return res.status(400).json({ error: 'Request already reviewed' });
       }
 
-      // Merge branch to main
-      await gitService.mergeBranch(request.branchName, adminName || 'Admin');
+      // Merge user branch to main
+      await gitService.mergeToMain(request.branchName, adminName || 'Admin');
 
       // Update queue status
       await queueService.approveRequest(requestId, adminName || 'Admin', note);
 
-      // Delete feature branch
-      await gitService.deleteBranch(request.branchName);
+      // Cleanup feature branch if it exists
+      if (request.featureBranch) {
+        try {
+          await gitService.removeWorktree(request.featureBranch);
+        } catch (err) {
+          console.log(`Feature branch ${request.featureBranch} already cleaned up`);
+        }
+      }
 
       res.json({
         success: true,
