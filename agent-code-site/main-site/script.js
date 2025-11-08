@@ -1166,14 +1166,18 @@ function renderModificationsTable(filter = 'all') {
     filteredData.slice(0, 20).forEach(mod => {
         const row = document.createElement('tr');
 
-        // Format date and time without AM/PM
+        // Format date and time in clean format
         const date = new Date(mod.date);
-        const dateStr = date.toLocaleDateString('ko-KR');
-        const timeStr = date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const formattedDate = `${year}.${month}.${day} ${hours}:${minutes}`;
 
         const rowCell = document.createElement('td');
         rowCell.className = 'mod-date';
-        rowCell.textContent = `${dateStr} ${timeStr}`;
+        rowCell.textContent = formattedDate;
         row.appendChild(rowCell);
 
         const requesterCell = document.createElement('td');
