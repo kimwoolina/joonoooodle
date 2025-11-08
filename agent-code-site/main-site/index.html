@@ -1617,7 +1617,10 @@
                 const data = await res.json();
 
                 if (!data.loggedIn) {
-                    document.getElementById('usernameModal').style.display = 'block';
+                    // Don't show login modal in iframe (preview mode)
+                    if (window.self === window.top) {
+                        document.getElementById('usernameModal').style.display = 'block';
+                    }
                 } else {
                     console.log('Logged in as:', data.username);
                     // Update branch indicator after confirming login
