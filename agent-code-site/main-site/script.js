@@ -359,6 +359,14 @@ function showPage(page) {
             initMap();
         }
         displaySelectedTree();
+    } else if (page === 'admin') {
+        document.getElementById('adminPage').classList.add('active');
+        // Initialize admin dashboard when showing admin page
+        setTimeout(() => {
+            initAdminDashboard();
+        }, 100);
+    } else if (page === 'modDetail') {
+        document.getElementById('modDetailPage').classList.add('active');
     }
 }
 
@@ -1436,33 +1444,3 @@ function rollbackModification() {
     }
 }
 
-// Update showPage function to handle admin page
-const originalShowPage = window.showPage;
-window.showPage = function(pageName) {
-    // Call original function if it exists
-    if (originalShowPage) {
-        originalShowPage(pageName);
-    } else {
-        // Manual implementation
-        const pages = ['list', 'detail', 'create', 'admin', 'modDetail'];
-        pages.forEach(page => {
-            const element = document.getElementById(page + 'Page');
-            if (element) {
-                element.classList.remove('active');
-            }
-        });
-
-        const targetPage = document.getElementById(pageName + 'Page');
-        if (targetPage) {
-            targetPage.classList.add('active');
-        }
-    }
-
-    // Initialize admin dashboard when showing admin page
-    if (pageName === 'admin') {
-        // Small delay to ensure DOM is ready
-        setTimeout(() => {
-            initAdminDashboard();
-        }, 100);
-    }
-};
