@@ -1,0 +1,46 @@
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.tree-marker {
+  background: transparent;
+  border: none;
+}
+
+.tree-marker svg {
+  transition: transform 0.2s ease;
+}
+
+.tree-marker:hover svg {
+  transform: scale(1.2);
+}
+
+/* Cluster styling */
+.marker-cluster {
+  background-color: rgba(34, 197, 94, 0.6);
+}
+
+.marker-cluster div {
+  background-color: rgba(34, 197, 94, 0.8);
+  color: white;
+  font-weight: bold;
+}
+
+/* Leaflet popup styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+  font-size: 14px;
+}
