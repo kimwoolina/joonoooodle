@@ -326,6 +326,9 @@
                     console.log('Preview loaded for user:', username);
                     // Could show username somewhere in preview if needed
                 }
+
+                // Update branch indicator in iframe mode too
+                await updateBranchIndicator();
                 return;
             }
 
