@@ -57,6 +57,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', sessions: sessionService.getSessionCount() });
 });
 
+// Trees API endpoint - returns empty array for now
+app.get('/api/trees', (req, res) => {
+  res.json([]);
+});
+
 // User login endpoint
 app.post('/api/user/login', async (req, res) => {
   try {
