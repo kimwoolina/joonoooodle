@@ -1,0 +1,19 @@
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-submitted {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-acknowledged {
+  background: #d1ecf1;
+  color: #0c5460;
+}
