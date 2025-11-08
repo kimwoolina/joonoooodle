@@ -166,7 +166,7 @@ function displayRequestsList() {
             <div class="card-content">
                 <div class="card-header">
                     <div class="card-title">
-                        <span class="request-id">#${String(request.id).padStart(4, '0')}</span>
+                        <span class="request-id">#${String(request.id).padStart(3, '0')}</span>
                         <span class="status-badge status-${request.status}">${statusLabel}</span>
                     </div>
                     <div class="emergency-type">${typeLabel}</div>
