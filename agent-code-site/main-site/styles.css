@@ -1186,6 +1186,26 @@
     font-size: 1.2rem;
 }
 
+.preview-modal-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.apply-changes-button {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.apply-changes-button:hover {
+    background: #f0f0f0;
+}
+
 .close-button-modal {
     background: transparent;
     border: none;
