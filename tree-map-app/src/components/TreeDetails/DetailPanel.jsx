@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PhotoGallery from './PhotoGallery';
 import HealthMetrics from './HealthMetrics';
 import TreeInfo from './TreeInfo';
@@ -6,6 +7,7 @@ import './DetailPanel.css';
 
 function DetailPanel({ tree, onClose }) {
   const [activeTab, setActiveTab] = useState('info');
+  const navigate = useNavigate();
 
   return (
     <div className="detail-panel">
@@ -45,6 +47,16 @@ function DetailPanel({ tree, onClose }) {
         <div className="tab-content">
           {activeTab === 'info' && <TreeInfo tree={tree} />}
           {activeTab === 'health' && <HealthMetrics tree={tree} />}
+        </div>
+
+        {/* Request Support Button */}
+        <div className="detail-panel-footer">
+          <button
+            className="request-support-button"
+            onClick={() => navigate('/request')}
+          >
+            REQUEST SUPPORT
+          </button>
         </div>
       </div>
     </div>
