@@ -18,6 +18,10 @@
                 <li><a href="#faq">FAQ</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            <div class="branch-indicator" id="branchIndicator">
+                <span class="branch-icon">🌿</span>
+                <span class="branch-name" id="branchName">Loading...</span>
+            </div>
             <button class="cta-button-small">Get Started</button>
         </nav>
     </header>
@@ -366,10 +370,9 @@
             <div id="previewNotification" class="preview-notification hidden">
                 <div class="preview-content">
                     <p><strong>🎉 Preview Ready!</strong></p>
-                    <p>Your changes are ready to view.</p>
+                    <p>Your changes are ready to view. Click "View Preview" to see them, then use "Apply Changes" in the preview to update your site.</p>
                     <div class="preview-actions-row">
                         <button onclick="viewPreview()" class="preview-btn">View Preview</button>
-                        <button onclick="submitForApproval()" class="submit-button">Submit for Approval</button>
                     </div>
                 </div>
             </div>
@@ -413,9 +416,36 @@
         <div class="preview-modal-content">
             <div class="preview-modal-header">
                 <h3>📋 Preview - <span id="previewBranchName"></span></h3>
-                <button class="close-button-modal" onclick="closePreview()">✕</button>
+                <div class="preview-modal-actions">
+                    <button class="apply-changes-button" onclick="applyChanges()">
+                        ✓ Apply Changes
+                    </button>
+                    <button class="close-button-modal" onclick="closePreview()">✕</button>
+                </div>
             </div>
             <iframe id="previewFrame" class="preview-frame"></iframe>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="confirm-modal hidden">
+        <div class="confirm-modal-backdrop" onclick="closeConfirmModal()"></div>
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-header">
+                <h3>🔄 Apply These Changes?</h3>
+            </div>
+            <div class="confirm-modal-body">
+                <p>This will:</p>
+                <ul>
+                    <li><strong>Apply changes to your personal site</strong> - visible immediately</li>
+                    <li><strong>Submit for admin approval</strong> - required to go live on main site</li>
+                </ul>
+                <p class="confirm-note">Your changes will be saved and sent to the admin queue for review before appearing on the main site.</p>
+            </div>
+            <div class="confirm-modal-footer">
+                <button class="confirm-cancel-btn" onclick="closeConfirmModal()">Cancel</button>
+                <button class="confirm-apply-btn" onclick="confirmApplyChanges()">Apply & Submit</button>
+            </div>
         </div>
     </div>
 
