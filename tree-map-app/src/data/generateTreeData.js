@@ -34,16 +34,16 @@ const seoulDistricts = [
   { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: ['Magok-dong', 'Balsan-dong', 'Gaehwa-dong', 'Banghwa-dong'] }
 ];
 
-// Common tree species in Seoul with matching photos
+// Common tree species in Seoul with placeholder images showing tree names
 const treeSpecies = [
   {
     common: 'Korean Red Pine',
     common_ko: '소나무',
     scientific: 'Pinus densiflora',
     photos: [
-      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80', // Pine tree 1
-      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Pine tree 2
-      'https://images.unsplash.com/photo-1520699287272-9c0f21e112f1?w=800&q=80'  // Pine tree 3
+      'https://placehold.co/800x600/228B22/white?text=Korean+Red+Pine+%EC%86%8C%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/2F4F2F/white?text=Pinus+densiflora',
+      'https://placehold.co/800x600/006400/white?text=%EC%86%8C%EB%82%98%EB%AC%B4+Pine'
     ]
   },
   {
@@ -51,9 +51,9 @@ const treeSpecies = [
     common_ko: '은행나무',
     scientific: 'Ginkgo biloba',
     photos: [
-      'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&q=80', // Ginkgo 1
-      'https://images.unsplash.com/photo-1533371452382-d45a9da51ad9?w=800&q=80', // Ginkgo autumn 2
-      'https://images.unsplash.com/photo-1604357209793-fca5dca89f97?w=800&q=80'  // Ginkgo 3
+      'https://placehold.co/800x600/FFD700/black?text=Ginkgo+%EC%9D%80%ED%96%89%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/FFA500/white?text=Ginkgo+biloba',
+      'https://placehold.co/800x600/DAA520/white?text=%EC%9D%80%ED%96%89%EB%82%98%EB%AC%B4+Ginkgo'
     ]
   },
   {
@@ -61,9 +61,9 @@ const treeSpecies = [
     common_ko: '느티나무',
     scientific: 'Zelkova serrata',
     photos: [
-      'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80', // Large tree 1
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80', // Zelkova 2
-      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80'  // Oak-like tree 3
+      'https://placehold.co/800x600/8B4513/white?text=Zelkova+%EB%8A%90%ED%8B%B0%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/A0522D/white?text=Zelkova+serrata',
+      'https://placehold.co/800x600/654321/white?text=%EB%8A%90%ED%8B%B0%EB%82%98%EB%AC%B4+Zelkova'
     ]
   },
   {
@@ -71,9 +71,9 @@ const treeSpecies = [
     common_ko: '마가목',
     scientific: 'Sorbus alnifolia',
     photos: [
-      'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // Mountain tree 1
-      'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&q=80', // Mountain tree 2
-      'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80'  // Tall tree 3
+      'https://placehold.co/800x600/556B2F/white?text=Mountain+Ash+%EB%A7%88%EA%B0%80%EB%AA%A9',
+      'https://placehold.co/800x600/6B8E23/white?text=Sorbus+alnifolia',
+      'https://placehold.co/800x600/808000/white?text=%EB%A7%88%EA%B0%80%EB%AA%A9+Sorbus'
     ]
   },
   {
@@ -81,9 +81,9 @@ const treeSpecies = [
     common_ko: '벚나무',
     scientific: 'Prunus serrulata',
     photos: [
-      'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80', // Cherry blossom 1
-      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80', // Cherry blossom 2
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80'  // Cherry blossom 3
+      'https://placehold.co/800x600/FFB6C1/black?text=Cherry+%EB%B2%9A%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/FFC0CB/black?text=Prunus+serrulata',
+      'https://placehold.co/800x600/FF69B4/white?text=%EB%B2%9A%EB%82%98%EB%AC%B4+Cherry'
     ]
   },
   {
@@ -91,9 +91,9 @@ const treeSpecies = [
     common_ko: '단풍나무',
     scientific: 'Acer palmatum',
     photos: [
-      'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&q=80', // Maple 1
-      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Maple 2
-      'https://images.unsplash.com/photo-1533371452382-d45a9da51ad9?w=800&q=80'  // Autumn maple 3
+      'https://placehold.co/800x600/DC143C/white?text=Japanese+Maple+%EB%8B%A8%ED%92%8D%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/8B0000/white?text=Acer+palmatum',
+      'https://placehold.co/800x600/B22222/white?text=%EB%8B%A8%ED%92%8D%EB%82%98%EB%AC%B4+Maple'
     ]
   },
   {
@@ -101,9 +101,9 @@ const treeSpecies = [
     common_ko: '메타세쿼이아',
     scientific: 'Metasequoia glyptostroboides',
     photos: [
-      'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80', // Tall redwood 1
-      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=80', // Redwood trunk 2
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80'  // Forest 3
+      'https://placehold.co/800x600/8B4513/white?text=Dawn+Redwood+%EB%A9%94%ED%83%80%EC%84%B8%EC%BF%BC%EC%9D%B4%EC%95%84',
+      'https://placehold.co/800x600/A0522D/white?text=Metasequoia',
+      'https://placehold.co/800x600/CD853F/white?text=%EB%A9%94%ED%83%80%EC%84%B8%EC%BF%BC%EC%9D%B4%EC%95%84'
     ]
   },
   {
@@ -111,9 +111,9 @@ const treeSpecies = [
     common_ko: '참나무',
     scientific: 'Quercus mongolica',
     photos: [
-      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80', // Oak 1
-      'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80', // Oak canopy 2
-      'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80'  // Oak 3
+      'https://placehold.co/800x600/6B8E23/white?text=Korean+Oak+%EC%B0%B8%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/556B2F/white?text=Quercus+mongolica',
+      'https://placehold.co/800x600/8FBC8F/black?text=%EC%B0%B8%EB%82%98%EB%AC%B4+Oak'
     ]
   },
   {
@@ -121,9 +121,9 @@ const treeSpecies = [
     common_ko: '감나무',
     scientific: 'Diospyros kaki',
     photos: [
-      'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', // Fruit tree 1
-      'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80', // Nature tree 2
-      'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80'  // Spring tree 3
+      'https://placehold.co/800x600/FF8C00/white?text=Persimmon+%EA%B0%90%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/FF6347/white?text=Diospyros+kaki',
+      'https://placehold.co/800x600/FFA07A/white?text=%EA%B0%90%EB%82%98%EB%AC%B4+Persimmon'
     ]
   },
   {
@@ -131,9 +131,9 @@ const treeSpecies = [
     common_ko: '목련',
     scientific: 'Magnolia kobus',
     photos: [
-      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80', // Magnolia blossom 1
-      'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=800&q=80', // Magnolia 2
-      'https://images.unsplash.com/photo-1520763185298-1b434c919102?w=800&q=80'  // White flowers 3
+      'https://placehold.co/800x600/F8F8FF/black?text=Magnolia+%EB%AA%A9%EB%A0%A8',
+      'https://placehold.co/800x600/FFFAF0/black?text=Magnolia+kobus',
+      'https://placehold.co/800x600/FFE4E1/black?text=%EB%AA%A9%EB%A0%A8+Magnolia'
     ]
   },
   {
@@ -141,9 +141,9 @@ const treeSpecies = [
     common_ko: '배롱나무',
     scientific: 'Lagerstroemia indica',
     photos: [
-      'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&q=80', // Flowering tree 1
-      'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // Green tree 2
-      'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80'  // Tree 3
+      'https://placehold.co/800x600/DB7093/white?text=Crape+Myrtle+%EB%B0%B0%EB%A1%B1%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/C71585/white?text=Lagerstroemia',
+      'https://placehold.co/800x600/FF1493/white?text=%EB%B0%B0%EB%A1%B1%EB%82%98%EB%AC%B4+Myrtle'
     ]
   },
   {
@@ -151,9 +151,9 @@ const treeSpecies = [
     common_ko: '팽나무',
     scientific: 'Celtis sinensis',
     photos: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', // Landscape tree 1
-      'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&q=80', // Tree 2
-      'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80'  // Large tree 3
+      'https://placehold.co/800x600/2E8B57/white?text=Hackberry+%ED%8C%BD%EB%82%98%EB%AC%B4',
+      'https://placehold.co/800x600/3CB371/white?text=Celtis+sinensis',
+      'https://placehold.co/800x600/20B2AA/white?text=%ED%8C%BD%EB%82%98%EB%AC%B4+Hackberry'
     ]
   },
 ];
