@@ -91,6 +91,44 @@ document.querySelectorAll('section').forEach(section => {
 console.log('Demo website loaded! Ask the AI agent to modify me!');
 
 // ============================================
+// BRANCH INDICATOR
+// ============================================
+
+// Fetch and display current branch info
+async function updateBranchIndicator() {
+    try {
+        const response = await fetch('http://localhost:3000/api/current-branch');
+        const data = await response.json();
+
+        const branchNameEl = document.getElementById('branchName');
+        if (data.branch) {
+            branchNameEl.textContent = data.branch;
+
+            // Color code based on branch type
+            const indicator = document.getElementById('branchIndicator');
+            if (data.branch === 'main') {
+                indicator.style.background = 'rgba(76, 175, 80, 0.3)';
+                indicator.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+            } else if (data.branch.startsWith('user-')) {
+                indicator.style.background = 'rgba(33, 150, 243, 0.3)';
+                indicator.style.borderColor = 'rgba(33, 150, 243, 0.5)';
+            } else if (data.branch.startsWith('feature-')) {
+                indicator.style.background = 'rgba(255, 152, 0, 0.3)';
+                indicator.style.borderColor = 'rgba(255, 152, 0, 0.5)';
+            }
+        } else {
+            branchNameEl.textContent = 'Unknown';
+        }
+    } catch (error) {
+        console.error('Failed to fetch branch info:', error);
+        document.getElementById('branchName').textContent = 'Error';
+    }
+}
+
+// Update on page load
+updateBranchIndicator();
+
+// ============================================
 // CHAT WIDGET FUNCTIONALITY
 // ============================================
 
@@ -126,13 +164,12 @@ function setUsername() {
 
     username = input;
     localStorage.setItem('buildright_username', username);
-    document.getElementById('usernameModal').classList.add('hidden');
 
-    // Connect to WebSocket
-    connectSocket();
+    // Set cookie for server-side routing
+    document.cookie = `buildright_username=${username}; path=/; max-age=31536000`; // 1 year
 
-    // Show welcome message
-    addSystemMessage(`Welcome, ${username}! How can I help you customize this website?`);
+    // Redirect to /site/ to load user's worktree
+    window.location.href = '/site/';
 }
 
 function connectSocket() {
@@ -201,6 +238,19 @@ function connectSocket() {
 
     socket.on('error', (data) => {
         addSystemMessage(`Error: ${data.error}`, true);
+    });
+
+    socket.on('changes:applied', (data) => {
+        addSystemMessage(data.message || 'Changes applied successfully! Reloading page...');
+
+        // Reload immediately now that backend has confirmed changes are applied
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    });
+
+    socket.on('request:submitted', (data) => {
+        addSystemMessage(data.message || 'Request submitted for admin approval!');
     });
 }
 
@@ -415,16 +465,6 @@ function showSubmittedNotification(data) {
     addSystemMessage('Your changes have been submitted for approval!');
 }
 
-function submitForApproval() {
-    if (!socket || !currentBranch) return;
-
-    const description = prompt('Add a description for this change request (optional):');
-
-    socket.emit('request:submit', {
-        description: description || 'Website modification request'
-    });
-}
-
 function viewPreview() {
     if (!currentBranch) {
         alert('No preview available');
@@ -445,4 +485,27 @@ function viewPreview() {
 function closePreview() {
     document.getElementById('previewModal').classList.add('hidden');
     document.getElementById('previewFrame').src = '';
+}
+
+function applyChanges() {
+    // Show custom confirmation modal
+    document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function confirmApplyChanges() {
+    // Close confirmation modal
+    closeConfirmModal();
+
+    // Close preview modal
+    closePreview();
+
+    // Emit event to apply changes and submit for approval
+    socket.emit('request:apply-and-submit');
+
+    // Show loading state
+    addSystemMessage('Applying changes to your site and submitting for admin approval...');
 }
