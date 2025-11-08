@@ -378,6 +378,11 @@ function initMap() {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+    // Fix map display after container becomes visible
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
+
     // Add markers for all trees
     treesData.forEach(tree => {
         const healthScore = tree.condition.healthScore;

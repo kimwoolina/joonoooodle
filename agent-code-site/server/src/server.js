@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import fs from 'fs/promises';
 import { GitService } from './services/gitService.js';
 import { QueueService } from './services/queueService.js';
 import { SessionService } from './services/sessionService.js';
@@ -57,9 +58,16 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', sessions: sessionService.getSessionCount() });
 });
 
-// Trees API endpoint - returns empty array for now
-app.get('/api/trees', (req, res) => {
-  res.json([]);
+// Trees API endpoint - loads from main-site/data/trees.json
+app.get('/api/trees', async (req, res) => {
+  try {
+    const treesPath = path.join(mainSitePath, 'data', 'trees.json');
+    const treesData = await fs.readFile(treesPath, 'utf-8');
+    res.json(JSON.parse(treesData));
+  } catch (error) {
+    console.error('Error loading trees:', error);
+    res.json([]);
+  }
 });
 
 // User login endpoint
@@ -176,6 +184,11 @@ app.use('/w/:branch', async (req, res, next) => {
 // Serve main site - dynamically serve from user's worktree if logged in
 app.use('/site', async (req, res, next) => {
   try {
+    // Admin page always serves from main branch
+    if (req.path === '/admin.html' || req.path.startsWith('/admin.html')) {
+      return express.static(mainSitePath)(req, res, next);
+    }
+
     // Check if user is logged in via cookie
     const username = req.cookies.agent_code_username;
 

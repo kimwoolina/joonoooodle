@@ -371,6 +371,91 @@ export class GitService {
   }
 
   /**
+   * Check if a branch is behind main
+   */
+  async isBranchBehindMain(branchName) {
+    try {
+      const worktreePath = await this.getWorktreePath(branchName);
+      if (!worktreePath) {
+        throw new Error(`Worktree not found for branch: ${branchName}`);
+      }
+
+      // Check how many commits behind main (local branch comparison)
+      const result = await this.execGitInPath(`rev-list --count ${branchName}..main`, worktreePath);
+      const commitsBehind = parseInt(result.stdout.trim());
+
+      return commitsBehind > 0;
+    } catch (error) {
+      console.error('Error checking branch status:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Sync a branch with main
+   */
+  async syncBranchWithMain(branchName, force = false, checkOnly = false) {
+    try {
+      const worktreePath = await this.getWorktreePath(branchName);
+      if (!worktreePath) {
+        throw new Error(`Worktree not found for branch: ${branchName}`);
+      }
+
+      if (force && !checkOnly) {
+        // Force reset to main (lose all local changes)
+        await this.execGitInPath('reset --hard main', worktreePath);
+        return { success: true, conflicts: false };
+      }
+
+      // Try to merge main into the branch (or just check for conflicts)
+      try {
+        await this.execGitInPath('merge main --no-edit --no-commit', worktreePath);
+
+        // If checkOnly, reset to clean state (merge --abort may fail if no conflicts)
+        if (checkOnly) {
+          try {
+            await this.execGitInPath('merge --abort', worktreePath);
+          } catch {
+            // If abort fails, reset the index instead
+            await this.execGitInPath('reset --merge', worktreePath);
+          }
+        }
+
+        return { success: true, conflicts: false };
+      } catch (mergeError) {
+        // Merge failed - check for conflicts
+        try {
+          const statusResult = await this.execGitInPath('status --short', worktreePath);
+          const conflicts = statusResult.stdout.split('\n').filter(line => line.startsWith('UU') || line.startsWith('AA'));
+
+          // Abort the merge
+          await this.execGitInPath('merge --abort', worktreePath);
+
+          // Get a summary of what will be lost
+          const diffResult = await this.execGitInPath('diff main...HEAD --stat', worktreePath);
+          const conflictsSummary = `Files with conflicts:\n${conflicts.map(c => c.substring(3)).join('\n')}\n\nChanges that will be lost:\n${diffResult.stdout}`;
+
+          return {
+            success: false,
+            conflicts: true,
+            conflictsSummary
+          };
+        } catch (statusError) {
+          // Abort merge and return error
+          try {
+            await this.execGitInPath('merge --abort', worktreePath);
+          } catch (e) {
+            // Ignore abort errors
+          }
+          throw mergeError;
+        }
+      }
+    } catch (error) {
+      throw new Error(`Failed to sync branch: ${error.message}`);
+    }
+  }
+
+  /**
    * Execute a git command in the main repo
    * @private
    */

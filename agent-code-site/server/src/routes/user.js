@@ -129,5 +129,55 @@ export function createUserRouter(services) {
     }
   });
 
+  /**
+   * Check if branch is behind main
+   */
+  router.get('/branch-status', async (req, res) => {
+    try {
+      const { branch } = req.query;
+
+      if (!branch) {
+        return res.status(400).json({ error: 'Branch name required' });
+      }
+
+      const behindMain = await gitService.isBranchBehindMain(branch);
+
+      res.json({ behindMain });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  /**
+   * Sync branch with main
+   */
+  router.post('/sync-with-main', async (req, res) => {
+    try {
+      const { branchName, force, checkOnly } = req.body;
+
+      if (!branchName) {
+        return res.status(400).json({ error: 'Branch name required' });
+      }
+
+      const result = await gitService.syncBranchWithMain(branchName, force, checkOnly);
+
+      if (result.conflicts && !force) {
+        return res.json({
+          conflicts: true,
+          conflictsSummary: result.conflictsSummary,
+          message: 'Conflicts detected. Use force to override.'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: checkOnly ? 'No conflicts detected' : 'Branch synced successfully',
+        conflicts: false
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return router;
 }

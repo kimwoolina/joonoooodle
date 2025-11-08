@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Tree Support System</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=8" />
 </head>
 <body>
     <div class="header">
@@ -21,20 +21,15 @@
     </div>
 
     <div class="admin-container">
-        <div class="admin-header">
-            <h1>AI Agent Admin Dashboard</h1>
-            <p>Monitor and manage AI-powered website modifications</p>
-        </div>
-
         <!-- Recent Modifications Table -->
         <div class="modifications-section">
             <div class="modifications-header">
                 <h2>Recent AI Modification Requests</h2>
                 <div class="status-filters">
-                    <button class="filter-btn active" data-status="all" onclick="filterRequests('all')">
+                    <button class="filter-btn" data-status="all" onclick="filterRequests('all')">
                         All <span class="filter-count" id="allCount">0</span>
                     </button>
-                    <button class="filter-btn" data-status="pending" onclick="filterRequests('pending')">
+                    <button class="filter-btn active" data-status="pending" onclick="filterRequests('pending')">
                         ⏳ Pending <span class="filter-count" id="pendingCount">0</span>
                     </button>
                     <button class="filter-btn" data-status="approved" onclick="filterRequests('approved')">
@@ -52,39 +47,12 @@
         </div>
     </div>
 
-    <!-- Request Detail Modal -->
-    <div id="detailModal" class="modal hidden">
-        <div class="modal-backdrop" onclick="closeDetailModal()"></div>
-        <div class="modal-content" style="max-width: 900px;">
-            <div class="modal-header">
-                <h2 id="modalTitle">Request Details</h2>
-                <button class="modal-close" onclick="closeDetailModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContent"></div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        const ADMIN_KEY = localStorage.getItem('admin_key');
-        let currentFilter = 'all';
+        let currentFilter = 'pending';
         let allRequests = [];
-
-        // Check if admin is logged in
-        if (!ADMIN_KEY) {
-            const key = prompt('Enter admin key:');
-            if (!key) {
-                window.location.href = '/site';
-            } else {
-                localStorage.setItem('admin_key', key);
-                window.location.reload();
-            }
-        }
 
         // Logout
         function logout() {
-            localStorage.removeItem('admin_key');
             window.location.href = '/site';
         }
 
@@ -97,17 +65,7 @@
         // Load stats
         async function loadStats() {
             try {
-                const response = await fetch('/api/admin/queue/stats', {
-                    headers: {
-                        'adminKey': ADMIN_KEY
-                    }
-                });
-
-                if (response.status === 401) {
-                    alert('Invalid admin key');
-                    logout();
-                    return;
-                }
+                const response = await fetch('/api/admin/queue/stats');
 
                 const stats = await response.json();
                 const total = (stats.pending || 0) + (stats.approved || 0) + (stats.rejected || 0);
@@ -127,24 +85,17 @@
                     ? '/api/admin/queue?status=all'
                     : `/api/admin/queue?status=${status}`;
 
-                const response = await fetch(url, {
-                    headers: {
-                        'adminKey': ADMIN_KEY
-                    }
-                });
-
-                if (response.status === 401) {
-                    alert('Invalid admin key');
-                    logout();
-                    return;
-                }
+                const response = await fetch(url);
 
                 const data = await response.json();
                 allRequests = data.requests || [];
                 renderRequests(allRequests);
             } catch (error) {
                 console.error('Error loading requests:', error);
-                document.getElementById('requestsList').innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Error loading requests</p>';
+                const container = document.getElementById('modificationsTableBody');
+                if (container) {
+                    container.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Error loading requests</p>';
+                }
             }
         }
 
@@ -165,9 +116,7 @@
                 return `
                     <div class="mod-request" data-status="${request.status}">
                         <div class="mod-request-header">
-                            <div>
-                                <span class="mod-date">${new Date(request.timestamp).toLocaleDateString()}</span>
-                            </div>
+                            <span class="mod-date">${new Date(request.timestamp).toLocaleDateString()}</span>
                             <span class="status-badge status-${request.status}">${request.status}</span>
                         </div>
                         <div class="mod-request-body">
@@ -183,9 +132,6 @@
                             </div>
                         </div>
                         <div class="table-action-buttons">
-                            <button class="action-btn btn-primary" onclick="viewDetails('${request.id}')">
-                                View Details
-                            </button>
                             ${request.status === 'pending' ? `
                                 <button class="action-btn approve" onclick="approveRequest('${request.id}')">
                                     ✅ Approve
@@ -207,146 +153,57 @@
             // Update active button
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
+                if (btn.dataset.status === status) {
+                    btn.classList.add('active');
+                }
             });
-            event.target.classList.add('active');
 
             loadRequests(status);
         }
 
-        // View request details
-        async function viewDetails(requestId) {
-            try {
-                const response = await fetch(`/api/admin/queue/${requestId}`, {
-                    headers: {
-                        'adminKey': ADMIN_KEY
-                    }
-                });
-
-                const request = await response.json();
-
-                const modalContent = document.getElementById('modalContent');
-                modalContent.innerHTML = `
-                    <div class="mod-detail-container">
-                        <div class="mod-detail-section">
-                            <h3>Request Information</h3>
-                            <div class="mod-detail-meta">
-                                <div><strong>User:</strong> ${request.username}</div>
-                                <div><strong>Status:</strong> <span class="status-badge status-${request.status}">${request.status}</span></div>
-                                <div><strong>Branch:</strong> ${request.branchName}</div>
-                                ${request.featureBranch ? `<div><strong>Feature Branch:</strong> ${request.featureBranch}</div>` : ''}
-                                <div><strong>Submitted:</strong> ${new Date(request.timestamp).toLocaleString()}</div>
-                            </div>
-                        </div>
-
-                        ${request.conversationHistory && request.conversationHistory.length > 0 ? `
-                            <div class="mod-detail-section">
-                                <h3>Conversation History</h3>
-                                <div class="conversation-history">
-                                    ${request.conversationHistory.map(msg => `
-                                        <div class="conversation-message ${msg.role}">
-                                            <strong>${msg.role === 'user' ? request.username : 'AI'}:</strong>
-                                            <p>${msg.content}</p>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-
-                        ${request.changedFiles && request.changedFiles.length > 0 ? `
-                            <div class="mod-detail-section">
-                                <h3>Changed Files</h3>
-                                <ul class="file-list">
-                                    ${request.changedFiles.map(file => `<li>${file}</li>`).join('')}
-                                </ul>
-                            </div>
-                        ` : ''}
-
-                        ${request.reviewedBy ? `
-                            <div class="mod-detail-section">
-                                <h3>Review</h3>
-                                <div class="mod-detail-meta">
-                                    <div><strong>Reviewed by:</strong> ${request.reviewedBy}</div>
-                                    <div><strong>Reviewed at:</strong> ${new Date(request.reviewedAt).toLocaleString()}</div>
-                                    ${request.reviewNote ? `<div><strong>Note:</strong> ${request.reviewNote}</div>` : ''}
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-
-                document.getElementById('detailModal').classList.remove('hidden');
-            } catch (error) {
-                console.error('Error loading request details:', error);
-                alert('Error loading request details');
-            }
-        }
-
-        // Close detail modal
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.add('hidden');
-        }
-
         // Approve request
         async function approveRequest(requestId) {
-            const adminName = prompt('Enter your name:');
-            if (!adminName) return;
-
-            const note = prompt('Add a note (optional):');
-
             try {
                 const response = await fetch(`/api/admin/approve/${requestId}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'adminKey': ADMIN_KEY
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ adminName, note })
+                    body: JSON.stringify({ adminName: 'Admin', note: '' })
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('Request approved successfully!');
                     loadDashboard();
                 } else {
-                    alert('Error: ' + result.error);
+                    console.error('Error approving:', result.error);
                 }
             } catch (error) {
                 console.error('Error approving request:', error);
-                alert('Error approving request');
             }
         }
 
         // Reject request
         async function rejectRequest(requestId) {
-            if (!confirm('Are you sure you want to reject this request?')) return;
-
-            const adminName = prompt('Enter your name:');
-            if (!adminName) return;
-
-            const note = prompt('Add a reason for rejection:');
-
             try {
                 const response = await fetch(`/api/admin/reject/${requestId}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'adminKey': ADMIN_KEY
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ adminName, note })
+                    body: JSON.stringify({ adminName: 'Admin', note: 'Rejected' })
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('Request rejected');
                     loadDashboard();
                 } else {
-                    alert('Error: ' + result.error);
+                    console.error('Error rejecting:', result.error);
                 }
             } catch (error) {
                 console.error('Error rejecting request:', error);
-                alert('Error rejecting request');
             }
         }
 

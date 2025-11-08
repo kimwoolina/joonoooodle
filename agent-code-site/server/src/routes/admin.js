@@ -2,26 +2,8 @@ import express from 'express';
 
 const router = express.Router();
 
-// Simple admin authentication middleware
-// TODO: Replace with real auth in production
-function adminAuth(req, res, next) {
-  const { adminKey } = req.headers;
-
-  // For now, use environment variable or simple key
-  const ADMIN_KEY = process.env.ADMIN_KEY || 'admin-secret-key';
-
-  if (adminKey !== ADMIN_KEY) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  next();
-}
-
 export function createAdminRouter(services) {
   const { queueService, gitService } = services;
-
-  // Apply auth to all admin routes
-  router.use(adminAuth);
 
   /**
    * Get all pending requests

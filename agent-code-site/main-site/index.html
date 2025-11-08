@@ -28,6 +28,15 @@
                         <path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path>
                     </svg>
                     <span class="branch-name" id="branchName"></span>
+                    <button class="sync-button" id="syncButton" onclick="syncWithMain()" title="Sync with main branch">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z"></path>
+                        </svg>
+                        Sync
+                    </button>
+                </div>
+                <div class="sync-warning" id="syncWarning" style="display: none;">
+                    ⚠️ Main branch has new changes. Please sync to stay up to date.
                 </div>
             </nav>
         </div>
@@ -295,6 +304,7 @@
                     document.getElementById('branchIndicator').style.display = 'flex';
                     document.getElementById('branchName').textContent = branchName;
                     console.log('Branch detected from URL:', branchName);
+                    await checkBranchStatus(branchName);
                     return;
                 }
 
@@ -304,9 +314,108 @@
                 if (data.branch) {
                     document.getElementById('branchIndicator').style.display = 'flex';
                     document.getElementById('branchName').textContent = data.branch;
+                    await checkBranchStatus(data.branch);
                 }
             } catch (err) {
                 console.error('Failed to fetch branch:', err);
+            }
+        }
+
+        // Check if branch is behind main
+        async function checkBranchStatus(branchName) {
+            if (branchName === 'main') {
+                document.getElementById('syncWarning').style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/user/branch-status?branch=${encodeURIComponent(branchName)}`, {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (data.behindMain) {
+                    document.getElementById('syncWarning').style.display = 'block';
+                } else {
+                    document.getElementById('syncWarning').style.display = 'none';
+                }
+            } catch (err) {
+                console.error('Failed to check branch status:', err);
+            }
+        }
+
+        // Sync with main branch
+        async function syncWithMain() {
+            const branchName = document.getElementById('branchName').textContent;
+            if (!branchName || branchName === 'main') {
+                alert('Already on main branch');
+                return;
+            }
+
+            try {
+                // First, check for conflicts by doing a dry-run
+                const checkRes = await fetch('/api/user/sync-with-main', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ branchName, checkOnly: true })
+                });
+
+                const checkData = await checkRes.json();
+
+                if (!checkRes.ok) {
+                    alert(`Error: ${checkData.error || 'Failed to check sync status'}`);
+                    return;
+                }
+
+                // If conflicts detected, warn user first
+                if (checkData.conflicts) {
+                    const conflictSummary = checkData.conflictsSummary || 'Some files have conflicts';
+                    if (!confirm(`⚠️ CONFLICTS DETECTED\n\n${conflictSummary}\n\nSyncing will REPLACE your changes with the latest from main.\n\nDo you want to continue?`)) {
+                        return;
+                    }
+
+                    // User confirmed - force sync
+                    const forceRes = await fetch('/api/user/sync-with-main', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ branchName, force: true })
+                    });
+
+                    if (forceRes.ok) {
+                        alert('✅ Branch synced successfully! Reloading...');
+                        window.location.reload();
+                    } else {
+                        const errorData = await forceRes.json();
+                        alert(`Error: ${errorData.error}`);
+                    }
+                } else {
+                    // No conflicts - ask for confirmation to proceed
+                    if (!confirm('Sync your branch with the latest changes from main? This will update your branch with the latest content.')) {
+                        return;
+                    }
+
+                    // Proceed with clean merge
+                    const res = await fetch('/api/user/sync-with-main', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ branchName })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        alert('✅ Branch synced successfully! Reloading...');
+                        window.location.reload();
+                    } else {
+                        alert(`Error: ${data.error || 'Failed to sync'}`);
+                    }
+                }
+            } catch (err) {
+                console.error('Sync error:', err);
+                alert('Failed to sync with main');
             }
         }
 
