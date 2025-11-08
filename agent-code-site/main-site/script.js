@@ -1148,6 +1148,14 @@ function generateMockModifications() {
     modificationsData.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
+// Format summary text with code tags (Notion-style)
+function formatSummaryWithTags(summary) {
+    // Pattern to match file names and keywords
+    // Matches: filename.ext, word → word, word 변경, etc.
+    return summary.replace(/([a-zA-Z0-9_-]+\.[a-z]+|[→↑↓←]|변경|추가|수정|업데이트|조정|증가|감소)/g,
+        '<span class="code-tag">$1</span>');
+}
+
 // Render modifications table
 function renderModificationsTable(filter = 'all') {
     const tbody = document.getElementById('modificationsTableBody');
@@ -1166,7 +1174,7 @@ function renderModificationsTable(filter = 'all') {
     filteredData.slice(0, 20).forEach(mod => {
         const row = document.createElement('tr');
 
-        // Format date and time in clean format
+        // Format date and time in clean format with badge
         const date = new Date(mod.date);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1177,7 +1185,10 @@ function renderModificationsTable(filter = 'all') {
 
         const rowCell = document.createElement('td');
         rowCell.className = 'mod-date';
-        rowCell.textContent = formattedDate;
+        const dateBadge = document.createElement('span');
+        dateBadge.className = 'date-badge';
+        dateBadge.textContent = formattedDate;
+        rowCell.appendChild(dateBadge);
         row.appendChild(rowCell);
 
         const requesterCell = document.createElement('td');
@@ -1194,7 +1205,7 @@ function renderModificationsTable(filter = 'all') {
 
         const summaryCell = document.createElement('td');
         summaryCell.className = 'mod-summary';
-        summaryCell.textContent = mod.summary;
+        summaryCell.innerHTML = formatSummaryWithTags(mod.summary);
         row.appendChild(summaryCell);
 
         const actionsCell = document.createElement('td');
