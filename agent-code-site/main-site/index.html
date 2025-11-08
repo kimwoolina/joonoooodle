@@ -1,425 +1,601 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuildRight - AI-Powered Website Builder</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>서울 나무 지도 & 민원 시스템</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 지도 영역 */
+        .map-section {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 오른쪽 패널 */
+        .side-panel {
+            width: 450px;
+            background: white;
+            border-left: 1px solid #ddd;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .panel-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .panel-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 선택된 나무 정보 */
+        .selected-tree-info {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .selected-tree-info h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .tree-details {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tree-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tree-details .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .detail-value {
+            color: #333;
+        }
+
+        .tree-photo {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .health-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .health-excellent { background: #d4edda; color: #155724; }
+        .health-good { background: #d1ecf1; color: #0c5460; }
+        .health-fair { background: #fff3cd; color: #856404; }
+        .health-poor { background: #f8d7da; color: #721c24; }
+
+        /* 민원 폼 */
+        .request-form {
+            padding: 20px;
+        }
+
+        .request-form h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* AI 컨텍스트 섹션 */
+        .ai-context {
+            padding: 20px;
+            background: #f0f4ff;
+            border-top: 2px solid #e0e7ff;
+        }
+
+        .ai-context h4 {
+            margin-bottom: 10px;
+            color: #4c51bf;
+            font-size: 14px;
+        }
+
+        .ai-context-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            border-left: 3px solid #667eea;
+        }
+
+        .no-tree-selected {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .no-tree-selected .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* 검색 바 */
+        .search-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            width: 300px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* 범례 */
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px #333;
+        }
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .alert-info {
+            background: #cfe2ff;
+            color: #084298;
+            border: 1px solid #b6d4fe;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">BuildRight</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
-                <li><a href="#faq">FAQ</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <button class="cta-button-small">Get Started</button>
-        </nav>
-    </header>
-
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="hero">
-            <div class="hero-content">
-                <h1>Build Websites with AI</h1>
-                <p>The smartest way to create and manage your online presence. Let AI do the heavy lifting.</p>
-                <div class="hero-buttons">
-                    <button class="cta-button" onclick="showMessage()">Start Free Trial</button>
-                    <button class="secondary-button">Watch Demo</button>
-                </div>
-                <div id="message" class="message"></div>
+    <div class="container">
+        <!-- 지도 영역 -->
+        <div class="map-section">
+            <div class="search-bar">
+                <input type="text" id="search" placeholder="나무 ID 또는 주소 검색..." />
             </div>
-            <div class="hero-image">
-                <div class="hero-placeholder">🚀</div>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="stats">
-            <div class="stat-item">
-                <h3 class="stat-number">10,000+</h3>
-                <p>Active Users</p>
-            </div>
-            <div class="stat-item">
-                <h3 class="stat-number">50,000+</h3>
-                <p>Websites Created</p>
-            </div>
-            <div class="stat-item">
-                <h3 class="stat-number">99.9%</h3>
-                <p>Uptime</p>
-            </div>
-            <div class="stat-item">
-                <h3 class="stat-number">24/7</h3>
-                <p>Support</p>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section id="features" class="features">
-            <h2>Powerful Features</h2>
-            <p class="section-subtitle">Everything you need to build amazing websites</p>
-
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>AI Design Assistant</h3>
-                    <p>Let our AI help you design beautiful, responsive websites with just a few prompts.</p>
+            <div id="map"></div>
+            <div class="legend">
+                <h4>건강 상태</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #28a745;"></div>
+                    <span>우수 (9-10)</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Optimized performance ensures your site loads in milliseconds, not seconds.</p>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #17a2b8;"></div>
+                    <span>양호 (7-8)</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Secure & Reliable</h3>
-                    <p>Enterprise-grade security with automatic backups and SSL certificates.</p>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffc107;"></div>
+                    <span>보통 (5-6)</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile First</h3>
-                    <p>All sites are fully responsive and optimized for mobile devices out of the box.</p>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dc3545;"></div>
+                    <span>불량 (1-4)</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Easy Deployment</h3>
-                    <p>Deploy your site with one click to our global CDN for maximum speed.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Analytics Built-in</h3>
-                    <p>Track your visitors, understand your audience, and grow your business.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <section id="pricing" class="pricing">
-            <h2>Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">Choose the plan that's right for you</p>
-
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3>Starter</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">9</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="features-list">
-                        <li>✓ 1 Website</li>
-                        <li>✓ 10 GB Storage</li>
-                        <li>✓ Basic Analytics</li>
-                        <li>✓ Email Support</li>
-                        <li>✗ Custom Domain</li>
-                        <li>✗ Priority Support</li>
-                    </ul>
-                    <button class="pricing-button">Get Started</button>
-                </div>
-
-                <div class="pricing-card featured">
-                    <div class="badge">Most Popular</div>
-                    <h3>Pro</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">29</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="features-list">
-                        <li>✓ 5 Websites</li>
-                        <li>✓ 50 GB Storage</li>
-                        <li>✓ Advanced Analytics</li>
-                        <li>✓ Priority Email Support</li>
-                        <li>✓ Custom Domain</li>
-                        <li>✓ AI Design Tools</li>
-                    </ul>
-                    <button class="pricing-button">Get Started</button>
-                </div>
-
-                <div class="pricing-card">
-                    <h3>Enterprise</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">99</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="features-list">
-                        <li>✓ Unlimited Websites</li>
-                        <li>✓ Unlimited Storage</li>
-                        <li>✓ Advanced Analytics</li>
-                        <li>✓ 24/7 Phone Support</li>
-                        <li>✓ Custom Domains</li>
-                        <li>✓ White Label</li>
-                    </ul>
-                    <button class="pricing-button">Contact Sales</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Testimonials Section -->
-        <section id="testimonials" class="testimonials">
-            <h2>What Our Customers Say</h2>
-            <p class="section-subtitle">Join thousands of happy users</p>
-
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p>"BuildRight transformed how we create landing pages. What used to take days now takes hours!"</p>
-                    <div class="author">
-                        <strong>Sarah Johnson</strong>
-                        <span>CEO, TechStart</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p>"The AI assistant is incredible. It understands exactly what I want and implements it perfectly."</p>
-                    <div class="author">
-                        <strong>Mike Chen</strong>
-                        <span>Freelance Designer</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p>"Best website builder I've ever used. The interface is intuitive and the results are professional."</p>
-                    <div class="author">
-                        <strong>Emily Rodriguez</strong>
-                        <span>Marketing Director</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section id="faq" class="faq">
-            <h2>Frequently Asked Questions</h2>
-            <p class="section-subtitle">Everything you need to know</p>
-
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>How does the AI assistant work?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Our AI assistant uses advanced language models to understand your requests and make changes to your website in real-time. Just describe what you want, and the AI will implement it.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>Can I use my own domain?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes! Pro and Enterprise plans include custom domain support. You can connect your existing domain or purchase a new one through our platform.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>Is there a free trial?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Absolutely! We offer a 14-day free trial on all plans. No credit card required.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>What kind of support do you offer?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>We provide email support for all users, priority support for Pro users, and 24/7 phone support for Enterprise customers.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="contact">
-            <h2>Get in Touch</h2>
-            <p class="section-subtitle">Have questions? We're here to help!</p>
-
-            <div class="contact-container">
-                <form class="contact-form" onsubmit="handleSubmit(event)">
-                    <div class="form-row">
-                        <input type="text" placeholder="Your Name" required>
-                        <input type="email" placeholder="Your Email" required>
-                    </div>
-                    <input type="text" placeholder="Subject" required>
-                    <textarea placeholder="Your Message" rows="6" required></textarea>
-                    <button type="submit">Send Message</button>
-                </form>
-
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">📧</div>
-                        <div>
-                            <h4>Email</h4>
-                            <p>support@buildright.com</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div>
-                            <h4>Phone</h4>
-                            <p>+1 (555) 123-4567</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">📍</div>
-                        <div>
-                            <h4>Office</h4>
-                            <p>123 Tech Street, San Francisco, CA</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="cta-section">
-            <h2>Ready to Build Your Dream Website?</h2>
-            <p>Join thousands of users who are already building amazing sites with BuildRight</p>
-            <button class="cta-button">Start Free Trial</button>
-        </section>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>BuildRight</h4>
-                <p>The AI-powered website builder for everyone.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Product</h4>
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#">Templates</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Company</h4>
-                <ul>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Careers</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#faq">FAQ</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li><a href="#">Documentation</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 BuildRight. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Chat Widget -->
-    <div id="chatWidget" class="chat-widget">
-        <!-- Username Modal -->
-        <div id="usernameModal" class="username-modal hidden">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <h2>Welcome to BuildRight!</h2>
-                <p>What should we call you?</p>
-                <input type="text" id="usernameInput" placeholder="Enter your name" autofocus>
-                <button onclick="setUsername()" class="modal-button">Get Started</button>
             </div>
         </div>
 
-        <!-- Chat Button -->
-        <button id="chatButton" class="chat-button" onclick="toggleChat()">
-            <span class="chat-icon">💬</span>
-            <span class="chat-badge" id="chatBadge" style="display: none;">1</span>
-        </button>
-
-        <!-- Chat Panel -->
-        <div id="chatPanel" class="chat-panel hidden">
-            <div class="chat-header">
-                <div class="chat-header-content">
-                    <h3>🤖 AI Assistant</h3>
-                    <span class="chat-status" id="chatStatus">
-                        <span class="status-dot disconnected"></span>
-                        Connecting...
-                    </span>
-                </div>
-                <button class="close-button" onclick="toggleChat()">✕</button>
+        <!-- 오른쪽 패널 -->
+        <div class="side-panel">
+            <div class="panel-header">
+                <h1>🌳 서울 나무 관리</h1>
+                <p>나무를 클릭하여 정보 확인 및 민원 작성</p>
             </div>
 
-            <!-- Preview Notification -->
-            <div id="previewNotification" class="preview-notification hidden">
-                <div class="preview-content">
-                    <p><strong>🎉 Preview Ready!</strong></p>
-                    <p>Your changes are ready to view.</p>
-                    <div class="preview-actions-row">
-                        <button onclick="viewPreview()" class="preview-btn">View Preview</button>
-                        <button onclick="submitForApproval()" class="submit-button">Submit for Approval</button>
-                    </div>
+            <div id="tree-info-section">
+                <div class="no-tree-selected">
+                    <div class="icon">🗺️</div>
+                    <p>지도에서 나무를 클릭하세요</p>
                 </div>
             </div>
 
-            <div class="chat-messages" id="chatMessages">
-                <div class="message assistant">
-                    <p>Hi! I'm your AI assistant. I can help you customize this website. Try asking me to:</p>
-                    <ul>
-                        <li>Change colors or fonts</li>
-                        <li>Add new sections</li>
-                        <li>Modify content</li>
-                        <li>Update styling</li>
-                    </ul>
-                    <p>What would you like to change?</p>
-                </div>
-            </div>
-
-            <div class="chat-input-container">
-                <textarea
-                    id="chatInput"
-                    class="chat-input"
-                    placeholder="Ask me to modify the website..."
-                    rows="1"
-                    onkeydown="handleChatKeydown(event)"
-                ></textarea>
-                <div class="chat-input-actions">
-                    <button id="sendButton" class="send-button" onclick="sendChatMessage()">
-                        <span>Send</span>
-                    </button>
-                    <button id="cancelButton" class="cancel-button hidden" onclick="cancelChatMessage()">
-                        <span>Cancel</span>
-                    </button>
-                </div>
+            <div id="ai-context-section" style="display: none;">
+                <!-- AI 컨텍스트 정보가 여기 표시됩니다 -->
             </div>
         </div>
     </div>
 
-    <!-- Preview Modal -->
-    <div id="previewModal" class="preview-modal hidden">
-        <div class="preview-modal-backdrop" onclick="closePreview()"></div>
-        <div class="preview-modal-content">
-            <div class="preview-modal-header">
-                <h3>📋 Preview - <span id="previewBranchName"></span></h3>
-                <button class="close-button-modal" onclick="closePreview()">✕</button>
-            </div>
-            <iframe id="previewFrame" class="preview-frame"></iframe>
-        </div>
-    </div>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="script.js"></script>
+    <script>
+        let map;
+        let treesData = [];
+        let selectedTree = null;
+        let markers = {};
+
+        // 지도 초기화
+        function initMap() {
+            map = L.map('map').setView([37.5665, 126.9780], 11);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+
+        // 나무 데이터 로드
+        async function loadTreeData() {
+            try {
+                const response = await fetch('/api/trees');
+                treesData = await response.json();
+                displayTreesOnMap();
+            } catch (error) {
+                console.error('Failed to load tree data:', error);
+                // Fallback: 샘플 데이터
+                treesData = generateSampleData();
+                displayTreesOnMap();
+            }
+        }
+
+        // 건강 상태에 따른 마커 색상
+        function getMarkerColor(healthScore) {
+            if (healthScore >= 9) return '#28a745';
+            if (healthScore >= 7) return '#17a2b8';
+            if (healthScore >= 5) return '#ffc107';
+            return '#dc3545';
+        }
+
+        // 지도에 나무 표시
+        function displayTreesOnMap() {
+            treesData.forEach(tree => {
+                const color = getMarkerColor(tree.condition.healthScore);
+
+                const marker = L.circleMarker([tree.location.coordinates.lat, tree.location.coordinates.lng], {
+                    radius: 6,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+
+                marker.on('click', () => selectTree(tree));
+                marker.addTo(map);
+                markers[tree.id] = marker;
+            });
+        }
+
+        // 나무 선택
+        function selectTree(tree) {
+            selectedTree = tree;
+
+            // 기존 선택 해제
+            Object.values(markers).forEach(m => m.setStyle({ weight: 2 }));
+
+            // 새로운 선택 강조
+            if (markers[tree.id]) {
+                markers[tree.id].setStyle({ weight: 4 });
+                map.setView([tree.location.coordinates.lat, tree.location.coordinates.lng], 15);
+            }
+
+            displayTreeInfo(tree);
+            displayAIContext(tree);
+        }
+
+        // 나무 정보 표시
+        function displayTreeInfo(tree) {
+            const healthClass = tree.condition.healthScore >= 9 ? 'excellent' :
+                              tree.condition.healthScore >= 7 ? 'good' :
+                              tree.condition.healthScore >= 5 ? 'fair' : 'poor';
+
+            const html = `
+                <div class="selected-tree-info">
+                    <h3>${tree.species.common_ko} (${tree.species.common})</h3>
+                    <div class="tree-details">
+                        <div class="detail-row">
+                            <span class="detail-label">ID</span>
+                            <span class="detail-value">${tree.id}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">학명</span>
+                            <span class="detail-value">${tree.species.scientific}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">위치</span>
+                            <span class="detail-value">${tree.location.district_ko}, ${tree.location.neighborhood_ko}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">높이</span>
+                            <span class="detail-value">${tree.physical.height}m</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">수관폭</span>
+                            <span class="detail-value">${tree.physical.canopySpread}m</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">건강 점수</span>
+                            <span class="detail-value">
+                                <span class="health-badge health-${healthClass}">${tree.condition.healthScore}/10</span>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">구조 상태</span>
+                            <span class="detail-value">${tree.condition.structuralCondition}</span>
+                        </div>
+                        ${tree.photos && tree.photos[0] ? `<img src="${tree.photos[0]}" class="tree-photo" onerror="this.style.display='none'" />` : ''}
+                    </div>
+                </div>
+                <div class="request-form">
+                    <h3>민원 작성</h3>
+                    <div class="alert alert-info">
+                        선택된 나무: ${tree.id} - ${tree.species.common_ko}
+                    </div>
+                    <form id="requestForm" onsubmit="submitRequest(event)">
+                        <div class="form-group">
+                            <label>민원 유형</label>
+                            <select id="requestType" required>
+                                <option value="">선택하세요</option>
+                                <option value="maintenance">일반 유지보수</option>
+                                <option value="emergency">긴급 조치 필요</option>
+                                <option value="disease">병충해 의심</option>
+                                <option value="pruning">가지치기 요청</option>
+                                <option value="removal">제거 요청</option>
+                                <option value="other">기타</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>상세 설명</label>
+                            <textarea id="description" required placeholder="문제 상황을 자세히 설명해주세요..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>연락처 (이름)</label>
+                            <input type="text" id="contactName" required placeholder="홍길동" />
+                        </div>
+                        <div class="form-group">
+                            <label>연락처 (전화번호)</label>
+                            <input type="tel" id="contactPhone" required placeholder="010-1234-5678" />
+                        </div>
+                        <button type="submit" class="submit-btn">민원 제출</button>
+                    </form>
+                </div>
+            `;
+
+            document.getElementById('tree-info-section').innerHTML = html;
+        }
+
+        // AI 컨텍스트 표시
+        function displayAIContext(tree) {
+            const contextHtml = `
+                <div class="ai-context">
+                    <h4>🤖 AI 분석 정보</h4>
+                    <div class="ai-context-item">
+                        <strong>최근 유지보수:</strong> ${tree.condition.lastInspection} (${tree.condition.notes})
+                    </div>
+                    <div class="ai-context-item">
+                        <strong>권장 조치:</strong> ${tree.condition.maintenanceNeeds.length > 0 ? tree.condition.maintenanceNeeds.join(', ') : '현재 필요한 조치 없음'}
+                    </div>
+                    <div class="ai-context-item">
+                        <strong>위험도:</strong> ${tree.condition.hazardRating}
+                    </div>
+                    ${tree.condition.healthScore < 7 ? `
+                    <div class="ai-context-item" style="border-left-color: #dc3545;">
+                        <strong>⚠️ 주의:</strong> 건강 상태가 좋지 않습니다. 전문가 검토가 필요할 수 있습니다.
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('ai-context-section').innerHTML = contextHtml;
+            document.getElementById('ai-context-section').style.display = 'block';
+        }
+
+        // 민원 제출
+        function submitRequest(event) {
+            event.preventDefault();
+
+            const requestData = {
+                treeId: selectedTree.id,
+                type: document.getElementById('requestType').value,
+                description: document.getElementById('description').value,
+                contact: {
+                    name: document.getElementById('contactName').value,
+                    phone: document.getElementById('contactPhone').value
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('민원 제출:', requestData);
+
+            // 서버에 전송 (구현 필요)
+            alert('민원이 성공적으로 접수되었습니다!\n담당자가 검토 후 연락드리겠습니다.');
+
+            // 폼 초기화
+            document.getElementById('requestForm').reset();
+        }
+
+        // 샘플 데이터 생성 (trees.json 로드 실패 시)
+        function generateSampleData() {
+            return [
+                {
+                    id: 'TREE-0001',
+                    species: { common: 'Ginkgo', common_ko: '은행나무', scientific: 'Ginkgo biloba' },
+                    location: {
+                        coordinates: { lat: 37.5665, lng: 126.9780 },
+                        district_ko: '종로구',
+                        neighborhood_ko: '광화문'
+                    },
+                    physical: { height: 15.5, canopySpread: 8.2 },
+                    condition: {
+                        healthScore: 9,
+                        structuralCondition: 'Excellent',
+                        hazardRating: 'None',
+                        lastInspection: '2025-10-15',
+                        notes: 'Healthy specimen',
+                        maintenanceNeeds: []
+                    },
+                    photos: []
+                }
+            ];
+        }
+
+        // 검색 기능
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                if (query.length < 2) return;
+
+                const found = treesData.find(tree =>
+                    tree.id.toLowerCase().includes(query) ||
+                    tree.location.district_ko.includes(query) ||
+                    tree.location.neighborhood_ko.includes(query)
+                );
+
+                if (found) {
+                    selectTree(found);
+                }
+            });
+        });
+
+        // 초기화
+        initMap();
+        loadTreeData();
+    </script>
 </body>
 </html>
