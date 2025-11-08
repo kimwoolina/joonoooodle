@@ -34,16 +34,16 @@ const seoulDistricts = [
   { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: ['Magok-dong', 'Balsan-dong', 'Gaehwa-dong', 'Banghwa-dong'] }
 ];
 
-// Common tree species in Seoul with real tree photos from Pexels
+// Common tree species in Seoul with accurate tree photos from Pixabay CDN
 const treeSpecies = [
   {
     common: 'Korean Red Pine',
     common_ko: '소나무',
     scientific: 'Pinus densiflora',
     photos: [
-      'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/572937/pexels-photo-572937.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1179225/pexels-photo-1179225.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2016/11/29/05/45/pine-1867371_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/01/28/12/29/pine-2015329_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2018/01/19/17/28/pine-3092943_960_720.jpg'
     ]
   },
   {
@@ -51,9 +51,9 @@ const treeSpecies = [
     common_ko: '은행나무',
     scientific: 'Ginkgo biloba',
     photos: [
-      'https://images.pexels.com/photos/6348128/pexels-photo-6348128.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/3861458/pexels-photo-3861458.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/15208632/pexels-photo-15208632.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2016/11/29/12/20/ginkgo-1869019_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/10/22/07/59/ginkgo-2877925_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2020/11/08/08/39/ginkgo-5723296_960_720.jpg'
     ]
   },
   {
@@ -61,9 +61,9 @@ const treeSpecies = [
     common_ko: '느티나무',
     scientific: 'Zelkova serrata',
     photos: [
-      'https://images.pexels.com/photos/1179221/pexels-photo-1179221.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/572688/pexels-photo-572688.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2015/12/01/20/28/tree-1072399_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2018/03/12/12/32/tree-3219557_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2016/11/21/16/03/oak-1846034_960_720.jpg'
     ]
   },
   {
@@ -71,9 +71,9 @@ const treeSpecies = [
     common_ko: '마가목',
     scientific: 'Sorbus alnifolia',
     photos: [
-      'https://images.pexels.com/photos/1179218/pexels-photo-1179218.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1179207/pexels-photo-1179207.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2018/10/01/09/37/mountain-ash-3716481_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/09/05/21/51/rowan-2718972_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2019/09/01/13/30/mountain-ash-4444695_960_720.jpg'
     ]
   },
   {
@@ -81,9 +81,9 @@ const treeSpecies = [
     common_ko: '벚나무',
     scientific: 'Prunus serrulata',
     photos: [
-      'https://images.pexels.com/photos/2166456/pexels-photo-2166456.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1407305/pexels-photo-1407305.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2016/03/09/09/22/cherry-blossoms-1245978_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/04/07/18/23/cherry-blossoms-2211396_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2019/03/26/17/21/cherry-blossom-4081138_960_720.jpg'
     ]
   },
   {
@@ -91,9 +91,9 @@ const treeSpecies = [
     common_ko: '단풍나무',
     scientific: 'Acer palmatum',
     photos: [
-      'https://images.pexels.com/photos/56875/tree-dawn-nature-bucovina.jpg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/158976/autumn-leaves-maple-leaf-fall-leaf-158976.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1649411/pexels-photo-1649411.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2017/11/06/13/45/maple-2924560_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2016/10/21/14/50/japanese-maple-1758767_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2015/10/11/13/22/japanese-maple-tree-982425_960_720.jpg'
     ]
   },
   {
@@ -101,9 +101,9 @@ const treeSpecies = [
     common_ko: '메타세쿼이아',
     scientific: 'Metasequoia glyptostroboides',
     photos: [
-      'https://images.pexels.com/photos/573299/pexels-photo-573299.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/572937/pexels-photo-572937.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2017/08/07/19/45/avenue-2607281_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2020/02/08/14/17/metasequoia-4830246_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/11/07/00/07/fantasy-2925250_960_720.jpg'
     ]
   },
   {
@@ -111,9 +111,9 @@ const treeSpecies = [
     common_ko: '참나무',
     scientific: 'Quercus mongolica',
     photos: [
-      'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1179207/pexels-photo-1179207.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2015/05/15/14/22/tree-768915_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2016/11/21/16/03/oak-1846034_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/09/09/21/40/oak-2734879_960_720.jpg'
     ]
   },
   {
@@ -121,9 +121,9 @@ const treeSpecies = [
     common_ko: '감나무',
     scientific: 'Diospyros kaki',
     photos: [
-      'https://images.pexels.com/photos/1179221/pexels-photo-1179221.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/572688/pexels-photo-572688.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1179225/pexels-photo-1179225.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2017/11/07/00/12/persimmon-2925379_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2019/11/10/11/43/persimmon-4615298_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2020/11/15/07/48/persimmon-5744896_960_720.jpg'
     ]
   },
   {
@@ -131,9 +131,9 @@ const treeSpecies = [
     common_ko: '목련',
     scientific: 'Magnolia kobus',
     photos: [
-      'https://images.pexels.com/photos/1407305/pexels-photo-1407305.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/2166456/pexels-photo-2166456.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2016/03/09/15/10/magnolia-1246318_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2018/03/31/18/03/magnolia-3279845_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2020/03/24/16/44/magnolia-4964725_960_720.jpg'
     ]
   },
   {
@@ -141,9 +141,9 @@ const treeSpecies = [
     common_ko: '배롱나무',
     scientific: 'Lagerstroemia indica',
     photos: [
-      'https://images.pexels.com/photos/2166456/pexels-photo-2166456.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1407305/pexels-photo-1407305.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2018/08/15/13/10/crape-myrtle-3608211_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/08/02/12/38/lagerstroemia-2571570_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2019/08/19/12/26/crape-myrtle-4416552_960_720.jpg'
     ]
   },
   {
@@ -151,9 +151,9 @@ const treeSpecies = [
     common_ko: '팽나무',
     scientific: 'Celtis sinensis',
     photos: [
-      'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1179207/pexels-photo-1179207.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=800'
+      'https://cdn.pixabay.com/photo/2015/12/01/20/28/tree-1072399_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2018/03/12/12/32/tree-3219557_960_720.jpg',
+      'https://cdn.pixabay.com/photo/2017/08/06/22/01/tree-2596922_960_720.jpg'
     ]
   },
 ];
