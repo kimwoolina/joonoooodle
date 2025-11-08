@@ -26,14 +26,19 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 
-// Get demo site path
-const demoSitePath = path.resolve(__dirname, '../../demo-site');
+// Get main site path
+const mainSitePath = path.resolve(__dirname, '../../main-site');
 
-// Serve demo site files statically for preview
-app.use('/demo', express.static(demoSitePath));
+// Serve main site files statically at /site path
+app.use('/site', express.static(mainSitePath));
 
-// File service for managing demo site files
-const fileService = new FileService(demoSitePath);
+// Redirect root path to main site
+app.get('/', (req, res) => {
+  res.redirect('/site/index.html');
+});
+
+// File service for managing main site files
+const fileService = new FileService(mainSitePath);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -110,5 +115,6 @@ const PORT = process.env.PORT || 3000;
 
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Demo site path: ${demoSitePath}`);
+  console.log(`Main site available at: http://localhost:${PORT}/site/`);
+  console.log(`Main site path: ${mainSitePath}`);
 });
