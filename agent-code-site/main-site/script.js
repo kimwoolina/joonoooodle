@@ -564,3 +564,388 @@ function formatDate(timestamp) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+// CHAT WIDGET FUNCTIONALITY
+// ============================================
+
+const SOCKET_URL = 'http://localhost:3000';
+let socket = null;
+let username = null;
+let sessionId = null;
+let currentBranch = null;
+let isThinking = false;
+let currentMessage = '';
+let isChatOpen = false;
+
+// Initialize chat widget
+window.addEventListener('load', () => {
+    // Check if username is stored
+    username = localStorage.getItem('buildright_username');
+
+    if (!username) {
+        // Show username modal on first chat open
+        // Don't show it automatically
+    } else {
+        // Connect to WebSocket
+        connectSocket();
+    }
+});
+
+function setUsername() {
+    const input = document.getElementById('usernameInput').value.trim();
+    if (!input) {
+        alert('Please enter your name');
+        return;
+    }
+
+    username = input;
+    localStorage.setItem('buildright_username', username);
+
+    // Set cookie for server-side routing
+    document.cookie = `buildright_username=${username}; path=/; max-age=31536000`; // 1 year
+
+    // Redirect to /site/ to load user's worktree
+    window.location.href = '/site/';
+}
+
+function connectSocket() {
+    if (socket) return; // Already connected
+
+    socket = io(SOCKET_URL);
+
+    socket.on('connect', () => {
+        sessionId = socket.id;
+        updateConnectionStatus(true);
+
+        // Send username to server
+        if (username) {
+            socket.emit('user:set-name', { username });
+        }
+    });
+
+    socket.on('disconnect', () => {
+        updateConnectionStatus(false);
+        addSystemMessage('Connection lost. Reconnecting...');
+    });
+
+    socket.on('user:name-set', (data) => {
+        console.log('Username set:', data.username);
+    });
+
+    socket.on('message:thinking', (data) => {
+        isThinking = data.thinking;
+        updateSendButton(data.thinking);
+
+        if (data.thinking) {
+            showThinkingIndicator();
+        } else {
+            hideThinkingIndicator();
+        }
+    });
+
+    socket.on('message:stream', (data) => {
+        if (data.isComplete) {
+            // Message complete
+            if (currentMessage) {
+                finalizeStreamingMessage();
+                currentMessage = '';
+            }
+        } else {
+            // Accumulate streaming text
+            currentMessage += data.text;
+            updateStreamingMessage(currentMessage);
+        }
+    });
+
+    socket.on('message:cancelled', () => {
+        addSystemMessage('Message cancelled');
+        currentMessage = '';
+        hideThinkingIndicator();
+    });
+
+    socket.on('preview:ready', (data) => {
+        currentBranch = data.branchName;
+        showPreviewNotification(data);
+    });
+
+    socket.on('request:submitted', (data) => {
+        showSubmittedNotification(data);
+    });
+
+    socket.on('error', (data) => {
+        addSystemMessage(`Error: ${data.error}`, true);
+    });
+
+    socket.on('changes:applied', (data) => {
+        addSystemMessage(data.message || 'Changes applied successfully! Reloading page...');
+
+        // Reload immediately now that backend has confirmed changes are applied
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    });
+
+    socket.on('request:submitted', (data) => {
+        addSystemMessage(data.message || 'Request submitted for admin approval!');
+    });
+}
+
+function toggleChat() {
+    isChatOpen = !isChatOpen;
+    const chatPanel = document.getElementById('chatPanel');
+
+    if (isChatOpen) {
+        chatPanel.classList.remove('hidden');
+        document.getElementById('chatInput').focus();
+
+        // Check if we need to show username modal
+        if (!username) {
+            document.getElementById('usernameModal').classList.remove('hidden');
+        }
+    } else {
+        chatPanel.classList.add('hidden');
+    }
+}
+
+function updateConnectionStatus(connected) {
+    const statusElement = document.getElementById('chatStatus');
+    const dot = statusElement.querySelector('.status-dot');
+
+    if (connected) {
+        dot.classList.add('connected');
+        dot.classList.remove('disconnected');
+        statusElement.innerHTML = `
+            <span class="status-dot connected"></span>
+            Connected
+        `;
+    } else {
+        dot.classList.remove('connected');
+        dot.classList.add('disconnected');
+        statusElement.innerHTML = `
+            <span class="status-dot disconnected"></span>
+            Disconnected
+        `;
+    }
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+
+    if (!message || !socket) return;
+
+    // Check if user has set username
+    if (!username) {
+        document.getElementById('usernameModal').classList.remove('hidden');
+        return;
+    }
+
+    addUserMessage(message);
+    input.value = '';
+    autoResizeTextarea(input);
+
+    // Send to server
+    socket.emit('message:send', {
+        message,
+        isNewFeature: !currentBranch,
+        featureDescription: message,
+    });
+}
+
+function cancelChatMessage() {
+    if (socket) {
+        socket.emit('message:cancel');
+    }
+}
+
+function handleChatKeydown(event) {
+    const input = event.target;
+
+    // Send on Enter (without Shift)
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendChatMessage();
+    }
+
+    // Auto-resize textarea
+    autoResizeTextarea(input);
+}
+
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+}
+
+function addUserMessage(text) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = 'message user';
+    msg.textContent = text;
+    messagesDiv.appendChild(msg);
+    scrollToBottom();
+}
+
+function addAssistantMessage(text) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = 'message assistant';
+    msg.innerHTML = text.replace(/\n/g, '<br>');
+    messagesDiv.appendChild(msg);
+    scrollToBottom();
+}
+
+function addSystemMessage(text, isError = false) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = 'message system';
+    msg.textContent = text;
+    if (isError) msg.style.background = '#ffebee';
+    messagesDiv.appendChild(msg);
+    scrollToBottom();
+}
+
+function showThinkingIndicator() {
+    const messagesDiv = document.getElementById('chatMessages');
+    const thinking = document.createElement('div');
+    thinking.id = 'thinkingIndicator';
+    thinking.className = 'message thinking';
+    thinking.innerHTML = `
+        <span>AI is thinking</span>
+        <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+    messagesDiv.appendChild(thinking);
+    scrollToBottom();
+}
+
+function hideThinkingIndicator() {
+    const thinking = document.getElementById('thinkingIndicator');
+    if (thinking) thinking.remove();
+
+    const streaming = document.getElementById('streamingMessage');
+    if (streaming && !currentMessage) {
+        streaming.remove();
+    }
+}
+
+function updateStreamingMessage(text) {
+    const messagesDiv = document.getElementById('chatMessages');
+    let streamMsg = document.getElementById('streamingMessage');
+
+    if (!streamMsg) {
+        // Remove thinking indicator
+        const thinking = document.getElementById('thinkingIndicator');
+        if (thinking) thinking.remove();
+
+        streamMsg = document.createElement('div');
+        streamMsg.id = 'streamingMessage';
+        streamMsg.className = 'message assistant';
+        messagesDiv.appendChild(streamMsg);
+    }
+
+    streamMsg.innerHTML = text.replace(/\n/g, '<br>');
+    scrollToBottom();
+}
+
+function finalizeStreamingMessage() {
+    const streamMsg = document.getElementById('streamingMessage');
+    if (streamMsg) {
+        streamMsg.removeAttribute('id');
+    }
+}
+
+function updateSendButton(thinking) {
+    const sendBtn = document.getElementById('sendButton');
+    const cancelBtn = document.getElementById('cancelButton');
+
+    if (thinking) {
+        sendBtn.disabled = true;
+        cancelBtn.classList.remove('hidden');
+    } else {
+        sendBtn.disabled = false;
+        cancelBtn.classList.add('hidden');
+    }
+}
+
+function scrollToBottom() {
+    const messagesDiv = document.getElementById('chatMessages');
+    // Use requestAnimationFrame to ensure DOM has updated before scrolling
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    });
+}
+
+function showPreviewNotification(data) {
+    const notification = document.getElementById('previewNotification');
+    notification.classList.remove('hidden');
+
+    // Store branch info for submit
+    currentBranch = data.branchName;
+}
+
+function showSubmittedNotification(data) {
+    const notification = document.getElementById('previewNotification');
+    notification.innerHTML = `
+        <div class="preview-content">
+            <p><strong>✅ Submitted!</strong></p>
+            <p>Your request is now pending admin approval.</p>
+        </div>
+    `;
+
+    // Hide after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('hidden');
+        currentBranch = null;
+    }, 5000);
+
+    addSystemMessage('Your changes have been submitted for approval!');
+}
+
+function viewPreview() {
+    if (!currentBranch) {
+        alert('No preview available');
+        return;
+    }
+
+    // Set the branch name in the modal
+    document.getElementById('previewBranchName').textContent = currentBranch;
+
+    // Load the preview in the iframe
+    const previewUrl = `http://localhost:3000/preview/${currentBranch}/index.html`;
+    document.getElementById('previewFrame').src = previewUrl;
+
+    // Show the modal
+    document.getElementById('previewModal').classList.remove('hidden');
+}
+
+function closePreview() {
+    document.getElementById('previewModal').classList.add('hidden');
+    document.getElementById('previewFrame').src = '';
+}
+
+function applyChanges() {
+    // Show custom confirmation modal
+    document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function confirmApplyChanges() {
+    // Close confirmation modal
+    closeConfirmModal();
+
+    // Close preview modal
+    closePreview();
+
+    // Emit event to apply changes and submit for approval
+    socket.emit('request:apply-and-submit');
+
+    // Show loading state
+    addSystemMessage('Applying changes to your site and submitting for admin approval...');
+}

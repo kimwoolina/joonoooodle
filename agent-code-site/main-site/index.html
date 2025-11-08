@@ -685,6 +685,595 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ============================================ */
+        /* CHAT WIDGET STYLES */
+        /* ============================================ */
+
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .chat-icon {
+            font-size: 1.8rem;
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .chat-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .chat-panel.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-content {
+            flex: 1;
+        }
+
+        .chat-header h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+        }
+
+        .chat-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+        }
+
+        .status-dot.connected {
+            background: #4caf50;
+        }
+
+        .close-button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .close-button:hover {
+            opacity: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #fafafa;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .message {
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            max-width: 70%;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            background: #e3f2fd;
+            color: #1976d2;
+            margin-left: auto;
+        }
+
+        .message.assistant {
+            background: white;
+            color: #333;
+        }
+
+        .message.system {
+            background: #fff3e0;
+            color: #f57c00;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .message.thinking {
+            background: white;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        .chat-input-container {
+            border-top: 1px solid #e0e0e0;
+            padding: 1rem;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: none;
+            max-height: 120px;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-input-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .send-button,
+        .cancel-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #00c853 0%, #00a03e 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: #00a03e;
+            transform: translateY(-1px);
+        }
+
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .cancel-button {
+            background: #ff4444;
+            color: white;
+        }
+
+        .cancel-button:hover {
+            background: #cc0000;
+        }
+
+        .preview-notification {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 1rem;
+            margin: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-notification.hidden {
+            display: none;
+        }
+
+        .preview-content p {
+            margin: 0.25rem 0;
+        }
+
+        .preview-actions-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .preview-btn {
+            background: white;
+            color: #2196f3;
+            border: 2px solid white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .preview-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .username-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .username-modal.hidden {
+            display: none;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Preview Modal Styles */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-modal.hidden {
+            display: none;
+        }
+
+        .preview-modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .preview-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-modal-header {
+            background: #667eea;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-modal-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .apply-changes-button,
+        .close-button-modal {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .apply-changes-button:hover,
+        .close-button-modal:hover {
+            background: #f0f0f0;
+        }
+
+        .preview-frame {
+            flex: 1;
+            border: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        /* Confirm Modal Styles */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-modal.hidden {
+            display: none;
+        }
+
+        .confirm-modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .confirm-modal-content {
+            position: relative;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-modal-header h3 {
+            margin: 0 0 1rem 0;
+            color: #667eea;
+        }
+
+        .confirm-modal-body ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .confirm-modal-body li {
+            margin: 0.5rem 0;
+        }
+
+        .confirm-note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 1rem;
+        }
+
+        .confirm-modal-footer {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .confirm-cancel-btn,
+        .confirm-apply-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .confirm-cancel-btn {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .confirm-cancel-btn:hover {
+            background: #d0d0d0;
+        }
+
+        .confirm-apply-btn {
+            background: linear-gradient(135deg, #00c853 0%, #00a03e 100%);
+            color: white;
+        }
+
+        .confirm-apply-btn:hover {
+            background: #00a03e;
+        }
+
+        /* Responsive Chat Widget */
+        @media (max-width: 768px) {
+            .chat-panel {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 110px);
+                right: 20px;
+            }
+
+            .chat-widget {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .chat-panel {
+                bottom: 80px;
+                right: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -838,6 +1427,118 @@
             </form>
         </div>
     </div>
+
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <!-- Username Modal -->
+        <div id="usernameModal" class="username-modal hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <h2>Welcome to Seoul Tree Support!</h2>
+                <p>What should we call you?</p>
+                <input type="text" id="usernameInput" placeholder="Enter your name" autofocus>
+                <button onclick="setUsername()" class="modal-button">Get Started</button>
+            </div>
+        </div>
+
+        <!-- Chat Button -->
+        <button id="chatButton" class="chat-button" onclick="toggleChat()">
+            <span class="chat-icon">💬</span>
+            <span class="chat-badge" id="chatBadge" style="display: none;">1</span>
+        </button>
+
+        <!-- Chat Panel -->
+        <div id="chatPanel" class="chat-panel hidden">
+            <div class="chat-header">
+                <div class="chat-header-content">
+                    <h3>🤖 AI Assistant</h3>
+                    <span class="chat-status" id="chatStatus">
+                        <span class="status-dot disconnected"></span>
+                        Connecting...
+                    </span>
+                </div>
+                <button class="close-button" onclick="toggleChat()">✕</button>
+            </div>
+
+            <!-- Preview Notification -->
+            <div id="previewNotification" class="preview-notification hidden">
+                <div class="preview-content">
+                    <p><strong>🎉 Preview Ready!</strong></p>
+                    <p>Your changes are ready to view. Click "View Preview" to see them!</p>
+                    <div class="preview-actions-row">
+                        <button onclick="viewPreview()" class="preview-btn">View Preview</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <p>Hi! I'm your AI assistant. I can help you improve this website!</p>
+                    <p>How can I help you today?</p>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <textarea
+                    id="chatInput"
+                    class="chat-input"
+                    placeholder="Ask me to modify the website..."
+                    rows="1"
+                    onkeydown="handleChatKeydown(event)"
+                ></textarea>
+                <div class="chat-input-actions">
+                    <button id="sendButton" class="send-button" onclick="sendChatMessage()">
+                        <span>Send</span>
+                    </button>
+                    <button id="cancelButton" class="cancel-button hidden" onclick="cancelChatMessage()">
+                        <span>Cancel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="preview-modal hidden">
+        <div class="preview-modal-backdrop" onclick="closePreview()"></div>
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <h3>📋 Preview - <span id="previewBranchName"></span></h3>
+                <div class="preview-modal-actions">
+                    <button class="apply-changes-button" onclick="applyChanges()">
+                        ✓ Apply Changes
+                    </button>
+                    <button class="close-button-modal" onclick="closePreview()">✕</button>
+                </div>
+            </div>
+            <iframe id="previewFrame" class="preview-frame"></iframe>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="confirm-modal hidden">
+        <div class="confirm-modal-backdrop" onclick="closeConfirmModal()"></div>
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-header">
+                <h3>🔄 Apply These Changes?</h3>
+            </div>
+            <div class="confirm-modal-body">
+                <p>This will:</p>
+                <ul>
+                    <li><strong>Apply changes to your personal site</strong> - visible immediately</li>
+                    <li><strong>Submit for admin approval</strong> - required to go live on main site</li>
+                </ul>
+                <p class="confirm-note">Your changes will be saved and sent to the admin queue for review before appearing on the main site.</p>
+            </div>
+            <div class="confirm-modal-footer">
+                <button class="confirm-cancel-btn" onclick="closeConfirmModal()">Cancel</button>
+                <button class="confirm-apply-btn" onclick="confirmApplyChanges()">Apply & Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO for Chat -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
