@@ -400,6 +400,9 @@ function initMap() {
         marker.addTo(map);
         markers.push(marker);
     });
+
+    // Setup tree search functionality
+    setupTreeSearch();
 }
 
 // Select tree from map
@@ -464,6 +467,108 @@ function displaySelectedTree() {
 function clearSelectedTree() {
     selectedTree = null;
     displaySelectedTree();
+}
+
+// Setup tree search functionality
+function setupTreeSearch() {
+    const searchInput = document.getElementById('treeSearch');
+    let searchDropdown = document.getElementById('searchDropdown');
+
+    // Create dropdown if it doesn't exist
+    if (!searchDropdown) {
+        searchDropdown = document.createElement('div');
+        searchDropdown.id = 'searchDropdown';
+        searchDropdown.className = 'search-dropdown';
+        searchInput.parentNode.appendChild(searchDropdown);
+    }
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim().toLowerCase();
+
+        if (query.length === 0) {
+            searchDropdown.classList.remove('active');
+            return;
+        }
+
+        // Debounce search
+        searchTimeout = setTimeout(() => {
+            performSearch(query, searchDropdown);
+        }, 300);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.classList.remove('active');
+        }
+    });
+}
+
+// Perform tree search
+function performSearch(query, dropdown) {
+    const results = treesData.filter(tree => {
+        const treeId = tree.id.toLowerCase();
+        const species = (tree.species.common_ko + ' ' + tree.species.common).toLowerCase();
+        const location = (tree.location.district_ko + ' ' + tree.location.neighborhood_ko).toLowerCase();
+
+        return treeId.includes(query) ||
+               species.includes(query) ||
+               location.includes(query);
+    });
+
+    if (results.length === 0) {
+        dropdown.innerHTML = '<div class="search-item no-results">No trees found</div>';
+        dropdown.classList.add('active');
+
+        // Hide "no results" after 2 seconds
+        setTimeout(() => {
+            dropdown.classList.remove('active');
+        }, 2000);
+        return;
+    }
+
+    // Limit to 10 results
+    const limitedResults = results.slice(0, 10);
+
+    dropdown.innerHTML = limitedResults.map(tree => {
+        const healthScore = tree.condition.healthScore;
+        const healthClass = getHealthClass(healthScore);
+        const healthLabel = getHealthLabel(healthScore);
+
+        return `
+            <div class="search-item" data-tree-id="${tree.id}">
+                <div class="search-item-main">
+                    <strong>${tree.id}</strong>
+                    <span class="health-badge ${healthClass}">${healthLabel}</span>
+                </div>
+                <div class="search-item-details">
+                    ${tree.species.common_ko} (${tree.species.common})
+                </div>
+                <div class="search-item-location">
+                    📍 ${tree.location.district_ko} ${tree.location.neighborhood_ko}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    dropdown.classList.add('active');
+
+    // Add click handlers to search results
+    dropdown.querySelectorAll('.search-item:not(.no-results)').forEach(item => {
+        item.addEventListener('click', () => {
+            const treeId = item.getAttribute('data-tree-id');
+            const tree = treesData.find(t => t.id === treeId);
+            if (tree) {
+                selectTree(tree);
+                map.setView([tree.location.coordinates.lat, tree.location.coordinates.lng], 16);
+                dropdown.classList.remove('active');
+                document.getElementById('treeSearch').value = '';
+            }
+        });
+    });
 }
 
 // Submit request
