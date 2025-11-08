@@ -316,12 +316,6 @@
                 console.log('Running in iframe (preview mode)');
                 console.log('Cookies in iframe:', document.cookie);
 
-                // Hide the chat widget in iframe
-                const chatWidget = document.getElementById('chatWidget');
-                if (chatWidget) {
-                    chatWidget.style.display = 'none';
-                }
-
                 // Try to get username from cookie in iframe
                 const cookie = document.cookie
                     .split('; ')
