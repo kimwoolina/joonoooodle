@@ -7,31 +7,81 @@ const __dirname = path.dirname(__filename);
 
 // Seoul districts with approximate center coordinates
 const seoulDistricts = [
-  { name: 'Gangnam-gu', name_ko: '강남구', lat: 37.5172, lng: 127.0473, neighborhoods: ['Apgujeong-dong', 'Cheongdam-dong', 'Daechi-dong', 'Samseong-dong'] },
-  { name: 'Jongno-gu', name_ko: '종로구', lat: 37.5735, lng: 126.9788, neighborhoods: ['Gwanghwamun', 'Insadong', 'Samcheong-dong', 'Bukchon'] },
-  { name: 'Jung-gu', name_ko: '중구', lat: 37.5641, lng: 126.9979, neighborhoods: ['Myeong-dong', 'Namsan', 'Euljiro', 'Hoehyeon-dong'] },
-  { name: 'Mapo-gu', name_ko: '마포구', lat: 37.5663, lng: 126.9019, neighborhoods: ['Hongdae', 'Yeonnam-dong', 'Sangsu-dong', 'Hapjeong-dong'] },
-  { name: 'Songpa-gu', name_ko: '송파구', lat: 37.5145, lng: 127.1059, neighborhoods: ['Jamsil', 'Munjeong-dong', 'Garak-dong', 'Bangi-dong'] },
-  { name: 'Seocho-gu', name_ko: '서초구', lat: 37.4837, lng: 127.0324, neighborhoods: ['Seocho-dong', 'Jamwon-dong', 'Banpo-dong', 'Yangjae-dong'] },
-  { name: 'Gangdong-gu', name_ko: '강동구', lat: 37.5301, lng: 127.1238, neighborhoods: ['Cheonho-dong', 'Sangil-dong', 'Myeongil-dong', 'Godeok-dong'] },
-  { name: 'Gwangjin-gu', name_ko: '광진구', lat: 37.5384, lng: 127.0822, neighborhoods: ['Jayang-dong', 'Guui-dong', 'Gwangjang-dong', 'Neung-dong'] },
-  { name: 'Seongdong-gu', name_ko: '성동구', lat: 37.5634, lng: 127.0371, neighborhoods: ['Seongsu-dong', 'Haengdang-dong', 'Wangsimni', 'Geumho-dong'] },
-  { name: 'Yongsan-gu', name_ko: '용산구', lat: 37.5326, lng: 126.9905, neighborhoods: ['Itaewon', 'Hannam-dong', 'Ichon-dong', 'Yongsan-dong'] },
-  { name: 'Seodaemun-gu', name_ko: '서대문구', lat: 37.5791, lng: 126.9368, neighborhoods: ['Sinchon', 'Yeonhui-dong', 'Hongje-dong', 'Bukgajwa-dong'] },
-  { name: 'Eunpyeong-gu', name_ko: '은평구', lat: 37.6176, lng: 126.9227, neighborhoods: ['Bulgwang-dong', 'Yeokchon-dong', 'Galhyeon-dong', 'Jingwan-dong'] },
-  { name: 'Gangbuk-gu', name_ko: '강북구', lat: 37.6396, lng: 127.0257, neighborhoods: ['Mia-dong', 'Suyu-dong', 'Beon-dong', 'Ui-dong'] },
-  { name: 'Dobong-gu', name_ko: '도봉구', lat: 37.6688, lng: 127.0471, neighborhoods: ['Ssangmun-dong', 'Banghak-dong', 'Chang-dong', 'Dobong-dong'] },
-  { name: 'Nowon-gu', name_ko: '노원구', lat: 37.6541, lng: 127.0568, neighborhoods: ['Sanggye-dong', 'Junggye-dong', 'Hagye-dong', 'Wolgye-dong'] },
-  { name: 'Seongbuk-gu', name_ko: '성북구', lat: 37.5894, lng: 127.0167, neighborhoods: ['Seongbuk-dong', 'Jeongneung-dong', 'Gil-dong', 'Dongseon-dong'] },
-  { name: 'Dongdaemun-gu', name_ko: '동대문구', lat: 37.5744, lng: 127.0396, neighborhoods: ['Jeonnong-dong', 'Yongdu-dong', 'Jegi-dong', 'Hoegi-dong'] },
-  { name: 'Jungnang-gu', name_ko: '중랑구', lat: 37.6063, lng: 127.0925, neighborhoods: ['Myeonmok-dong', 'Sangbong-dong', 'Junghwa-dong', 'Mukdong'] },
-  { name: 'Gwanak-gu', name_ko: '관악구', lat: 37.4784, lng: 126.9516, neighborhoods: ['Bongcheon-dong', 'Sillim-dong', 'Nakseongdae', 'Daehak-dong'] },
-  { name: 'Dongjak-gu', name_ko: '동작구', lat: 37.5124, lng: 126.9393, neighborhoods: ['Noryangjin', 'Sangdo-dong', 'Heukseok-dong', 'Sadang-dong'] },
-  { name: 'Yeongdeungpo-gu', name_ko: '영등포구', lat: 37.5264, lng: 126.8962, neighborhoods: ['Yeouido', 'Dangsan-dong', 'Singil-dong', 'Daerim-dong'] },
-  { name: 'Guro-gu', name_ko: '구로구', lat: 37.4954, lng: 126.8874, neighborhoods: ['Guro-dong', 'Gasan-dong', 'Sindorim', 'Garibong-dong'] },
-  { name: 'Geumcheon-gu', name_ko: '금천구', lat: 37.4519, lng: 126.9023, neighborhoods: ['Gasan-dong', 'Siheung-dong', 'Doksan-dong'] },
-  { name: 'Yangcheon-gu', name_ko: '양천구', lat: 37.5170, lng: 126.8665, neighborhoods: ['Mok-dong', 'Sinjeong-dong', 'Sinwol-dong'] },
-  { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: ['Magok-dong', 'Balsan-dong', 'Gaehwa-dong', 'Banghwa-dong'] }
+  { name: 'Gangnam-gu', name_ko: '강남구', lat: 37.5172, lng: 127.0473, neighborhoods: [
+    { en: 'Apgujeong-dong', ko: '압구정동' }, { en: 'Cheongdam-dong', ko: '청담동' }, { en: 'Daechi-dong', ko: '대치동' }, { en: 'Samseong-dong', ko: '삼성동' }
+  ]},
+  { name: 'Jongno-gu', name_ko: '종로구', lat: 37.5735, lng: 126.9788, neighborhoods: [
+    { en: 'Gwanghwamun', ko: '광화문' }, { en: 'Insadong', ko: '인사동' }, { en: 'Samcheong-dong', ko: '삼청동' }, { en: 'Bukchon', ko: '북촌' }
+  ]},
+  { name: 'Jung-gu', name_ko: '중구', lat: 37.5641, lng: 126.9979, neighborhoods: [
+    { en: 'Myeong-dong', ko: '명동' }, { en: 'Namsan', ko: '남산' }, { en: 'Euljiro', ko: '을지로' }, { en: 'Hoehyeon-dong', ko: '회현동' }
+  ]},
+  { name: 'Mapo-gu', name_ko: '마포구', lat: 37.5663, lng: 126.9019, neighborhoods: [
+    { en: 'Hongdae', ko: '홍대' }, { en: 'Yeonnam-dong', ko: '연남동' }, { en: 'Sangsu-dong', ko: '상수동' }, { en: 'Hapjeong-dong', ko: '합정동' }
+  ]},
+  { name: 'Songpa-gu', name_ko: '송파구', lat: 37.5145, lng: 127.1059, neighborhoods: [
+    { en: 'Jamsil', ko: '잠실' }, { en: 'Munjeong-dong', ko: '문정동' }, { en: 'Garak-dong', ko: '가락동' }, { en: 'Bangi-dong', ko: '방이동' }
+  ]},
+  { name: 'Seocho-gu', name_ko: '서초구', lat: 37.4837, lng: 127.0324, neighborhoods: [
+    { en: 'Seocho-dong', ko: '서초동' }, { en: 'Jamwon-dong', ko: '잠원동' }, { en: 'Banpo-dong', ko: '반포동' }, { en: 'Yangjae-dong', ko: '양재동' }
+  ]},
+  { name: 'Gangdong-gu', name_ko: '강동구', lat: 37.5301, lng: 127.1238, neighborhoods: [
+    { en: 'Cheonho-dong', ko: '천호동' }, { en: 'Sangil-dong', ko: '상일동' }, { en: 'Myeongil-dong', ko: '명일동' }, { en: 'Godeok-dong', ko: '고덕동' }
+  ]},
+  { name: 'Gwangjin-gu', name_ko: '광진구', lat: 37.5384, lng: 127.0822, neighborhoods: [
+    { en: 'Jayang-dong', ko: '자양동' }, { en: 'Guui-dong', ko: '구의동' }, { en: 'Gwangjang-dong', ko: '광장동' }, { en: 'Neung-dong', ko: '능동' }
+  ]},
+  { name: 'Seongdong-gu', name_ko: '성동구', lat: 37.5634, lng: 127.0371, neighborhoods: [
+    { en: 'Seongsu-dong', ko: '성수동' }, { en: 'Haengdang-dong', ko: '행당동' }, { en: 'Wangsimni', ko: '왕십리' }, { en: 'Geumho-dong', ko: '금호동' }
+  ]},
+  { name: 'Yongsan-gu', name_ko: '용산구', lat: 37.5326, lng: 126.9905, neighborhoods: [
+    { en: 'Itaewon', ko: '이태원' }, { en: 'Hannam-dong', ko: '한남동' }, { en: 'Ichon-dong', ko: '이촌동' }, { en: 'Yongsan-dong', ko: '용산동' }
+  ]},
+  { name: 'Seodaemun-gu', name_ko: '서대문구', lat: 37.5791, lng: 126.9368, neighborhoods: [
+    { en: 'Sinchon', ko: '신촌' }, { en: 'Yeonhui-dong', ko: '연희동' }, { en: 'Hongje-dong', ko: '홍제동' }, { en: 'Bukgajwa-dong', ko: '북가좌동' }
+  ]},
+  { name: 'Eunpyeong-gu', name_ko: '은평구', lat: 37.6176, lng: 126.9227, neighborhoods: [
+    { en: 'Bulgwang-dong', ko: '불광동' }, { en: 'Yeokchon-dong', ko: '역촌동' }, { en: 'Galhyeon-dong', ko: '갈현동' }, { en: 'Jingwan-dong', ko: '진관동' }
+  ]},
+  { name: 'Gangbuk-gu', name_ko: '강북구', lat: 37.6396, lng: 127.0257, neighborhoods: [
+    { en: 'Mia-dong', ko: '미아동' }, { en: 'Suyu-dong', ko: '수유동' }, { en: 'Beon-dong', ko: '번동' }, { en: 'Ui-dong', ko: '우이동' }
+  ]},
+  { name: 'Dobong-gu', name_ko: '도봉구', lat: 37.6688, lng: 127.0471, neighborhoods: [
+    { en: 'Ssangmun-dong', ko: '쌍문동' }, { en: 'Banghak-dong', ko: '방학동' }, { en: 'Chang-dong', ko: '창동' }, { en: 'Dobong-dong', ko: '도봉동' }
+  ]},
+  { name: 'Nowon-gu', name_ko: '노원구', lat: 37.6541, lng: 127.0568, neighborhoods: [
+    { en: 'Sanggye-dong', ko: '상계동' }, { en: 'Junggye-dong', ko: '중계동' }, { en: 'Hagye-dong', ko: '하계동' }, { en: 'Wolgye-dong', ko: '월계동' }
+  ]},
+  { name: 'Seongbuk-gu', name_ko: '성북구', lat: 37.5894, lng: 127.0167, neighborhoods: [
+    { en: 'Seongbuk-dong', ko: '성북동' }, { en: 'Jeongneung-dong', ko: '정릉동' }, { en: 'Gil-dong', ko: '길동' }, { en: 'Dongseon-dong', ko: '동선동' }
+  ]},
+  { name: 'Dongdaemun-gu', name_ko: '동대문구', lat: 37.5744, lng: 127.0396, neighborhoods: [
+    { en: 'Jeonnong-dong', ko: '전농동' }, { en: 'Yongdu-dong', ko: '용두동' }, { en: 'Jegi-dong', ko: '제기동' }, { en: 'Hoegi-dong', ko: '회기동' }
+  ]},
+  { name: 'Jungnang-gu', name_ko: '중랑구', lat: 37.6063, lng: 127.0925, neighborhoods: [
+    { en: 'Myeonmok-dong', ko: '면목동' }, { en: 'Sangbong-dong', ko: '상봉동' }, { en: 'Junghwa-dong', ko: '중화동' }, { en: 'Mukdong', ko: '묵동' }
+  ]},
+  { name: 'Gwanak-gu', name_ko: '관악구', lat: 37.4784, lng: 126.9516, neighborhoods: [
+    { en: 'Bongcheon-dong', ko: '봉천동' }, { en: 'Sillim-dong', ko: '신림동' }, { en: 'Nakseongdae', ko: '낙성대' }, { en: 'Daehak-dong', ko: '대학동' }
+  ]},
+  { name: 'Dongjak-gu', name_ko: '동작구', lat: 37.5124, lng: 126.9393, neighborhoods: [
+    { en: 'Noryangjin', ko: '노량진' }, { en: 'Sangdo-dong', ko: '상도동' }, { en: 'Heukseok-dong', ko: '흑석동' }, { en: 'Sadang-dong', ko: '사당동' }
+  ]},
+  { name: 'Yeongdeungpo-gu', name_ko: '영등포구', lat: 37.5264, lng: 126.8962, neighborhoods: [
+    { en: 'Yeouido', ko: '여의도' }, { en: 'Dangsan-dong', ko: '당산동' }, { en: 'Singil-dong', ko: '신길동' }, { en: 'Daerim-dong', ko: '대림동' }
+  ]},
+  { name: 'Guro-gu', name_ko: '구로구', lat: 37.4954, lng: 126.8874, neighborhoods: [
+    { en: 'Guro-dong', ko: '구로동' }, { en: 'Gasan-dong', ko: '가산동' }, { en: 'Sindorim', ko: '신도림' }, { en: 'Garibong-dong', ko: '가리봉동' }
+  ]},
+  { name: 'Geumcheon-gu', name_ko: '금천구', lat: 37.4519, lng: 126.9023, neighborhoods: [
+    { en: 'Gasan-dong', ko: '가산동' }, { en: 'Siheung-dong', ko: '시흥동' }, { en: 'Doksan-dong', ko: '독산동' }
+  ]},
+  { name: 'Yangcheon-gu', name_ko: '양천구', lat: 37.5170, lng: 126.8665, neighborhoods: [
+    { en: 'Mok-dong', ko: '목동' }, { en: 'Sinjeong-dong', ko: '신정동' }, { en: 'Sinwol-dong', ko: '신월동' }
+  ]},
+  { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: [
+    { en: 'Magok-dong', ko: '마곡동' }, { en: 'Balsan-dong', ko: '발산동' }, { en: 'Gaehwa-dong', ko: '개화동' }, { en: 'Banghwa-dong', ko: '방화동' }
+  ]}
 ];
 
 // Pool of 12 real tree/nature photos from Unsplash (using specific photo IDs - guaranteed to work)
@@ -212,7 +262,7 @@ function generateTree(id, district) {
 
   // Generate street number
   const streetNumber = randomInt(1, 999);
-  const address = `${streetNumber} ${district.name}, ${neighborhood}, Seoul`;
+  const address = `${streetNumber} ${district.name}, ${neighborhood.en}, Seoul`;
 
   // Random health condition
   const conditionKey = randomChoice(Object.keys(healthConditions));
@@ -253,7 +303,8 @@ function generateTree(id, district) {
       coordinates: coordinates,
       district: district.name,
       district_ko: district.name_ko,
-      neighborhood: neighborhood
+      neighborhood: neighborhood.en,
+      neighborhood_ko: neighborhood.ko
     },
     physical: {
       height: height,
