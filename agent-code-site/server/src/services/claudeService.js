@@ -235,13 +235,17 @@ export class ClaudeService {
         await this.fileService.writeFile(input.file_path, input.content);
         // Commit change to active branch
         const username = this.sessionService.getUsername(sessionId);
-        await this.gitService.commitChanges(`Update ${input.file_path}`, username);
+        // Get worktree root (go up 2 levels from agent-code-site/main-site)
+        const worktreeRoot = this.fileService.basePath.replace(/\/agent-code-site\/main-site$/, '');
+        await this.gitService.commitChanges(worktreeRoot, `Update ${input.file_path}`, username);
         return { success: true, message: 'File written and committed' };
 
       case 'Edit':
         await this.fileService.editFile(input.file_path, input.old_string, input.new_string);
         const user = this.sessionService.getUsername(sessionId);
-        await this.gitService.commitChanges(`Edit ${input.file_path}`, user);
+        // Get worktree root (go up 2 levels from agent-code-site/main-site)
+        const worktreeRootEdit = this.fileService.basePath.replace(/\/agent-code-site\/main-site$/, '');
+        await this.gitService.commitChanges(worktreeRootEdit, `Edit ${input.file_path}`, user);
         return { success: true, message: 'File edited and committed' };
 
       case 'Bash':
