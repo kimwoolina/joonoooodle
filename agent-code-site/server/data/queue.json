@@ -1,0 +1,35 @@
+[
+  {
+    "id": "req-1762587798585-f0eft075k",
+    "username": "zach",
+    "branchName": "user-zach-can-you-change",
+    "description": "change to green",
+    "conversationHistory": [
+      {
+        "role": "user",
+        "content": "can you change the main header to a green?",
+        "timestamp": "2025-11-08T07:42:15.707Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Perfect! I've changed the main header to a beautiful green gradient. Check the preview to see your new green header!",
+        "timestamp": "2025-11-08T07:42:32.244Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Great news! I can see your header is already set to green. It has a nice gradient from emerald green to a darker green shade. Your changes are ready - check the preview to see the green header at the top of the page!",
+        "timestamp": "2025-11-08T07:43:06.951Z"
+      },
+      {
+        "role": "assistant",
+        "content": "I'll change the main header to green for you!\n\nLet me first check the current structure of your site.",
+        "timestamp": "2025-11-08T07:43:06.951Z"
+      }
+    ],
+    "timestamp": "2025-11-08T07:43:18.585Z",
+    "status": "pending",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "reviewNote": null
+  }
+]

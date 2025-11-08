@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuildRight - AI-Powered Website Builder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">BuildRight</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="cta-button-small">Get Started</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Build Websites with AI</h1>
+                <p>The smartest way to create and manage your online presence. Let AI do the heavy lifting.</p>
+                <div class="hero-buttons">
+                    <button class="cta-button" onclick="showMessage()">Start Free Trial</button>
+                    <button class="secondary-button">Watch Demo</button>
+                </div>
+                <div id="message" class="message"></div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-placeholder">🚀</div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stat-item">
+                <h3 class="stat-number">10,000+</h3>
+                <p>Active Users</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number">50,000+</h3>
+                <p>Websites Created</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number">99.9%</h3>
+                <p>Uptime</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number">24/7</h3>
+                <p>Support</p>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <h2>Powerful Features</h2>
+            <p class="section-subtitle">Everything you need to build amazing websites</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>AI Design Assistant</h3>
+                    <p>Let our AI help you design beautiful, responsive websites with just a few prompts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Optimized performance ensures your site loads in milliseconds, not seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Enterprise-grade security with automatic backups and SSL certificates.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile First</h3>
+                    <p>All sites are fully responsive and optimized for mobile devices out of the box.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Easy Deployment</h3>
+                    <p>Deploy your site with one click to our global CDN for maximum speed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics Built-in</h3>
+                    <p>Track your visitors, understand your audience, and grow your business.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="pricing">
+            <h2>Simple, Transparent Pricing</h2>
+            <p class="section-subtitle">Choose the plan that's right for you</p>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div class="price">
+                        <span class="currency">$</span>
+                        <span class="amount">9</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ 1 Website</li>
+                        <li>✓ 10 GB Storage</li>
+                        <li>✓ Basic Analytics</li>
+                        <li>✓ Email Support</li>
+                        <li>✗ Custom Domain</li>
+                        <li>✗ Priority Support</li>
+                    </ul>
+                    <button class="pricing-button">Get Started</button>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="badge">Most Popular</div>
+                    <h3>Pro</h3>
+                    <div class="price">
+                        <span class="currency">$</span>
+                        <span class="amount">29</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ 5 Websites</li>
+                        <li>✓ 50 GB Storage</li>
+                        <li>✓ Advanced Analytics</li>
+                        <li>✓ Priority Email Support</li>
+                        <li>✓ Custom Domain</li>
+                        <li>✓ AI Design Tools</li>
+                    </ul>
+                    <button class="pricing-button">Get Started</button>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">
+                        <span class="currency">$</span>
+                        <span class="amount">99</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ Unlimited Websites</li>
+                        <li>✓ Unlimited Storage</li>
+                        <li>✓ Advanced Analytics</li>
+                        <li>✓ 24/7 Phone Support</li>
+                        <li>✓ Custom Domains</li>
+                        <li>✓ White Label</li>
+                    </ul>
+                    <button class="pricing-button">Contact Sales</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="testimonials">
+            <h2>What Our Customers Say</h2>
+            <p class="section-subtitle">Join thousands of happy users</p>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p>"BuildRight transformed how we create landing pages. What used to take days now takes hours!"</p>
+                    <div class="author">
+                        <strong>Sarah Johnson</strong>
+                        <span>CEO, TechStart</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p>"The AI assistant is incredible. It understands exactly what I want and implements it perfectly."</p>
+                    <div class="author">
+                        <strong>Mike Chen</strong>
+                        <span>Freelance Designer</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p>"Best website builder I've ever used. The interface is intuitive and the results are professional."</p>
+                    <div class="author">
+                        <strong>Emily Rodriguez</strong>
+                        <span>Marketing Director</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="faq">
+            <h2>Frequently Asked Questions</h2>
+            <p class="section-subtitle">Everything you need to know</p>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>How does the AI assistant work?</h3>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our AI assistant uses advanced language models to understand your requests and make changes to your website in real-time. Just describe what you want, and the AI will implement it.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>Can I use my own domain?</h3>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Pro and Enterprise plans include custom domain support. You can connect your existing domain or purchase a new one through our platform.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>Is there a free trial?</h3>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! We offer a 14-day free trial on all plans. No credit card required.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>What kind of support do you offer?</h3>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We provide email support for all users, priority support for Pro users, and 24/7 phone support for Enterprise customers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <h2>Get in Touch</h2>
+            <p class="section-subtitle">Have questions? We're here to help!</p>
+
+            <div class="contact-container">
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-row">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                    </div>
+                    <input type="text" placeholder="Subject" required>
+                    <textarea placeholder="Your Message" rows="6" required></textarea>
+                    <button type="submit">Send Message</button>
+                </form>
+
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>support@buildright.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <h4>Office</h4>
+                            <p>123 Tech Street, San Francisco, CA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to Build Your Dream Website?</h2>
+            <p>Join thousands of users who are already building amazing sites with BuildRight</p>
+            <button class="cta-button">Start Free Trial</button>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BuildRight</h4>
+                <p>The AI-powered website builder for everyone.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#">Templates</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#">Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 BuildRight. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <!-- Username Modal -->
+        <div id="usernameModal" class="username-modal hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <h2>Welcome to BuildRight!</h2>
+                <p>What should we call you?</p>
+                <input type="text" id="usernameInput" placeholder="Enter your name" autofocus>
+                <button onclick="setUsername()" class="modal-button">Get Started</button>
+            </div>
+        </div>
+
+        <!-- Chat Button -->
+        <button id="chatButton" class="chat-button" onclick="toggleChat()">
+            <span class="chat-icon">💬</span>
+            <span class="chat-badge" id="chatBadge" style="display: none;">1</span>
+        </button>
+
+        <!-- Chat Panel -->
+        <div id="chatPanel" class="chat-panel hidden">
+            <div class="chat-header">
+                <div class="chat-header-content">
+                    <h3>🤖 AI Assistant</h3>
+                    <span class="chat-status" id="chatStatus">
+                        <span class="status-dot disconnected"></span>
+                        Connecting...
+                    </span>
+                </div>
+                <button class="close-button" onclick="toggleChat()">✕</button>
+            </div>
+
+            <!-- Preview Notification -->
+            <div id="previewNotification" class="preview-notification hidden">
+                <div class="preview-content">
+                    <p><strong>🎉 Preview Ready!</strong></p>
+                    <p>Your changes are ready to view.</p>
+                    <div class="preview-actions-row">
+                        <button onclick="viewPreview()" class="preview-btn">View Preview</button>
+                        <button onclick="submitForApproval()" class="submit-button">Submit for Approval</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <p>Hi! I'm your AI assistant. I can help you customize this website. Try asking me to:</p>
+                    <ul>
+                        <li>Change colors or fonts</li>
+                        <li>Add new sections</li>
+                        <li>Modify content</li>
+                        <li>Update styling</li>
+                    </ul>
+                    <p>What would you like to change?</p>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <textarea
+                    id="chatInput"
+                    class="chat-input"
+                    placeholder="Ask me to modify the website..."
+                    rows="1"
+                    onkeydown="handleChatKeydown(event)"
+                ></textarea>
+                <div class="chat-input-actions">
+                    <button id="sendButton" class="send-button" onclick="sendChatMessage()">
+                        <span>Send</span>
+                    </button>
+                    <button id="cancelButton" class="cancel-button hidden" onclick="cancelChatMessage()">
+                        <span>Cancel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="preview-modal hidden">
+        <div class="preview-modal-backdrop" onclick="closePreview()"></div>
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <h3>📋 Preview - <span id="previewBranchName"></span></h3>
+                <button class="close-button-modal" onclick="closePreview()">✕</button>
+            </div>
+            <iframe id="previewFrame" class="preview-frame"></iframe>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
