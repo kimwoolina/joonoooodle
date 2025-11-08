@@ -1,0 +1,21 @@
+[
+  {
+    "requestId": "REQ-2025-2058",
+    "emergencyType": "Fallen or Leaning Tree",
+    "contact": {
+      "name": "Kim Min-jun (Demo)",
+      "email": "demo.user@example.com",
+      "phone": "010-1234-5678"
+    },
+    "location": {
+      "address": "456 Teheran-ro, Gangnam-gu, Seoul",
+      "crossStreets": "Near intersection with Samseong-ro",
+      "district": "Gangnam-gu",
+      "coordinates": null,
+      "landmarks": "Across from COEX Mall"
+    },
+    "description": "Large tree leaning over sidewalk after storm",
+    "submittedAt": "2025-11-08T07:08:40.646Z",
+    "status": "Acknowledged"
+  }
+]

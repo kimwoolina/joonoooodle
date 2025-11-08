@@ -1,0 +1,56 @@
+.header {
+  background: #2d6a4f;
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.tree-icon {
+  font-size: 2rem;
+}
+
+.header-nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .header-nav {
+    gap: 1rem;
+  }
+}
