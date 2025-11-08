@@ -1625,8 +1625,10 @@
                 }
             } catch (err) {
                 console.error('Failed to check login:', err);
-                // Show login modal on error
-                document.getElementById('usernameModal').style.display = 'block';
+                // Don't show login modal in iframe (preview mode)
+                if (window.self === window.top) {
+                    document.getElementById('usernameModal').style.display = 'block';
+                }
             }
         }
 
