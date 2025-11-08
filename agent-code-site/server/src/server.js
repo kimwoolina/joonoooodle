@@ -181,14 +181,12 @@ app.use('/w/:branch', async (req, res, next) => {
   }
 });
 
+// Admin dashboard - ALWAYS serve from main branch
+app.use('/admin', express.static(mainSitePath));
+
 // Serve main site - dynamically serve from user's worktree if logged in
 app.use('/site', async (req, res, next) => {
   try {
-    // Admin page always serves from main branch
-    if (req.path === '/admin.html' || req.path.startsWith('/admin.html')) {
-      return express.static(mainSitePath)(req, res, next);
-    }
-
     // Check if user is logged in via cookie
     const username = req.cookies.agent_code_username;
 
