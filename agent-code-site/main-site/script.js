@@ -676,6 +676,7 @@ function connectSocket() {
     });
 
     socket.on('preview:ready', (data) => {
+        console.log('Preview ready event received:', data);
         currentBranch = data.branchName;
         showPreviewNotification(data);
     });
@@ -934,6 +935,7 @@ function showSubmittedNotification(data) {
 }
 
 function viewPreview() {
+    console.log('viewPreview called, currentBranch:', currentBranch);
     if (!currentBranch) {
         alert('No preview available');
         return;
@@ -944,6 +946,7 @@ function viewPreview() {
 
     // Load the preview in the iframe from the worktree
     const previewUrl = `/w/${currentBranch}/`;
+    console.log('Loading preview from URL:', previewUrl);
     document.getElementById('previewFrame').src = previewUrl;
 
     // Show the modal
