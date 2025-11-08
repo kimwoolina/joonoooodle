@@ -85,8 +85,7 @@ app.post('/api/user/login', async (req, res) => {
     res.json({
       success: true,
       username,
-      branchName,
-      redirectUrl: `/w/${branchName}/`
+      branchName
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -174,8 +173,32 @@ app.use('/w/:branch', async (req, res, next) => {
   }
 });
 
-// Serve main site (from main branch)
-app.use('/site', express.static(mainSitePath));
+// Serve main site - dynamically serve from user's worktree if logged in
+app.use('/site', async (req, res, next) => {
+  try {
+    // Check if user is logged in via cookie
+    const username = req.cookies.agent_code_username;
+
+    if (username) {
+      // User is logged in - serve from their worktree
+      const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      const branchName = `user-${sanitizedUsername}`;
+      const worktreePath = await gitService.getWorktreePath(branchName);
+
+      if (worktreePath) {
+        // Serve from user's worktree
+        return express.static(worktreePath)(req, res, next);
+      }
+    }
+
+    // No user logged in or worktree not found - serve from main branch
+    express.static(mainSitePath)(req, res, next);
+  } catch (error) {
+    console.error('Error serving site:', error);
+    // Fallback to main site on error
+    express.static(mainSitePath)(req, res, next);
+  }
+});
 
 // WebSocket handling
 io.on('connection', (socket) => {
@@ -313,8 +336,8 @@ io.on('connection', (socket) => {
       // Clear active branch from session
       sessionService.setActiveBranch(socket.id, null);
 
-      // Cleanup feature branch
-      await gitService.removeWorktree(featureBranchName);
+      // Don't cleanup feature branch - keep it for admin review and approval
+      // It will be cleaned up after admin approves/rejects
     } catch (error) {
       console.error('Error applying and submitting request:', error);
       socket.emit('error', { error: error.message });

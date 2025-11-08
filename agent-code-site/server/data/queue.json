@@ -1,32 +1,96 @@
 [
   {
-    "id": "req-1762587798585-f0eft075k",
+    "id": "req-1762630949938-30r9emtmp",
     "username": "zach",
-    "branchName": "user-zach-can-you-change",
-    "description": "change to green",
+    "branchName": "user-zach",
+    "featureBranch": "feature-zach-can-you-change-T5WI7XzA",
+    "description": "Applied feature changes",
     "conversationHistory": [
       {
         "role": "user",
-        "content": "can you change the main header to a green?",
-        "timestamp": "2025-11-08T07:42:15.707Z"
+        "content": "can you change the tree icon to a sad face?",
+        "timestamp": "2025-11-08T19:42:11.904Z"
       },
       {
         "role": "assistant",
-        "content": "Perfect! I've changed the main header to a beautiful green gradient. Check the preview to see your new green header!",
-        "timestamp": "2025-11-08T07:42:32.244Z"
+        "content": "I can see the tree icon 🌳 in the header. Let me change it to a sad face for you!",
+        "timestamp": "2025-11-08T19:42:23.022Z"
       },
       {
         "role": "assistant",
-        "content": "Great news! I can see your header is already set to green. It has a nice gradient from emerald green to a darker green shade. Your changes are ready - check the preview to see the green header at the top of the page!",
-        "timestamp": "2025-11-08T07:43:06.951Z"
-      },
-      {
-        "role": "assistant",
-        "content": "I'll change the main header to green for you!\n\nLet me first check the current structure of your site.",
-        "timestamp": "2025-11-08T07:43:06.951Z"
+        "content": "I'll help you change the tree icon to a sad face! Let me first check what we're working with.",
+        "timestamp": "2025-11-08T19:42:23.023Z"
       }
     ],
-    "timestamp": "2025-11-08T07:43:18.585Z",
+    "timestamp": "2025-11-08T19:42:29.938Z",
+    "status": "pending",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "reviewNote": null
+  },
+  {
+    "id": "req-1762631806605-pbj5e0omk",
+    "username": "zach",
+    "branchName": "user-zach",
+    "featureBranch": "feature-zach-rename-the-website-r4jUcG65",
+    "description": "Applied feature changes",
+    "conversationHistory": [
+      {
+        "role": "user",
+        "content": "rename the website to Zach's Trees hehe",
+        "timestamp": "2025-11-08T19:56:20.847Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Haha, I see it's already called \"Zach's Trees\" in the title tag! Let me update the header logo text to match:",
+        "timestamp": "2025-11-08T19:56:40.322Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Haha, love it! Let me change that for you.",
+        "timestamp": "2025-11-08T19:56:40.326Z"
+      },
+      {
+        "role": "assistant",
+        "content": "I'll help you rename the website to \"Zach's Trees\"! Let me update that for you.",
+        "timestamp": "2025-11-08T19:56:40.327Z"
+      }
+    ],
+    "timestamp": "2025-11-08T19:56:46.605Z",
+    "status": "pending",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "reviewNote": null
+  },
+  {
+    "id": "req-1762631906552-q87xk1jt3",
+    "username": "lina",
+    "branchName": "user-lina",
+    "featureBranch": "feature-lina-rename-it-to-kYTGoyua",
+    "description": "Applied feature changes",
+    "conversationHistory": [
+      {
+        "role": "user",
+        "content": "rename it to Lina's Trees hehe",
+        "timestamp": "2025-11-08T19:57:56.912Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Hehe, done! I've renamed it to \"Lina's Trees\" - check the preview to see your new site name! 🌳",
+        "timestamp": "2025-11-08T19:58:21.382Z"
+      },
+      {
+        "role": "assistant",
+        "content": "I can see the title is already \"Lina's Trees\" but let me update the header logo too! 😊",
+        "timestamp": "2025-11-08T19:58:21.382Z"
+      },
+      {
+        "role": "assistant",
+        "content": "I'll rename your site to \"Lina's Trees\" for you!",
+        "timestamp": "2025-11-08T19:58:21.383Z"
+      }
+    ],
+    "timestamp": "2025-11-08T19:58:26.552Z",
     "status": "pending",
     "reviewedBy": null,
     "reviewedAt": null,
