@@ -1,0 +1,123 @@
+.health-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.metric-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Health Score Display */
+.health-score-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.score-circle {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1;
+}
+
+.score-max {
+  font-size: 24px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.score-label {
+  font-size: 18px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+/* Condition Badge */
+.condition-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Hazard Badge */
+.hazard-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Maintenance */
+.maintenance-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.maintenance-tag {
+  padding: 6px 12px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.no-maintenance {
+  color: #6b7280;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Inspection Date */
+.inspection-date {
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+/* Notes */
+.notes {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #22c55e;
+}
