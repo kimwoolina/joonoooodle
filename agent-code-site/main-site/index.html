@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuildRight - AI-Powered Website Builder</title>
+    <title>Seoul Tree Management System - AI-Powered Tree Care</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">BuildRight</div>
+            <div class="logo">🌳 Seoul Tree System</div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
+                <li><a href="#map">Tree Map</a></li>
+                <li><a href="#request">Emergency Service</a></li>
                 <li><a href="#features">Features</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
-                <li><a href="#faq">FAQ</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <button class="cta-button-small">Get Started</button>
+            <button class="cta-button-small">Report Emergency</button>
         </nav>
     </header>
 
@@ -26,260 +28,256 @@
         <!-- Hero Section -->
         <section id="home" class="hero">
             <div class="hero-content">
-                <h1>Build Websites with AI</h1>
-                <p>The smartest way to create and manage your online presence. Let AI do the heavy lifting.</p>
+                <h1>Seoul Tree Management System</h1>
+                <p>AI-powered platform for monitoring, managing, and protecting Seoul's urban forest ecosystem.</p>
                 <div class="hero-buttons">
-                    <button class="cta-button" onclick="showMessage()">Start Free Trial</button>
-                    <button class="secondary-button">Watch Demo</button>
+                    <button class="cta-button" onclick="scrollToMap()">Explore Tree Map</button>
+                    <button class="secondary-button" onclick="scrollToRequest()">Report Emergency</button>
                 </div>
                 <div id="message" class="message"></div>
             </div>
             <div class="hero-image">
-                <div class="hero-placeholder">🚀</div>
+                <div class="hero-placeholder">🌳</div>
             </div>
         </section>
 
         <!-- Stats Section -->
         <section class="stats">
             <div class="stat-item">
-                <h3 class="stat-number">10,000+</h3>
-                <p>Active Users</p>
+                <h3 class="stat-number">850+</h3>
+                <p>Trees Monitored</p>
             </div>
             <div class="stat-item">
-                <h3 class="stat-number">50,000+</h3>
-                <p>Websites Created</p>
+                <h3 class="stat-number">25</h3>
+                <p>Districts Covered</p>
             </div>
             <div class="stat-item">
-                <h3 class="stat-number">99.9%</h3>
-                <p>Uptime</p>
+                <h3 class="stat-number">92%</h3>
+                <p>Health Score</p>
             </div>
             <div class="stat-item">
                 <h3 class="stat-number">24/7</h3>
-                <p>Support</p>
+                <p>Emergency Service</p>
+            </div>
+        </section>
+
+        <!-- Interactive Tree Map Section -->
+        <section id="map" class="map-section">
+            <h2>Interactive Tree Map</h2>
+            <p class="section-subtitle">Explore 850+ trees across Seoul's 25 districts</p>
+
+            <div class="map-controls">
+                <input type="text" id="searchAddress" class="search-input" placeholder="Search by address (e.g., Gangnam-gu)...">
+                <select id="healthFilter" class="filter-select">
+                    <option value="all">All Health Levels</option>
+                    <option value="excellent">Excellent (9-10)</option>
+                    <option value="good">Good (7-8)</option>
+                    <option value="fair">Fair (5-6)</option>
+                    <option value="poor">Poor (1-4)</option>
+                </select>
+            </div>
+
+            <div id="treeMap" class="tree-map"></div>
+
+            <div class="map-legend">
+                <h4>Health Status</h4>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-marker excellent"></span>
+                        <span>Excellent (9-10)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker good"></span>
+                        <span>Good (7-8)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker fair"></span>
+                        <span>Fair (5-6)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker poor"></span>
+                        <span>Poor (1-4)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Service Request Section -->
+        <section id="request" class="request-section">
+            <h2>Emergency Service Request</h2>
+            <p class="section-subtitle">Report tree emergencies 24/7</p>
+
+            <div class="request-container">
+                <form id="emergencyForm" class="emergency-form">
+                    <div class="form-group">
+                        <label>Emergency Type *</label>
+                        <select id="emergencyType" required>
+                            <option value="">Select emergency type...</option>
+                            <option value="fallen">Fallen or Leaning Tree</option>
+                            <option value="branch">Branch Hazard</option>
+                            <option value="root">Root Damage</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="contactName" placeholder="Kim Min-jun (Demo)" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="contactEmail" placeholder="demo.user@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" id="contactPhone" placeholder="010-1234-5678" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <input type="text" id="locationAddress" placeholder="456 Teheran-ro, Gangnam-gu, Seoul" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>District *</label>
+                            <select id="district" required>
+                                <option value="">Select district...</option>
+                                <option value="Gangnam-gu">Gangnam-gu (강남구)</option>
+                                <option value="Jongno-gu">Jongno-gu (종로구)</option>
+                                <option value="Jung-gu">Jung-gu (중구)</option>
+                                <option value="Mapo-gu">Mapo-gu (마포구)</option>
+                                <option value="Songpa-gu">Songpa-gu (송파구)</option>
+                                <option value="Seocho-gu">Seocho-gu (서초구)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cross Streets</label>
+                            <input type="text" id="crossStreets" placeholder="Near intersection with...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Landmarks / Special Instructions</label>
+                        <textarea id="landmarks" rows="2" placeholder="Across from COEX Mall, near bus stop #23"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description *</label>
+                        <textarea id="description" rows="4" placeholder="Describe the emergency situation..." required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="secondary-button" onclick="generateFakeData()">Generate Demo Data</button>
+                        <button type="submit" class="cta-button">Submit Request</button>
+                    </div>
+
+                    <div id="requestConfirmation" class="request-confirmation hidden">
+                        <h3>✅ Request Submitted!</h3>
+                        <p>Request ID: <strong id="requestId"></strong></p>
+                        <p>We'll respond to your emergency within 2 hours.</p>
+                    </div>
+                </form>
+
+                <div class="emergency-info">
+                    <h3>Emergency Types</h3>
+                    <div class="emergency-type-card">
+                        <h4>🌲 Fallen or Leaning Tree</h4>
+                        <p><strong>Priority:</strong> Critical</p>
+                        <p>Trees that have fallen or are dangerously leaning</p>
+                        <p><strong>Response:</strong> Immediate assessment</p>
+                    </div>
+                    <div class="emergency-type-card">
+                        <h4>🌿 Branch Hazard</h4>
+                        <p><strong>Priority:</strong> High</p>
+                        <p>Broken, hanging, or dead branches</p>
+                        <p><strong>Response:</strong> Same-day inspection</p>
+                    </div>
+                    <div class="emergency-type-card">
+                        <h4>🌱 Root Damage</h4>
+                        <p><strong>Priority:</strong> Medium</p>
+                        <p>Roots damaging infrastructure</p>
+                        <p><strong>Response:</strong> Within 1-2 weeks</p>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Features Section -->
         <section id="features" class="features">
-            <h2>Powerful Features</h2>
-            <p class="section-subtitle">Everything you need to build amazing websites</p>
+            <h2>System Features</h2>
+            <p class="section-subtitle">Advanced technology for comprehensive tree management</p>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>AI Design Assistant</h3>
-                    <p>Let our AI help you design beautiful, responsive websites with just a few prompts.</p>
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Interactive Mapping</h3>
+                    <p>Real-time visualization of 850+ trees across Seoul with detailed health metrics.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Optimized performance ensures your site loads in milliseconds, not seconds.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Secure & Reliable</h3>
-                    <p>Enterprise-grade security with automatic backups and SSL certificates.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile First</h3>
-                    <p>All sites are fully responsive and optimized for mobile devices out of the box.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Easy Deployment</h3>
-                    <p>Deploy your site with one click to our global CDN for maximum speed.</p>
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Assistant</h3>
+                    <p>Get instant answers and customize this page using our AI chat widget.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3>Analytics Built-in</h3>
-                    <p>Track your visitors, understand your audience, and grow your business.</p>
+                    <h3>Health Monitoring</h3>
+                    <p>Track tree health scores, hazard ratings, and maintenance needs in real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Emergency Response</h3>
+                    <p>24/7 emergency service request system with priority-based response times.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Advanced Search</h3>
+                    <p>Search trees by location, species, health status, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile Optimized</h3>
+                    <p>Access the tree management system from any device, anywhere.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Pricing Section -->
-        <section id="pricing" class="pricing">
-            <h2>Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">Choose the plan that's right for you</p>
-
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3>Starter</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">9</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="features-list">
-                        <li>✓ 1 Website</li>
-                        <li>✓ 10 GB Storage</li>
-                        <li>✓ Basic Analytics</li>
-                        <li>✓ Email Support</li>
-                        <li>✗ Custom Domain</li>
-                        <li>✗ Priority Support</li>
-                    </ul>
-                    <button class="pricing-button">Get Started</button>
-                </div>
-
-                <div class="pricing-card featured">
-                    <div class="badge">Most Popular</div>
-                    <h3>Pro</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">29</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="features-list">
-                        <li>✓ 5 Websites</li>
-                        <li>✓ 50 GB Storage</li>
-                        <li>✓ Advanced Analytics</li>
-                        <li>✓ Priority Email Support</li>
-                        <li>✓ Custom Domain</li>
-                        <li>✓ AI Design Tools</li>
-                    </ul>
-                    <button class="pricing-button">Get Started</button>
-                </div>
-
-                <div class="pricing-card">
-                    <h3>Enterprise</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">99</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="features-list">
-                        <li>✓ Unlimited Websites</li>
-                        <li>✓ Unlimited Storage</li>
-                        <li>✓ Advanced Analytics</li>
-                        <li>✓ 24/7 Phone Support</li>
-                        <li>✓ Custom Domains</li>
-                        <li>✓ White Label</li>
-                    </ul>
-                    <button class="pricing-button">Contact Sales</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Testimonials Section -->
-        <section id="testimonials" class="testimonials">
-            <h2>What Our Customers Say</h2>
-            <p class="section-subtitle">Join thousands of happy users</p>
-
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p>"BuildRight transformed how we create landing pages. What used to take days now takes hours!"</p>
-                    <div class="author">
-                        <strong>Sarah Johnson</strong>
-                        <span>CEO, TechStart</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p>"The AI assistant is incredible. It understands exactly what I want and implements it perfectly."</p>
-                    <div class="author">
-                        <strong>Mike Chen</strong>
-                        <span>Freelance Designer</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p>"Best website builder I've ever used. The interface is intuitive and the results are professional."</p>
-                    <div class="author">
-                        <strong>Emily Rodriguez</strong>
-                        <span>Marketing Director</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section id="faq" class="faq">
-            <h2>Frequently Asked Questions</h2>
-            <p class="section-subtitle">Everything you need to know</p>
-
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>How does the AI assistant work?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Our AI assistant uses advanced language models to understand your requests and make changes to your website in real-time. Just describe what you want, and the AI will implement it.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>Can I use my own domain?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes! Pro and Enterprise plans include custom domain support. You can connect your existing domain or purchase a new one through our platform.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>Is there a free trial?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Absolutely! We offer a 14-day free trial on all plans. No credit card required.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3>What kind of support do you offer?</h3>
-                        <span class="faq-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>We provide email support for all users, priority support for Pro users, and 24/7 phone support for Enterprise customers.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Contact Section -->
         <section id="contact" class="contact">
-            <h2>Get in Touch</h2>
-            <p class="section-subtitle">Have questions? We're here to help!</p>
+            <h2>Contact Us</h2>
+            <p class="section-subtitle">Questions about tree management? We're here to help!</p>
 
             <div class="contact-container">
-                <form class="contact-form" onsubmit="handleSubmit(event)">
-                    <div class="form-row">
-                        <input type="text" placeholder="Your Name" required>
-                        <input type="email" placeholder="Your Email" required>
-                    </div>
-                    <input type="text" placeholder="Subject" required>
-                    <textarea placeholder="Your Message" rows="6" required></textarea>
-                    <button type="submit">Send Message</button>
-                </form>
-
                 <div class="contact-info">
                     <div class="contact-item">
                         <div class="contact-icon">📧</div>
                         <div>
                             <h4>Email</h4>
-                            <p>support@buildright.com</p>
+                            <p>support@seoultrees.go.kr</p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-icon">📞</div>
                         <div>
-                            <h4>Phone</h4>
-                            <p>+1 (555) 123-4567</p>
+                            <h4>Emergency Hotline</h4>
+                            <p>1588-0000 (24/7)</p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-icon">📍</div>
                         <div>
                             <h4>Office</h4>
-                            <p>123 Tech Street, San Francisco, CA</p>
+                            <p>Seoul Metropolitan Government<br>110 Sejong-daero, Jung-gu, Seoul</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">⏰</div>
+                        <div>
+                            <h4>Office Hours</h4>
+                            <p>Mon-Fri: 9:00 AM - 6:00 PM<br>Emergency: 24/7</p>
                         </div>
                     </div>
                 </div>
@@ -288,45 +286,45 @@
 
         <!-- CTA Section -->
         <section class="cta-section">
-            <h2>Ready to Build Your Dream Website?</h2>
-            <p>Join thousands of users who are already building amazing sites with BuildRight</p>
-            <button class="cta-button">Start Free Trial</button>
+            <h2>Help Us Protect Seoul's Urban Forest</h2>
+            <p>Report tree emergencies and explore the interactive map to learn about trees in your neighborhood</p>
+            <button class="cta-button" onclick="scrollToRequest()">Report Emergency Now</button>
         </section>
     </main>
 
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h4>BuildRight</h4>
-                <p>The AI-powered website builder for everyone.</p>
+                <h4>🌳 Seoul Tree System</h4>
+                <p>AI-powered platform for protecting Seoul's urban forest.</p>
             </div>
             <div class="footer-section">
-                <h4>Product</h4>
+                <h4>Services</h4>
                 <ul>
+                    <li><a href="#map">Tree Map</a></li>
+                    <li><a href="#request">Emergency Service</a></li>
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#">Templates</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>Company</h4>
+                <h4>Information</h4>
                 <ul>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Careers</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#faq">FAQ</a></li>
                     <li><a href="#contact">Contact</a></li>
-                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Emergency</h4>
+                <ul>
+                    <li>Hotline: 1588-0000</li>
+                    <li>24/7 Service</li>
+                    <li><a href="#request">Report Now</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 BuildRight. All rights reserved.</p>
+            <p>&copy; 2024 Seoul Metropolitan Government. All rights reserved.</p>
         </div>
     </footer>
 
@@ -376,14 +374,14 @@
 
             <div class="chat-messages" id="chatMessages">
                 <div class="message assistant">
-                    <p>Hi! I'm your AI assistant. I can help you customize this website. Try asking me to:</p>
+                    <p>Hi! I'm your AI assistant for the Seoul Tree Management System. I can help you:</p>
                     <ul>
-                        <li>Change colors or fonts</li>
-                        <li>Add new sections</li>
-                        <li>Modify content</li>
-                        <li>Update styling</li>
+                        <li>Navigate the tree map</li>
+                        <li>Find information about trees</li>
+                        <li>Customize this website</li>
+                        <li>Answer questions about tree care</li>
                     </ul>
-                    <p>What would you like to change?</p>
+                    <p>How can I assist you today?</p>
                 </div>
             </div>
 
@@ -420,6 +418,8 @@
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

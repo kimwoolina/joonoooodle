@@ -1,54 +1,228 @@
-// Demo website JavaScript
+// Seoul Tree Management System JavaScript
 
-let clickCount = 0;
+// ============================================
+// TREE MAP FUNCTIONALITY
+// ============================================
 
-function showMessage() {
-    clickCount++;
-    const messageDiv = document.getElementById('message');
+let treeMap = null;
+let treeMarkers = [];
+let markerClusterGroup = null;
 
-    const messages = [
-        '👋 Hello! Thanks for clicking!',
-        '✨ You clicked again!',
-        '🎉 You\'re on a roll!',
-        '🚀 Keep going!',
-        '⭐ Amazing! Try asking the AI agent to modify this page!',
+// Mock tree data generator
+function generateMockTrees() {
+    const species = [
+        { common: 'Korean Red Pine', scientific: 'Pinus densiflora' },
+        { common: 'Ginkgo', scientific: 'Ginkgo biloba' },
+        { common: 'Zelkova', scientific: 'Zelkova serrata' },
+        { common: 'Korean Mountain Ash', scientific: 'Sorbus alnifolia' },
+        { common: 'Cherry', scientific: 'Prunus serrulata' },
+        { common: 'Maple', scientific: 'Acer palmatum' }
     ];
 
-    const index = Math.min(clickCount - 1, messages.length - 1);
-    messageDiv.textContent = messages[index];
-    messageDiv.style.opacity = '1';
+    const districts = [
+        { name: 'Gangnam-gu', lat: 37.5172, lng: 127.0473 },
+        { name: 'Jongno-gu', lat: 37.5735, lng: 126.9788 },
+        { name: 'Jung-gu', lat: 37.5636, lng: 126.9970 },
+        { name: 'Mapo-gu', lat: 37.5663, lng: 126.9019 },
+        { name: 'Songpa-gu', lat: 37.5145, lng: 127.1059 },
+        { name: 'Seocho-gu', lat: 37.4837, lng: 127.0324 }
+    ];
 
-    // Animate the button
-    const button = event.target;
-    button.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-        button.style.transform = 'scale(1)';
-    }, 100);
+    const trees = [];
+    for (let i = 0; i < 100; i++) {
+        const district = districts[Math.floor(Math.random() * districts.length)];
+        const sp = species[Math.floor(Math.random() * species.length)];
+        const healthScore = Math.floor(Math.random() * 10) + 1;
+
+        trees.push({
+            id: `TREE-${String(i + 1).padStart(3, '0')}`,
+            species: sp,
+            location: {
+                district: district.name,
+                coordinates: {
+                    lat: district.lat + (Math.random() - 0.5) * 0.05,
+                    lng: district.lng + (Math.random() - 0.5) * 0.05
+                }
+            },
+            physical: {
+                height: (Math.random() * 20 + 5).toFixed(1),
+                dbh: Math.floor(Math.random() * 80 + 20),
+                estimatedAge: Math.floor(Math.random() * 50 + 10)
+            },
+            condition: {
+                healthScore: healthScore,
+                lastInspection: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+            }
+        });
+    }
+    return trees;
 }
 
-function handleSubmit(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const formData = new FormData(form);
-
-    alert('Thanks for your message! (This is a demo - no actual submission happens)');
-    form.reset();
+// Get marker color based on health score
+function getMarkerColor(healthScore) {
+    if (healthScore >= 9) return '#4caf50'; // Excellent - green
+    if (healthScore >= 7) return '#8bc34a'; // Good - light green
+    if (healthScore >= 5) return '#ffc107'; // Fair - yellow
+    return '#f44336'; // Poor - red
 }
 
-function toggleFaq(element) {
-    const faqItem = element.parentElement;
-    const isActive = faqItem.classList.contains('active');
+// Initialize tree map
+function initTreeMap() {
+    // Initialize map centered on Seoul
+    treeMap = L.map('treeMap').setView([37.5665, 126.9780], 11);
 
-    // Close all FAQ items
-    document.querySelectorAll('.faq-item').forEach(item => {
-        item.classList.remove('active');
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18
+    }).addTo(treeMap);
+
+    // Initialize marker cluster group
+    markerClusterGroup = L.markerClusterGroup({
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false
     });
 
-    // Toggle current item
-    if (!isActive) {
-        faqItem.classList.add('active');
+    // Generate and add tree markers
+    const trees = generateMockTrees();
+    trees.forEach(tree => {
+        const color = getMarkerColor(tree.condition.healthScore);
+
+        const icon = L.divIcon({
+            className: 'custom-tree-marker',
+            html: `<div style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [16, 16]
+        });
+
+        const marker = L.marker(
+            [tree.location.coordinates.lat, tree.location.coordinates.lng],
+            { icon: icon }
+        );
+
+        marker.bindPopup(`
+            <div style="min-width: 200px;">
+                <h3 style="margin: 0 0 8px 0; font-size: 16px;">${tree.species.common}</h3>
+                <p style="margin: 4px 0; font-size: 12px; color: #666;"><em>${tree.species.scientific}</em></p>
+                <p style="margin: 4px 0;"><strong>ID:</strong> ${tree.id}</p>
+                <p style="margin: 4px 0;"><strong>District:</strong> ${tree.location.district}</p>
+                <p style="margin: 4px 0;"><strong>Health Score:</strong> ${tree.condition.healthScore}/10</p>
+                <p style="margin: 4px 0;"><strong>Height:</strong> ${tree.physical.height}m</p>
+                <p style="margin: 4px 0;"><strong>Age:</strong> ~${tree.physical.estimatedAge} years</p>
+                <p style="margin: 4px 0; font-size: 11px; color: #888;">Last inspection: ${tree.condition.lastInspection}</p>
+            </div>
+        `);
+
+        markerClusterGroup.addLayer(marker);
+        treeMarkers.push({ marker, tree });
+    });
+
+    treeMap.addLayer(markerClusterGroup);
+}
+
+// Search and filter functionality
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize map when page loads
+    if (document.getElementById('treeMap')) {
+        setTimeout(initTreeMap, 100);
     }
+
+    // Search address
+    const searchInput = document.getElementById('searchAddress');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (query.length < 2) return;
+
+            treeMarkers.forEach(({ marker, tree }) => {
+                const matchesSearch =
+                    tree.location.district.toLowerCase().includes(query) ||
+                    tree.species.common.toLowerCase().includes(query);
+
+                if (matchesSearch) {
+                    marker.setOpacity(1);
+                } else {
+                    marker.setOpacity(0.2);
+                }
+            });
+        });
+    }
+
+    // Health filter
+    const healthFilter = document.getElementById('healthFilter');
+    if (healthFilter) {
+        healthFilter.addEventListener('change', (e) => {
+            const filter = e.target.value;
+
+            treeMarkers.forEach(({ marker, tree }) => {
+                let show = true;
+
+                if (filter === 'excellent') show = tree.condition.healthScore >= 9;
+                else if (filter === 'good') show = tree.condition.healthScore >= 7 && tree.condition.healthScore < 9;
+                else if (filter === 'fair') show = tree.condition.healthScore >= 5 && tree.condition.healthScore < 7;
+                else if (filter === 'poor') show = tree.condition.healthScore < 5;
+
+                marker.setOpacity(show ? 1 : 0.2);
+            });
+        });
+    }
+
+    // Emergency form submission
+    const emergencyForm = document.getElementById('emergencyForm');
+    if (emergencyForm) {
+        emergencyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Generate request ID
+            const requestId = `REQ-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
+
+            // Show confirmation
+            const confirmation = document.getElementById('requestConfirmation');
+            const requestIdElement = document.getElementById('requestId');
+
+            requestIdElement.textContent = requestId;
+            confirmation.classList.remove('hidden');
+
+            // Scroll to confirmation
+            confirmation.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Hide form temporarily
+            Array.from(emergencyForm.elements).forEach(el => {
+                if (el.type !== 'submit') el.disabled = true;
+            });
+
+            // Re-enable form after 5 seconds
+            setTimeout(() => {
+                confirmation.classList.add('hidden');
+                emergencyForm.reset();
+                Array.from(emergencyForm.elements).forEach(el => {
+                    el.disabled = false;
+                });
+            }, 5000);
+        });
+    }
+});
+
+// Generate fake contact data
+function generateFakeData() {
+    const firstNames = ['Min-jun', 'Seo-yeon', 'Do-yoon', 'Ji-woo', 'Ye-jun', 'Ha-yoon'];
+    const lastNames = ['Kim', 'Lee', 'Park', 'Choi', 'Jung', 'Kang'];
+
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+
+    document.getElementById('contactName').value = `${lastName} ${firstName} (Demo)`;
+    document.getElementById('contactEmail').value = `demo.${firstName.toLowerCase()}@example.com`;
+    document.getElementById('contactPhone').value = `010-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
+}
+
+// Scroll helper functions
+function scrollToMap() {
+    document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+}
+
+function scrollToRequest() {
+    document.getElementById('request').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Smooth scrolling for navigation links

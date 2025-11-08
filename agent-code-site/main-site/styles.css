@@ -1225,3 +1225,249 @@ footer {
 .hidden {
     display: none;
 }
+
+/* ============================================
+   TREE MAP STYLES
+   ============================================ */
+
+.map-section {
+    padding: 4rem 2rem;
+    background: #f5f5f5;
+}
+
+.map-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #2d5016;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.map-controls {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-input,
+.filter-select {
+    flex: 1;
+    min-width: 250px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+.tree-map {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.map-legend {
+    max-width: 1200px;
+    margin: 2rem auto 0;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.map-legend h4 {
+    margin: 0 0 1rem 0;
+    color: #2d5016;
+}
+
+.legend-items {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.legend-marker.excellent {
+    background-color: #4caf50;
+}
+
+.legend-marker.good {
+    background-color: #8bc34a;
+}
+
+.legend-marker.fair {
+    background-color: #ffc107;
+}
+
+.legend-marker.poor {
+    background-color: #f44336;
+}
+
+/* ============================================
+   EMERGENCY SERVICE REQUEST STYLES
+   ============================================ */
+
+.request-section {
+    padding: 4rem 2rem;
+    background: white;
+}
+
+.request-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #c62828;
+}
+
+.request-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+}
+
+.emergency-form {
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #c62828;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.request-confirmation {
+    background: #e8f5e9;
+    border: 2px solid #4caf50;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.request-confirmation h3 {
+    color: #2e7d32;
+    margin-bottom: 0.5rem;
+}
+
+.emergency-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.emergency-info h3 {
+    color: #c62828;
+    margin-bottom: 0.5rem;
+}
+
+.emergency-type-card {
+    background: #fff3e0;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #ff9800;
+}
+
+.emergency-type-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #e65100;
+}
+
+.emergency-type-card p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   RESPONSIVE STYLES FOR NEW SECTIONS
+   ============================================ */
+
+@media (max-width: 968px) {
+    .request-container {
+        grid-template-columns: 1fr;
+    }
+
+    .tree-map {
+        height: 400px;
+    }
+
+    .map-controls {
+        flex-direction: column;
+    }
+
+    .legend-items {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
