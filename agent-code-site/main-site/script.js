@@ -1150,9 +1150,8 @@ function generateMockModifications() {
 
 // Format summary text with code tags (Notion-style)
 function formatSummaryWithTags(summary) {
-    // Pattern to match file names and keywords
-    // Matches: filename.ext, word → word, word 변경, etc.
-    return summary.replace(/([a-zA-Z0-9_-]+\.[a-z]+|[→↑↓←]|변경|추가|수정|업데이트|조정|증가|감소)/g,
+    // Pattern to match only file names (filename.ext)
+    return summary.replace(/([a-zA-Z0-9_-]+\.(html|css|js|jsx|tsx|ts|json|md|py|java|php|xml|yml|yaml))/g,
         '<span class="code-tag">$1</span>');
 }
 
