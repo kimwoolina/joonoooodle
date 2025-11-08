@@ -1474,11 +1474,15 @@
             background: #f8f9fa;
             border: 2px dashed #dee2e6;
             border-radius: 8px;
-            height: 300px;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #6c757d;
+        }
+
+        .chart-card canvas {
+            max-height: 200px;
         }
 
         /* Modifications Table */
@@ -1601,6 +1605,41 @@
             font-family: 'Courier New', monospace;
             font-size: 0.85rem;
             color: #6c757d;
+        }
+
+        /* Table Action Buttons */
+        .table-action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .table-action-btn {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .table-action-btn.approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .table-action-btn.approve:hover {
+            background: #218838;
+        }
+
+        .table-action-btn.reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .table-action-btn.reject:hover {
+            background: #c82333;
         }
 
         /* Agent Status Indicator */
@@ -1928,13 +1967,13 @@
                 <!-- Timeline Chart -->
                 <div class="chart-card">
                     <h2>Modification Activity Timeline</h2>
-                    <canvas id="timelineChart" width="600" height="300"></canvas>
+                    <canvas id="timelineChart" width="600" height="200"></canvas>
                 </div>
 
                 <!-- Donut Chart -->
                 <div class="chart-card">
                     <h2>Status Distribution (7 Days)</h2>
-                    <canvas id="donutChart" width="300" height="300"></canvas>
+                    <canvas id="donutChart" width="300" height="200"></canvas>
                 </div>
             </div>
 
@@ -1968,7 +2007,7 @@
                             <th>Requester</th>
                             <th>Request</th>
                             <th>Modification Summary</th>
-                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="modificationsTableBody">

@@ -1165,34 +1165,83 @@ function renderModificationsTable(filter = 'all') {
     // Render rows (show first 20)
     filteredData.slice(0, 20).forEach(mod => {
         const row = document.createElement('tr');
-        row.onclick = () => showModificationDetail(mod.id);
 
-        const statusEmoji = {
-            approved: '✅',
-            pending: '⏳',
-            rejected: '❌',
-            rollback: '🔁'
+        // Format date and time without AM/PM
+        const date = new Date(mod.date);
+        const dateStr = date.toLocaleDateString('ko-KR');
+        const timeStr = date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+        const rowCell = document.createElement('td');
+        rowCell.className = 'mod-date';
+        rowCell.textContent = `${dateStr} ${timeStr}`;
+        row.appendChild(rowCell);
+
+        const requesterCell = document.createElement('td');
+        requesterCell.className = 'mod-requester';
+        requesterCell.textContent = mod.requester;
+        row.appendChild(requesterCell);
+
+        const requestCell = document.createElement('td');
+        requestCell.className = 'mod-request';
+        requestCell.textContent = mod.request;
+        requestCell.style.cursor = 'pointer';
+        requestCell.onclick = () => showModificationDetail(mod.id);
+        row.appendChild(requestCell);
+
+        const summaryCell = document.createElement('td');
+        summaryCell.className = 'mod-summary';
+        summaryCell.textContent = mod.summary;
+        row.appendChild(summaryCell);
+
+        const actionsCell = document.createElement('td');
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'table-action-buttons';
+
+        const approveBtn = document.createElement('button');
+        approveBtn.className = 'table-action-btn approve';
+        approveBtn.textContent = 'Approve';
+        approveBtn.onclick = (e) => {
+            e.stopPropagation();
+            quickApprove(mod.id);
         };
 
-        const statusText = {
-            approved: 'Approved',
-            pending: 'Pending',
-            rejected: 'Rejected',
-            rollback: 'Rollback'
+        const rejectBtn = document.createElement('button');
+        rejectBtn.className = 'table-action-btn reject';
+        rejectBtn.textContent = 'Reject';
+        rejectBtn.onclick = (e) => {
+            e.stopPropagation();
+            quickReject(mod.id);
         };
 
-        const statusClass = `status-${mod.status}`;
-
-        row.innerHTML = `
-            <td class="mod-date">${new Date(mod.date).toLocaleDateString('ko-KR')} ${new Date(mod.date).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</td>
-            <td class="mod-requester">${mod.requester}</td>
-            <td class="mod-request">${mod.request}</td>
-            <td class="mod-summary">${mod.summary}</td>
-            <td><span class="status-badge ${statusClass}">${statusEmoji[mod.status]} ${statusText[mod.status]}</span></td>
-        `;
+        actionsDiv.appendChild(approveBtn);
+        actionsDiv.appendChild(rejectBtn);
+        actionsCell.appendChild(actionsDiv);
+        row.appendChild(actionsCell);
 
         tbody.appendChild(row);
     });
+}
+
+// Quick approve from table
+function quickApprove(modId) {
+    const mod = modificationsData.find(m => m.id === modId);
+    if (mod) {
+        mod.status = 'approved';
+        alert('✅ 승인되었습니다!');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
+}
+
+// Quick reject from table
+function quickReject(modId) {
+    const mod = modificationsData.find(m => m.id === modId);
+    if (mod) {
+        mod.status = 'rejected';
+        alert('❌ 거절되었습니다.');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
 }
 
 // Setup filter buttons
