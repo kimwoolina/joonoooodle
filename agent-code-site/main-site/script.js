@@ -172,24 +172,26 @@ function displayRequestsList() {
                     <div class="emergency-type">${typeLabel}</div>
                 </div>
                 <div class="card-body">
-                    <div class="info-section">
-                        <h4>Request</h4>
-                        <p><strong>Title:</strong> ${request.title}</p>
-                        <p><strong>Description:</strong> ${request.description}</p>
+                    <div class="card-body-content">
+                        <div class="info-section">
+                            <h4>Request</h4>
+                            <p><strong>Title:</strong> ${request.title}</p>
+                            <p><strong>Description:</strong> ${request.description}</p>
+                        </div>
+                        <div class="info-section">
+                            <h4>Tree Information</h4>
+                            <p><strong>ID:</strong> ${request.treeId}</p>
+                            <p><strong>Species:</strong> ${request.treeInfo.species}</p>
+                            <p><strong>Location:</strong> ${request.treeInfo.location}</p>
+                        </div>
                     </div>
-                    <div class="info-section">
-                        <h4>Tree Information</h4>
-                        <p><strong>ID:</strong> ${request.treeId}</p>
-                        <p><strong>Species:</strong> ${request.treeInfo.species}</p>
-                        <p><strong>Location:</strong> ${request.treeInfo.location}</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="submit-date">Submitted: ${date}</span>
+                    <div class="card-map">
+                        <div id="${mapId}" class="card-map-small"></div>
                     </div>
                 </div>
-            </div>
-            <div class="card-map">
-                <div id="${mapId}" class="card-map-small"></div>
+                <div class="card-footer">
+                    <span class="submit-date">Submitted: ${date}</span>
+                </div>
             </div>
         `;
 
@@ -357,6 +359,14 @@ function showPage(page) {
             initMap();
         }
         displaySelectedTree();
+    } else if (page === 'admin') {
+        document.getElementById('adminPage').classList.add('active');
+        // Initialize admin dashboard when showing admin page
+        setTimeout(() => {
+            initAdminDashboard();
+        }, 100);
+    } else if (page === 'modDetail') {
+        document.getElementById('modDetailPage').classList.add('active');
     }
 }
 
@@ -398,6 +408,9 @@ function initMap() {
         marker.addTo(map);
         markers.push(marker);
     });
+
+    // Setup tree search functionality
+    setupTreeSearch();
 }
 
 // Select tree from map
@@ -462,6 +475,108 @@ function displaySelectedTree() {
 function clearSelectedTree() {
     selectedTree = null;
     displaySelectedTree();
+}
+
+// Setup tree search functionality
+function setupTreeSearch() {
+    const searchInput = document.getElementById('treeSearch');
+    let searchDropdown = document.getElementById('searchDropdown');
+
+    // Create dropdown if it doesn't exist
+    if (!searchDropdown) {
+        searchDropdown = document.createElement('div');
+        searchDropdown.id = 'searchDropdown';
+        searchDropdown.className = 'search-dropdown';
+        searchInput.parentNode.appendChild(searchDropdown);
+    }
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim().toLowerCase();
+
+        if (query.length === 0) {
+            searchDropdown.classList.remove('active');
+            return;
+        }
+
+        // Debounce search
+        searchTimeout = setTimeout(() => {
+            performSearch(query, searchDropdown);
+        }, 300);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.classList.remove('active');
+        }
+    });
+}
+
+// Perform tree search
+function performSearch(query, dropdown) {
+    const results = treesData.filter(tree => {
+        const treeId = tree.id.toLowerCase();
+        const species = (tree.species.common_ko + ' ' + tree.species.common).toLowerCase();
+        const location = (tree.location.district_ko + ' ' + tree.location.neighborhood_ko).toLowerCase();
+
+        return treeId.includes(query) ||
+               species.includes(query) ||
+               location.includes(query);
+    });
+
+    if (results.length === 0) {
+        dropdown.innerHTML = '<div class="search-item no-results">No trees found</div>';
+        dropdown.classList.add('active');
+
+        // Hide "no results" after 2 seconds
+        setTimeout(() => {
+            dropdown.classList.remove('active');
+        }, 2000);
+        return;
+    }
+
+    // Limit to 10 results
+    const limitedResults = results.slice(0, 10);
+
+    dropdown.innerHTML = limitedResults.map(tree => {
+        const healthScore = tree.condition.healthScore;
+        const healthClass = getHealthClass(healthScore);
+        const healthLabel = getHealthLabel(healthScore);
+
+        return `
+            <div class="search-item" data-tree-id="${tree.id}">
+                <div class="search-item-main">
+                    <strong>${tree.id}</strong>
+                    <span class="health-badge ${healthClass}">${healthLabel}</span>
+                </div>
+                <div class="search-item-details">
+                    ${tree.species.common_ko} (${tree.species.common})
+                </div>
+                <div class="search-item-location">
+                    📍 ${tree.location.district_ko} ${tree.location.neighborhood_ko}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    dropdown.classList.add('active');
+
+    // Add click handlers to search results
+    dropdown.querySelectorAll('.search-item:not(.no-results)').forEach(item => {
+        item.addEventListener('click', () => {
+            const treeId = item.getAttribute('data-tree-id');
+            const tree = treesData.find(t => t.id === treeId);
+            if (tree) {
+                selectTree(tree);
+                map.setView([tree.location.coordinates.lat, tree.location.coordinates.lng], 16);
+                dropdown.classList.remove('active');
+                document.getElementById('treeSearch').value = '';
+            }
+        });
+    });
 }
 
 // Submit request
@@ -994,3 +1109,446 @@ function confirmApplyChanges() {
     // Show loading state
     addSystemMessage('Applying changes to your site and submitting for admin approval...');
 }
+
+// ============================================
+// ADMIN DASHBOARD
+// ============================================
+
+// Mock data for modifications
+let modificationsData = [];
+let timelineChart = null;
+let donutChart = null;
+
+// Initialize admin dashboard when the page is shown
+function initAdminDashboard() {
+    // Generate mock data if not already generated
+    if (modificationsData.length === 0) {
+        generateMockModifications();
+    }
+
+    // Render the dashboard
+    renderModificationsTable();
+    initializeCharts();
+    setupFilterButtons();
+}
+
+// Generate mock modification data
+function generateMockModifications() {
+    const requesters = ['공공포털팀', '시청 관리자', '김영희', '이철수', '박민수', 'AI Bot'];
+    const statuses = ['approved', 'pending', 'rejected', 'rollback'];
+    const requests = [
+        '상단 배너를 "2025년 신규 정책 안내"로 바꿔줘',
+        '메인 페이지 색상을 좀 더 밝게 해줘',
+        '푸터에 연락처 정보 추가해줘',
+        '로그인 버튼 크기를 키워줘',
+        '모바일에서 메뉴가 잘 보이게 해줘',
+        '검색창을 상단에 추가해줘',
+        '공지사항 섹션을 더 눈에 띄게 해줘',
+        '폰트 크기를 좀 더 크게 해줘',
+        '이미지 슬라이더 추가해줘',
+        '404 페이지 디자인 개선해줘'
+    ];
+
+    const summaries = [
+        'header.html → banner-text 변경',
+        'styles.css → color scheme 업데이트',
+        'footer.html → contact-info 추가',
+        'index.html → button size 조정',
+        'mobile.css → responsive menu 수정',
+        'header.html → search-bar 추가',
+        'index.html → notice-section 스타일 변경',
+        'styles.css → font-size 증가',
+        'index.html → image-carousel 컴포넌트 추가',
+        '404.html → 페이지 디자인 리뉴얼'
+    ];
+
+    // Generate data for the last 30 days
+    const now = new Date();
+    for (let i = 0; i < 127; i++) {
+        const daysAgo = Math.floor(Math.random() * 30);
+        const date = new Date(now);
+        date.setDate(date.getDate() - daysAgo);
+
+        const statusWeights = { approved: 0.7, pending: 0.1, rejected: 0.15, rollback: 0.05 };
+        let rand = Math.random();
+        let status = 'approved';
+        if (rand < statusWeights.rollback) status = 'rollback';
+        else if (rand < statusWeights.rollback + statusWeights.rejected) status = 'rejected';
+        else if (rand < statusWeights.rollback + statusWeights.rejected + statusWeights.pending) status = 'pending';
+
+        modificationsData.push({
+            id: i + 1,
+            date: date.toISOString(),
+            requester: requesters[Math.floor(Math.random() * requesters.length)],
+            request: requests[Math.floor(Math.random() * requests.length)],
+            summary: summaries[Math.floor(Math.random() * summaries.length)],
+            status: status,
+            rating: Math.floor(Math.random() * 3) + 3, // 3-5 stars
+            comments: '수정 내용이 정확하고 빠르게 적용되었습니다.',
+            codeDiff: `- <h1>기존 타이틀</h1>\n+ <h1>2025년 신규 정책 안내</h1>\n\n- background: #ffffff;\n+ background: #f5f5f5;`
+        });
+    }
+
+    // Sort by date (newest first)
+    modificationsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+// Format summary text with code tags (Notion-style)
+function formatSummaryWithTags(summary) {
+    // Pattern to match only file names (filename.ext)
+    return summary.replace(/([a-zA-Z0-9_-]+\.(html|css|js|jsx|tsx|ts|json|md|py|java|php|xml|yml|yaml))/g,
+        '<span class="code-tag">$1</span>');
+}
+
+// Render modifications table
+function renderModificationsTable(filter = 'all') {
+    const tbody = document.getElementById('modificationsTableBody');
+    if (!tbody) return;
+
+    // Filter data
+    let filteredData = modificationsData;
+    if (filter !== 'all') {
+        filteredData = modificationsData.filter(mod => mod.status === filter);
+    }
+
+    // Clear table
+    tbody.innerHTML = '';
+
+    // Render rows (show first 20)
+    filteredData.slice(0, 20).forEach(mod => {
+        const row = document.createElement('tr');
+
+        // Format date and time in clean format with badge
+        const date = new Date(mod.date);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const formattedDate = `${year}.${month}.${day} ${hours}:${minutes}`;
+
+        const rowCell = document.createElement('td');
+        rowCell.className = 'mod-date';
+        const dateBadge = document.createElement('span');
+        dateBadge.className = 'date-badge';
+        dateBadge.textContent = formattedDate;
+        rowCell.appendChild(dateBadge);
+        row.appendChild(rowCell);
+
+        const requesterCell = document.createElement('td');
+        requesterCell.className = 'mod-requester';
+        requesterCell.textContent = mod.requester;
+        row.appendChild(requesterCell);
+
+        const requestCell = document.createElement('td');
+        requestCell.className = 'mod-request';
+        requestCell.textContent = mod.request;
+        requestCell.style.cursor = 'pointer';
+        requestCell.onclick = () => showModificationDetail(mod.id);
+        row.appendChild(requestCell);
+
+        const summaryCell = document.createElement('td');
+        summaryCell.className = 'mod-summary';
+        summaryCell.innerHTML = formatSummaryWithTags(mod.summary);
+        row.appendChild(summaryCell);
+
+        const actionsCell = document.createElement('td');
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'table-action-buttons';
+
+        const approveBtn = document.createElement('button');
+        approveBtn.className = 'table-action-btn approve';
+        approveBtn.textContent = 'Approve';
+        approveBtn.onclick = (e) => {
+            e.stopPropagation();
+            quickApprove(mod.id);
+        };
+
+        const rejectBtn = document.createElement('button');
+        rejectBtn.className = 'table-action-btn reject';
+        rejectBtn.textContent = 'Reject';
+        rejectBtn.onclick = (e) => {
+            e.stopPropagation();
+            quickReject(mod.id);
+        };
+
+        actionsDiv.appendChild(approveBtn);
+        actionsDiv.appendChild(rejectBtn);
+        actionsCell.appendChild(actionsDiv);
+        row.appendChild(actionsCell);
+
+        tbody.appendChild(row);
+    });
+}
+
+// Quick approve from table
+function quickApprove(modId) {
+    const mod = modificationsData.find(m => m.id === modId);
+    if (mod) {
+        mod.status = 'approved';
+        alert('✅ 승인되었습니다!');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
+}
+
+// Quick reject from table
+function quickReject(modId) {
+    const mod = modificationsData.find(m => m.id === modId);
+    if (mod) {
+        mod.status = 'rejected';
+        alert('❌ 거절되었습니다.');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
+}
+
+// Setup filter buttons
+function setupFilterButtons() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Update active state
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Get filter status
+            const status = btn.getAttribute('data-status');
+
+            // Render table with filter
+            renderModificationsTable(status);
+        });
+    });
+}
+
+// Initialize charts
+function initializeCharts() {
+    // Check if Chart is available
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded');
+        return;
+    }
+
+    // Timeline Chart
+    const timelineCtx = document.getElementById('timelineChart');
+    if (timelineCtx) {
+        // Prepare data for the last 14 days
+        const days = 14;
+        const labels = [];
+        const proposedData = [];
+        const approvedData = [];
+        const rollbackData = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            labels.push(date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }));
+
+            // Count modifications for this day
+            const dayStart = new Date(date);
+            dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = new Date(date);
+            dayEnd.setHours(23, 59, 59, 999);
+
+            const dayMods = modificationsData.filter(mod => {
+                const modDate = new Date(mod.date);
+                return modDate >= dayStart && modDate <= dayEnd;
+            });
+
+            proposedData.push(dayMods.length);
+            approvedData.push(dayMods.filter(m => m.status === 'approved').length);
+            rollbackData.push(dayMods.filter(m => m.status === 'rollback').length);
+        }
+
+        if (timelineChart) {
+            timelineChart.destroy();
+        }
+
+        timelineChart = new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '제안 건수',
+                        data: proposedData,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: '승인 건수',
+                        data: approvedData,
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: '롤백 건수',
+                        data: rollbackData,
+                        borderColor: '#ffc107',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Donut Chart
+    const donutCtx = document.getElementById('donutChart');
+    if (donutCtx) {
+        // Count status for the last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const recentMods = modificationsData.filter(mod => new Date(mod.date) >= sevenDaysAgo);
+
+        const statusCounts = {
+            approved: recentMods.filter(m => m.status === 'approved').length,
+            pending: recentMods.filter(m => m.status === 'pending').length,
+            rejected: recentMods.filter(m => m.status === 'rejected').length,
+            rollback: recentMods.filter(m => m.status === 'rollback').length
+        };
+
+        if (donutChart) {
+            donutChart.destroy();
+        }
+
+        donutChart = new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['승인됨', '대기중', '거절됨', '롤백됨'],
+                datasets: [{
+                    data: [statusCounts.approved, statusCounts.pending, statusCounts.rejected, statusCounts.rollback],
+                    backgroundColor: [
+                        '#28a745',
+                        '#ffc107',
+                        '#dc3545',
+                        '#fd7e14'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Show modification detail
+function showModificationDetail(modId) {
+    const mod = modificationsData.find(m => m.id === modId);
+    if (!mod) return;
+
+    // Update detail page content
+    document.getElementById('modDetailTitle').textContent = mod.request;
+    document.getElementById('modDetailRequester').innerHTML = `<strong>요청자:</strong> ${mod.requester}`;
+    document.getElementById('modDetailDate').innerHTML = `<strong>날짜:</strong> ${new Date(mod.date).toLocaleString('ko-KR')}`;
+
+    const statusEmoji = {
+        approved: '✅',
+        pending: '⏳',
+        rejected: '❌',
+        rollback: '🔁'
+    };
+
+    const statusText = {
+        approved: 'Approved',
+        pending: 'Pending',
+        rejected: 'Rejected',
+        rollback: 'Rollback'
+    };
+
+    const statusClass = `status-${mod.status}`;
+    document.getElementById('modDetailStatus').innerHTML = `<span class="status-badge ${statusClass}">${statusEmoji[mod.status]} ${statusText[mod.status]}</span>`;
+
+    document.getElementById('modDetailRequest').textContent = mod.request;
+    document.getElementById('modDetailSummary').textContent = mod.summary;
+    document.getElementById('modDetailCodeDiff').textContent = mod.codeDiff;
+
+    // Render stars
+    const ratingContainer = document.getElementById('modDetailRating');
+    ratingContainer.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.className = i <= mod.rating ? 'star' : 'star empty';
+        star.textContent = '★';
+        ratingContainer.appendChild(star);
+    }
+
+    document.getElementById('modDetailComments').textContent = mod.comments;
+
+    // Store current mod ID for actions
+    window.currentModId = modId;
+
+    // Show detail page
+    showPage('modDetail');
+}
+
+// Admin actions
+function approveModification() {
+    if (!window.currentModId) return;
+
+    const mod = modificationsData.find(m => m.id === window.currentModId);
+    if (mod) {
+        mod.status = 'approved';
+        alert('✅ 수정 사항이 승인되었습니다!');
+        showPage('admin');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
+}
+
+function rejectModification() {
+    if (!window.currentModId) return;
+
+    const mod = modificationsData.find(m => m.id === window.currentModId);
+    if (mod) {
+        mod.status = 'rejected';
+        alert('❌ 수정 사항이 거절되었습니다.');
+        showPage('admin');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
+}
+
+function rollbackModification() {
+    if (!window.currentModId) return;
+
+    const mod = modificationsData.find(m => m.id === window.currentModId);
+    if (mod) {
+        mod.status = 'rollback';
+        alert('🔁 수정 사항이 롤백되었습니다.');
+        showPage('admin');
+        renderModificationsTable();
+        if (timelineChart) initializeCharts();
+    }
+}
+
