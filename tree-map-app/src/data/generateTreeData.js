@@ -84,79 +84,127 @@ const seoulDistricts = [
   ]}
 ];
 
-// Common tree species in Seoul with LOCAL PNG images (stored in project)
+// Common tree species in Seoul with real Unsplash photos (specific IDs for reliability)
 const treeSpecies = [
   {
     common: 'Korean Red Pine',
     common_ko: '소나무',
     scientific: 'Pinus densiflora',
-    photos: ['/images/trees/pine-1.png', '/images/trees/pine-2.png', '/images/trees/pine-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1519408299519-b52503e6e4e0?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Ginkgo',
     common_ko: '은행나무',
     scientific: 'Ginkgo biloba',
-    photos: ['/images/trees/ginkgo-1.png', '/images/trees/ginkgo-2.png', '/images/trees/ginkgo-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1509718443690-d8e2fb3474b7?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1604608672516-f1b9b1a61ec3?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1606506750622-37cb9d7e6b0d?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Zelkova',
     common_ko: '느티나무',
     scientific: 'Zelkova serrata',
-    photos: ['/images/trees/zelkova-1.png', '/images/trees/zelkova-2.png', '/images/trees/zelkova-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Korean Mountain Ash',
     common_ko: '마가목',
     scientific: 'Sorbus alnifolia',
-    photos: ['/images/trees/mountain-ash-1.png', '/images/trees/mountain-ash-2.png', '/images/trees/mountain-ash-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Cherry',
     common_ko: '벚나무',
     scientific: 'Prunus serrulata',
-    photos: ['/images/trees/cherry-1.png', '/images/trees/cherry-2.png', '/images/trees/cherry-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Japanese Maple',
     common_ko: '단풍나무',
     scientific: 'Acer palmatum',
-    photos: ['/images/trees/maple-1.png', '/images/trees/maple-2.png', '/images/trees/maple-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1476231790875-69f3b3f23e13?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Dawn Redwood',
     common_ko: '메타세쿼이아',
     scientific: 'Metasequoia glyptostroboides',
-    photos: ['/images/trees/redwood-1.png', '/images/trees/redwood-2.png', '/images/trees/redwood-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Korean Oak',
     common_ko: '참나무',
     scientific: 'Quercus mongolica',
-    photos: ['/images/trees/oak-1.png', '/images/trees/oak-2.png', '/images/trees/oak-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1540206395-68808572332f?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Persimmon',
     common_ko: '감나무',
     scientific: 'Diospyros kaki',
-    photos: ['/images/trees/persimmon-1.png', '/images/trees/persimmon-2.png', '/images/trees/persimmon-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Magnolia',
     common_ko: '목련',
     scientific: 'Magnolia kobus',
-    photos: ['/images/trees/magnolia-1.png', '/images/trees/magnolia-2.png', '/images/trees/magnolia-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Crape Myrtle',
     common_ko: '배롱나무',
     scientific: 'Lagerstroemia indica',
-    photos: ['/images/trees/crape-myrtle-1.png', '/images/trees/crape-myrtle-2.png', '/images/trees/crape-myrtle-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=600&fit=crop&q=80'
+    ]
   },
   {
     common: 'Hackberry',
     common_ko: '팽나무',
     scientific: 'Celtis sinensis',
-    photos: ['/images/trees/hackberry-1.png', '/images/trees/hackberry-2.png', '/images/trees/hackberry-3.png']
+    photos: [
+      'https://images.unsplash.com/photo-1540206395-68808572332f?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&q=80'
+    ]
   },
 ];
 
