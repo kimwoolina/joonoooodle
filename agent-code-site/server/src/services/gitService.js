@@ -135,7 +135,9 @@ export class GitService {
   async getWorktreePath(branchName) {
     const worktrees = await this.listWorktrees();
     const worktree = worktrees.find(w => w.branch === branchName);
-    return worktree?.path || null;
+    if (!worktree) return null;
+    // Return path to the main-site directory within the worktree
+    return path.join(worktree.path, 'agent-code-site', 'main-site');
   }
 
   /**
@@ -144,15 +146,17 @@ export class GitService {
    */
   async removeWorktree(branchName) {
     try {
-      const worktreePath = await this.getWorktreePath(branchName);
+      // Get the actual worktree root path (not the main-site subdirectory)
+      const worktrees = await this.listWorktrees();
+      const worktree = worktrees.find(w => w.branch === branchName);
 
-      if (!worktreePath) {
+      if (!worktree) {
         console.log(`Worktree not found for branch: ${branchName}`);
         return false;
       }
 
-      // Remove worktree
-      await this.execGit(`worktree remove ${worktreePath} --force`);
+      // Remove worktree (needs the root path, not the subdirectory)
+      await this.execGit(`worktree remove ${worktree.path} --force`);
 
       // Delete branch
       await this.execGit(`branch -D ${branchName}`);
