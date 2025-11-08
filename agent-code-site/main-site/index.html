@@ -287,6 +287,17 @@
         // Update branch indicator
         async function updateBranchIndicator() {
             try {
+                // First try to get branch from URL path (for worktree paths like /w/user-lina/)
+                const pathMatch = window.location.pathname.match(/\/w\/([^\/]+)/);
+                if (pathMatch) {
+                    const branchName = pathMatch[1];
+                    document.getElementById('branchIndicator').style.display = 'flex';
+                    document.getElementById('branchName').textContent = branchName;
+                    console.log('Branch detected from URL:', branchName);
+                    return;
+                }
+
+                // Fallback to API call if not in worktree path
                 const res = await fetch('/api/git/branch', { credentials: 'include' });
                 const data = await res.json();
                 if (data.branch) {

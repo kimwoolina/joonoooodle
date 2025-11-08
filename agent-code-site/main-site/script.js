@@ -567,7 +567,8 @@ function formatDate(timestamp) {
 // CHAT WIDGET FUNCTIONALITY
 // ============================================
 
-const SOCKET_URL = 'http://localhost:3000';
+// Use window.location.origin to support both direct access and iframes
+const SOCKET_URL = window.location.origin.includes('localhost') ? 'http://localhost:3000' : window.location.origin;
 let socket = null;
 let sessionId = null;
 let currentBranch = null;
