@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { ClaudeService } from '../src/services/claudeService.js';
 import { FileService } from '../src/services/fileService.js';
+import { SessionService } from '../src/services/sessionService.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,8 +15,11 @@ jest.mock('@anthropic-ai/sdk');
 describe('ClaudeService', () => {
   let claudeService;
   let fileService;
+  let sessionService;
+  let mockGitService;
   let mockSocket;
   let testDir;
+  let testSessionId;
 
   beforeEach(async () => {
     // Create temporary test directory
@@ -25,13 +29,22 @@ describe('ClaudeService', () => {
     // Create FileService with test directory
     fileService = new FileService(testDir);
 
+    // Create SessionService
+    sessionService = new SessionService();
+    testSessionId = 'test-session-123';
+
+    // Mock GitService
+    mockGitService = {
+      commitChanges: jest.fn().mockResolvedValue(undefined),
+    };
+
     // Mock Socket.io socket
     mockSocket = {
       emit: jest.fn(),
     };
 
     // Create ClaudeService
-    claudeService = new ClaudeService(fileService, mockSocket);
+    claudeService = new ClaudeService(fileService, mockGitService, sessionService, mockSocket);
 
     // Mock API key
     process.env.ANTHROPIC_API_KEY = 'test-api-key';
@@ -45,8 +58,9 @@ describe('ClaudeService', () => {
   describe('initialization', () => {
     it('should initialize with correct properties', () => {
       expect(claudeService.fileService).toBe(fileService);
+      expect(claudeService.gitService).toBe(mockGitService);
+      expect(claudeService.sessionService).toBe(sessionService);
       expect(claudeService.socket).toBe(mockSocket);
-      expect(claudeService.conversationHistory).toEqual([]);
     });
 
     it('should have Anthropic client', () => {
@@ -160,11 +174,15 @@ describe('ClaudeService', () => {
         }
       };
 
-      const result = await claudeService.executeTool(toolUse);
+      // Set username for session (required for git commits)
+      sessionService.setUsername(testSessionId, 'testuser');
+
+      const result = await claudeService.executeTool(toolUse, testSessionId);
 
       expect(result.success).toBe(true);
       const written = await fs.readFile(path.join(testDir, 'new.txt'), 'utf-8');
       expect(written).toBe('New content');
+      expect(mockGitService.commitChanges).toHaveBeenCalledWith('Update new.txt', 'testuser');
     });
 
     it('should create nested directories', async () => {
@@ -176,7 +194,8 @@ describe('ClaudeService', () => {
         }
       };
 
-      const result = await claudeService.executeTool(toolUse);
+      sessionService.setUsername(testSessionId, 'testuser');
+      const result = await claudeService.executeTool(toolUse, testSessionId);
 
       expect(result.success).toBe(true);
       const written = await fs.readFile(path.join(testDir, 'dir/subdir/nested.txt'), 'utf-8');
@@ -198,11 +217,13 @@ describe('ClaudeService', () => {
         }
       };
 
-      const result = await claudeService.executeTool(toolUse);
+      sessionService.setUsername(testSessionId, 'testuser');
+      const result = await claudeService.executeTool(toolUse, testSessionId);
 
       expect(result.success).toBe(true);
       const edited = await fs.readFile(path.join(testDir, filePath), 'utf-8');
       expect(edited).toBe('color: blue;');
+      expect(mockGitService.commitChanges).toHaveBeenCalledWith('Edit edit.txt', 'testuser');
     });
 
     it('should throw error when string not found', async () => {
@@ -218,7 +239,8 @@ describe('ClaudeService', () => {
         }
       };
 
-      await expect(claudeService.executeTool(toolUse)).rejects.toThrow(/not found/);
+      sessionService.setUsername(testSessionId, 'testuser');
+      await expect(claudeService.executeTool(toolUse, testSessionId)).rejects.toThrow(/not found/);
     });
   });
 
@@ -346,46 +368,31 @@ describe('ClaudeService', () => {
   });
 
   describe('conversation history', () => {
-    it('should start with empty history', () => {
-      expect(claudeService.conversationHistory).toEqual([]);
+    it('should start with empty history for new session', () => {
+      const history = sessionService.getConversationHistory(testSessionId);
+      expect(history).toEqual([]);
     });
 
-    it('should maintain conversation context', () => {
-      claudeService.conversationHistory.push({
-        role: 'user',
-        content: 'Test message'
-      });
+    it('should maintain conversation context via session service', () => {
+      sessionService.addMessage(testSessionId, 'user', 'Test message');
 
-      expect(claudeService.conversationHistory).toHaveLength(1);
-      expect(claudeService.conversationHistory[0].role).toBe('user');
+      const history = sessionService.getConversationHistory(testSessionId);
+      expect(history).toHaveLength(1);
+      expect(history[0].role).toBe('user');
+      expect(history[0].content).toBe('Test message');
     });
   });
 
-  describe('continueWithToolResult', () => {
-    it('should format tool result correctly', () => {
-      const toolUse = {
-        id: 'tool_123',
-        name: 'Read',
-        input: { file_path: 'test.txt' }
-      };
+  describe('buildMessages', () => {
+    it('should build messages from session history', () => {
+      sessionService.addMessage(testSessionId, 'user', 'Hello');
+      sessionService.addMessage(testSessionId, 'assistant', 'Hi there!');
 
-      const toolResult = {
-        success: true,
-        content: 'File content'
-      };
+      const messages = claudeService.buildMessages(testSessionId);
 
-      // This would trigger another Claude API call in real scenario
-      // For unit test, we just verify the method exists and doesn't crash
-      expect(() => {
-        claudeService.conversationHistory.push({
-          role: 'user',
-          content: [{
-            type: 'tool_result',
-            tool_use_id: toolUse.id,
-            content: JSON.stringify(toolResult)
-          }]
-        });
-      }).not.toThrow();
+      expect(messages).toHaveLength(2);
+      expect(messages[0]).toEqual({ role: 'user', content: 'Hello' });
+      expect(messages[1]).toEqual({ role: 'assistant', content: 'Hi there!' });
     });
   });
 });

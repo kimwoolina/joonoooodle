@@ -5,49 +5,63 @@ import { promisify } from 'util';
 const execAsync = promisify(exec);
 
 export class ClaudeService {
-  constructor(fileService, socket) {
+  constructor(fileService, gitService, sessionService, socket) {
     this.client = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
     this.fileService = fileService;
+    this.gitService = gitService;
+    this.sessionService = sessionService;
     this.socket = socket;
-    this.conversationHistory = [];
   }
 
   async processMessage(userMessage, sessionId) {
-    // Add user message to history
-    this.conversationHistory.push({
-      role: 'user',
-      content: userMessage,
-    });
+    // Get session
+    const session = this.sessionService.getOrCreateSession(sessionId);
+
+    // Add user message to session history
+    this.sessionService.addMessage(sessionId, 'user', userMessage);
+
+    // Create abort controller for this request
+    const abortController = new AbortController();
+    this.sessionService.registerActiveRequest(sessionId, abortController);
 
     let fullResponse = '';
     let currentToolUse = null;
+    let currentContentBlockType = null;
 
     try {
       const stream = await this.client.messages.create({
         model: 'claude-sonnet-4-5-20250929',
         max_tokens: 8096,
         system: this.getSystemPrompt(),
-        messages: this.conversationHistory,
+        messages: this.buildMessages(sessionId),
         tools: this.getTools(),
         stream: true,
+      }, {
+        signal: abortController.signal,
       });
 
       for await (const event of stream) {
+        // Check if aborted
+        if (abortController.signal.aborted) {
+          this.socket.emit('message:cancelled', {});
+          break;
+        }
+
         if (event.type === 'content_block_start') {
-          if (event.content_block.type === 'text') {
-            // Starting a text block
-          } else if (event.content_block.type === 'tool_use') {
+          currentContentBlockType = event.content_block.type;
+          if (event.content_block.type === 'tool_use') {
             currentToolUse = {
               id: event.content_block.id,
               name: event.content_block.name,
               input: {},
+              inputJson: '',
             };
           }
         } else if (event.type === 'content_block_delta') {
           if (event.delta.type === 'text_delta') {
-            // Stream text to client
+            // Stream conversational text to client
             const text = event.delta.text;
             fullResponse += text;
             this.socket.emit('message:stream', {
@@ -55,35 +69,34 @@ export class ClaudeService {
               isComplete: false,
             });
           } else if (event.delta.type === 'input_json_delta') {
-            // Accumulate tool input
             if (currentToolUse) {
-              currentToolUse.inputJson = (currentToolUse.inputJson || '') + event.delta.partial_json;
+              currentToolUse.inputJson += event.delta.partial_json;
             }
           }
         } else if (event.type === 'content_block_stop') {
           if (currentToolUse) {
-            // Parse and execute tool
             try {
               currentToolUse.input = JSON.parse(currentToolUse.inputJson);
-              const toolResult = await this.executeTool(currentToolUse);
 
-              // Send tool execution notification to client
-              this.socket.emit('tool:executed', {
-                tool: currentToolUse.name,
-                input: currentToolUse.input,
-                result: toolResult,
-              });
+              // Execute tool silently (don't show to user)
+              const toolResult = await this.executeTool(currentToolUse, sessionId);
 
               // Continue conversation with tool result
-              await this.continueWithToolResult(currentToolUse, toolResult);
+              await this.continueWithToolResult(currentToolUse, toolResult, sessionId, abortController);
             } catch (error) {
               console.error('Tool execution error:', error);
               this.socket.emit('error', { error: error.message });
             }
             currentToolUse = null;
+          } else if (currentContentBlockType === 'text') {
+            // Text block complete - finalize this message
+            this.socket.emit('message:stream', {
+              text: '',
+              isComplete: true,
+            });
           }
+          currentContentBlockType = null;
         } else if (event.type === 'message_stop') {
-          // Message complete
           this.socket.emit('message:stream', {
             text: '',
             isComplete: true,
@@ -91,22 +104,29 @@ export class ClaudeService {
         }
       }
 
-      // Add assistant response to history
+      // Add assistant response to session history
       if (fullResponse) {
-        this.conversationHistory.push({
-          role: 'assistant',
-          content: fullResponse,
-        });
+        this.sessionService.addMessage(sessionId, 'assistant', fullResponse);
       }
     } catch (error) {
-      console.error('Claude API error:', error);
-      throw error;
+      if (error.name === 'AbortError') {
+        console.log('Request aborted by user');
+      } else {
+        console.error('Claude API error:', error);
+        throw error;
+      }
+    } finally {
+      // Clear active request
+      this.sessionService.clearActiveRequest(sessionId);
     }
   }
 
-  async continueWithToolResult(toolUse, toolResult) {
-    // Add assistant's tool use to history
-    this.conversationHistory.push({
+  async continueWithToolResult(toolUse, toolResult, sessionId, abortController) {
+    // Build message history with tool use and result
+    const messages = this.buildMessages(sessionId);
+
+    // Add tool use
+    messages.push({
       role: 'assistant',
       content: [
         {
@@ -118,8 +138,8 @@ export class ClaudeService {
       ],
     });
 
-    // Add tool result to history
-    this.conversationHistory.push({
+    // Add tool result
+    messages.push({
       role: 'user',
       content: [
         {
@@ -130,26 +150,34 @@ export class ClaudeService {
       ],
     });
 
-    // Continue the conversation
     let fullResponse = '';
     const stream = await this.client.messages.create({
       model: 'claude-sonnet-4-5-20250929',
       max_tokens: 8096,
       system: this.getSystemPrompt(),
-      messages: this.conversationHistory,
+      messages,
       tools: this.getTools(),
       stream: true,
+    }, {
+      signal: abortController.signal,
     });
 
     let currentToolUse = null;
+    let currentContentBlockType = null;
 
     for await (const event of stream) {
+      if (abortController.signal.aborted) {
+        break;
+      }
+
       if (event.type === 'content_block_start') {
+        currentContentBlockType = event.content_block.type;
         if (event.content_block.type === 'tool_use') {
           currentToolUse = {
             id: event.content_block.id,
             name: event.content_block.name,
             input: {},
+            inputJson: '',
           };
         }
       } else if (event.type === 'content_block_delta') {
@@ -162,27 +190,27 @@ export class ClaudeService {
           });
         } else if (event.delta.type === 'input_json_delta') {
           if (currentToolUse) {
-            currentToolUse.inputJson = (currentToolUse.inputJson || '') + event.delta.partial_json;
+            currentToolUse.inputJson += event.delta.partial_json;
           }
         }
       } else if (event.type === 'content_block_stop') {
         if (currentToolUse) {
           try {
             currentToolUse.input = JSON.parse(currentToolUse.inputJson);
-            const toolResult = await this.executeTool(currentToolUse);
-
-            this.socket.emit('tool:executed', {
-              tool: currentToolUse.name,
-              input: currentToolUse.input,
-              result: toolResult,
-            });
-
-            await this.continueWithToolResult(currentToolUse, toolResult);
+            const toolResult = await this.executeTool(currentToolUse, sessionId);
+            await this.continueWithToolResult(currentToolUse, toolResult, sessionId, abortController);
           } catch (error) {
             console.error('Tool execution error:', error);
           }
           currentToolUse = null;
+        } else if (currentContentBlockType === 'text') {
+          // Text block complete - finalize this message
+          this.socket.emit('message:stream', {
+            text: '',
+            isComplete: true,
+          });
         }
+        currentContentBlockType = null;
       } else if (event.type === 'message_stop') {
         this.socket.emit('message:stream', {
           text: '',
@@ -192,14 +220,11 @@ export class ClaudeService {
     }
 
     if (fullResponse) {
-      this.conversationHistory.push({
-        role: 'assistant',
-        content: fullResponse,
-      });
+      this.sessionService.addMessage(sessionId, 'assistant', fullResponse);
     }
   }
 
-  async executeTool(toolUse) {
+  async executeTool(toolUse, sessionId) {
     const { name, input } = toolUse;
 
     switch (name) {
@@ -208,11 +233,16 @@ export class ClaudeService {
 
       case 'Write':
         await this.fileService.writeFile(input.file_path, input.content);
-        return { success: true, message: 'File written successfully' };
+        // Commit change to active branch
+        const username = this.sessionService.getUsername(sessionId);
+        await this.gitService.commitChanges(`Update ${input.file_path}`, username);
+        return { success: true, message: 'File written and committed' };
 
       case 'Edit':
         await this.fileService.editFile(input.file_path, input.old_string, input.new_string);
-        return { success: true, message: 'File edited successfully' };
+        const user = this.sessionService.getUsername(sessionId);
+        await this.gitService.commitChanges(`Edit ${input.file_path}`, user);
+        return { success: true, message: 'File edited and committed' };
 
       case 'Bash':
         return await this.executeBash(input.command);
@@ -230,10 +260,9 @@ export class ClaudeService {
 
   async executeBash(command) {
     try {
-      // Execute in demo site directory
       const { stdout, stderr } = await execAsync(command, {
         cwd: this.fileService.basePath,
-        timeout: 30000, // 30 second timeout
+        timeout: 30000,
       });
       return { stdout, stderr };
     } catch (error) {
@@ -241,28 +270,53 @@ export class ClaudeService {
     }
   }
 
+  buildMessages(sessionId) {
+    const history = this.sessionService.getConversationHistory(sessionId);
+    return history.map(msg => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+  }
+
   getSystemPrompt() {
-    return `You are an AI assistant embedded in a web application demo environment. You can modify a demo website by editing files, creating new files, and running commands.
+    return `You are a helpful AI assistant embedded in a website builder application. Users can ask you to modify and enhance their website, and you have the tools to make those changes.
 
-Current project: A demo website located in the demo-site directory.
+IMPORTANT INTERACTION STYLE:
+- Be conversational and friendly, NOT technical
+- Don't mention file names, tools, or technical implementation details
+- Focus on WHAT you're doing, not HOW
+- Keep responses concise and user-friendly
+- ALWAYS end by telling users their changes are ready in the preview
 
-You have access to these tools:
+Examples:
+❌ "I'm using the Edit tool to modify styles.css and change the background-color property..."
+✅ "Working on changing the background color..."
+
+❌ "I'll use the Write tool to create a new file called dark-mode.js..."
+✅ "Adding dark mode functionality..."
+
+❌ "Let me use the Glob tool to find all CSS files..."
+✅ "Let me check the current styling..."
+
+✅ GOOD ENDINGS:
+"Done! Your changes are ready - check the preview to see the new background color!"
+"All set! The header is now green. You can see it in the preview on the right."
+"Changes complete! Take a look at the preview to see the new design."
+
+You have access to these tools (but don't mention them to the user):
 - Read: Read file contents
 - Write: Create or overwrite files
-- Edit: Modify existing files by replacing specific strings
-- Bash: Run shell commands (like npm install, etc.)
-- Glob: Find files matching patterns
-- Grep: Search for text in files
+- Edit: Modify existing files
+- Bash: Run commands (like npm install)
+- Glob: Find files
+- Grep: Search for text
 
-When making changes:
-1. Explain what you're doing clearly
-2. Show the actual changes you're making
-3. Be helpful and educational
-4. Handle errors gracefully
+When users ask for changes:
+1. Acknowledge their request conversationally
+2. Work on it (use tools silently)
+3. When complete, ALWAYS tell them to check the preview
 
-File paths should be relative to the demo-site directory (e.g., "index.html", "styles.css", "components/Header.js").
-
-Be conversational and helpful. The user can see the live preview of the website you're modifying.`;
+Be helpful, clear, and educational. Focus on the user experience, not the technical details.`;
   }
 
   getTools() {
@@ -275,7 +329,7 @@ Be conversational and helpful. The user can see the live preview of the website 
           properties: {
             file_path: {
               type: 'string',
-              description: 'Path to the file to read (relative to demo-site)',
+              description: 'Path to the file to read (relative to main-site)',
             },
           },
           required: ['file_path'],
@@ -289,7 +343,7 @@ Be conversational and helpful. The user can see the live preview of the website 
           properties: {
             file_path: {
               type: 'string',
-              description: 'Path to the file to write (relative to demo-site)',
+              description: 'Path to the file to write (relative to main-site)',
             },
             content: {
               type: 'string',
@@ -323,7 +377,7 @@ Be conversational and helpful. The user can see the live preview of the website 
       },
       {
         name: 'Bash',
-        description: 'Execute a bash command in the demo site directory',
+        description: 'Execute a bash command in the website directory',
         input_schema: {
           type: 'object',
           properties: {

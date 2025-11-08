@@ -578,16 +578,17 @@ let isChatOpen = false;
 
 // Initialize chat widget
 window.addEventListener('load', () => {
-    // Check if username is stored
-    username = localStorage.getItem('buildright_username');
-
-    if (!username) {
-        // Show username modal on first chat open
-        // Don't show it automatically
-    } else {
-        // Connect to WebSocket
-        connectSocket();
-    }
+    // Check if user is logged in via cookie
+    fetch('/api/user/me', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.loggedIn) {
+                username = data.username;
+                // Connect to WebSocket
+                connectSocket();
+            }
+        })
+        .catch(err => console.error('Failed to check login status:', err));
 });
 
 function setUsername() {
@@ -809,7 +810,7 @@ function showThinkingIndicator() {
     thinking.id = 'thinkingIndicator';
     thinking.className = 'message thinking';
     thinking.innerHTML = `
-        <span>AI is thinking</span>
+        <span>Agent is thinking...</span>
         <div class="typing-indicator">
             <span></span>
             <span></span>
@@ -914,8 +915,8 @@ function viewPreview() {
     // Set the branch name in the modal
     document.getElementById('previewBranchName').textContent = currentBranch;
 
-    // Load the preview in the iframe
-    const previewUrl = `http://localhost:3000/preview/${currentBranch}/index.html`;
+    // Load the preview in the iframe from the worktree
+    const previewUrl = `/w/${currentBranch}/`;
     document.getElementById('previewFrame').src = previewUrl;
 
     // Show the modal

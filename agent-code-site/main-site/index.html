@@ -66,6 +66,7 @@
         .header-nav {
             display: flex;
             gap: 2rem;
+            align-items: center;
         }
 
         .nav-link {
@@ -81,6 +82,22 @@
 
         .nav-link:hover {
             opacity: 0.8;
+        }
+
+        .branch-indicator {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            margin-left: 1rem;
+        }
+
+        .branch-name {
+            white-space: nowrap;
         }
 
         /* Page Views */
@@ -1287,6 +1304,12 @@
             <nav class="header-nav">
                 <button class="nav-link" onclick="showPage('list')">View Requests</button>
                 <button class="nav-link" onclick="showPage('create')">Submit Request</button>
+                <div class="branch-indicator" id="branchIndicator" style="display: none;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 6px;">
+                        <path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path>
+                    </svg>
+                    <span class="branch-name" id="branchName"></span>
+                </div>
             </nav>
         </div>
     </header>
@@ -1430,17 +1453,6 @@
 
     <!-- Chat Widget -->
     <div id="chatWidget" class="chat-widget">
-        <!-- Username Modal -->
-        <div id="usernameModal" class="username-modal hidden">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <h2>Welcome to Seoul Tree Support!</h2>
-                <p>What should we call you?</p>
-                <input type="text" id="usernameInput" placeholder="Enter your name" autofocus>
-                <button onclick="setUsername()" class="modal-button">Get Started</button>
-            </div>
-        </div>
-
         <!-- Chat Button -->
         <button id="chatButton" class="chat-button" onclick="toggleChat()">
             <span class="chat-icon">💬</span>
@@ -1537,11 +1549,124 @@
         </div>
     </div>
 
+    <!-- Username Modal -->
+    <div id="usernameModal" class="confirm-modal" style="display: none;">
+        <div class="confirm-modal-backdrop"></div>
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-header">
+                <h3>Welcome! 👋</h3>
+            </div>
+            <div class="confirm-modal-body">
+                <p>Please enter your name to get started:</p>
+                <input type="text" id="usernameInput" placeholder="Your name" style="width: 100%; padding: 0.75rem; margin-top: 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;" autofocus>
+            </div>
+            <div class="confirm-modal-footer">
+                <button class="confirm-apply-btn" onclick="submitUsername()">Continue</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Socket.IO for Chat -->
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Update branch indicator
+        async function updateBranchIndicator() {
+            try {
+                const res = await fetch('/api/git/branch', { credentials: 'include' });
+                const data = await res.json();
+                if (data.branch) {
+                    document.getElementById('branchIndicator').style.display = 'flex';
+                    document.getElementById('branchName').textContent = data.branch;
+                }
+            } catch (err) {
+                console.error('Failed to fetch branch:', err);
+            }
+        }
+
+        // Check if user is logged in
+        async function checkLogin() {
+            // Skip login check if we're in an iframe (preview mode)
+            if (window.self !== window.top) {
+                console.log('Running in iframe, skipping login check');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/user/me', { credentials: 'include' });
+                const data = await res.json();
+
+                if (!data.loggedIn) {
+                    document.getElementById('usernameModal').style.display = 'block';
+                } else {
+                    console.log('Logged in as:', data.username);
+                    // Update branch indicator after confirming login
+                    await updateBranchIndicator();
+                }
+            } catch (err) {
+                console.error('Failed to check login:', err);
+                // Show login modal on error
+                document.getElementById('usernameModal').style.display = 'block';
+            }
+        }
+
+        async function submitUsername() {
+            console.log('submitUsername called');
+            const username = document.getElementById('usernameInput').value.trim();
+            console.log('Username entered:', username);
+
+            if (!username) {
+                alert('Please enter your name');
+                return;
+            }
+
+            try {
+                console.log('Sending login request...');
+                const res = await fetch('/api/user/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ username })
+                });
+
+                console.log('Login response status:', res.status);
+                const data = await res.json();
+                console.log('Login response data:', data);
+
+                if (data.success) {
+                    document.getElementById('usernameModal').style.display = 'none';
+                    console.log('Logged in successfully as:', data.username);
+
+                    // Update branch indicator after successful login
+                    await updateBranchIndicator();
+                } else {
+                    console.error('Login failed:', data.error);
+                    alert('Login failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('Failed to login: ' + err.message);
+            }
+        }
+
+        // Handle Enter key in username input
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Setup Enter key handler
+            const usernameInput = document.getElementById('usernameInput');
+            if (usernameInput) {
+                usernameInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        submitUsername();
+                    }
+                });
+            }
+
+            // Check login status on page load
+            await checkLogin();
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

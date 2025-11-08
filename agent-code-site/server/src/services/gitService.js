@@ -1,63 +1,177 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
 export class GitService {
-  constructor(repoPath) {
-    this.repoPath = repoPath;
+  constructor(repoPath, worktreesBasePath) {
+    this.repoPath = repoPath; // Main git repo (main-site)
+    this.worktreesBasePath = worktreesBasePath || path.join(path.dirname(repoPath), 'worktrees');
   }
 
   /**
-   * Create a new feature branch for a user request
+   * Create a new worktree for a user
    * @param {string} username - User's name
-   * @param {string} featureSlug - URL-friendly feature description
-   * @returns {Promise<string>} - Branch name
+   * @returns {Promise<{branchName: string, worktreePath: string}>}
    */
-  async createFeatureBranch(username, featureSlug, sessionId = null) {
+  async createUserWorktree(username) {
     const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '-');
-    const sanitizedFeature = featureSlug.toLowerCase().replace(/[^a-z0-9]/g, '-');
-
-    // Add timestamp or session ID to make branch name unique
-    const uniqueId = sessionId ? sessionId.slice(0, 8) : Date.now().toString().slice(-8);
-    const branchName = `user-${sanitizedUsername}-${sanitizedFeature}-${uniqueId}`;
+    const branchName = `user-${sanitizedUsername}`;
+    const worktreePath = path.join(this.worktreesBasePath, branchName);
 
     try {
-      // Ensure we're on main branch
-      await this.execGit('checkout main');
-
-      // Pull latest changes only if origin exists
-      try {
-        await this.execGit('remote get-url origin');
-        await this.execGit('pull origin main');
-      } catch {
-        // No origin configured, skip pull (local repo only)
-        console.log('No remote origin configured, skipping pull');
+      // Check if worktree already exists
+      const worktrees = await this.listWorktrees();
+      const existing = worktrees.find(w => w.branch === branchName);
+      if (existing) {
+        console.log(`User worktree already exists: ${branchName}`);
+        return { branchName, worktreePath: existing.path };
       }
 
-      // Create and checkout new branch
-      await this.execGit(`checkout -b ${branchName}`);
+      // Create directory if it doesn't exist
+      await fs.mkdir(this.worktreesBasePath, { recursive: true });
 
-      console.log(`Created feature branch: ${branchName}`);
-      return branchName;
+      // Create branch from main if it doesn't exist
+      try {
+        await this.execGit(`show-ref --verify refs/heads/${branchName}`);
+        console.log(`Branch ${branchName} already exists, using it`);
+      } catch {
+        // Branch doesn't exist, create it from main
+        await this.execGit(`branch ${branchName} main`);
+        console.log(`Created branch: ${branchName}`);
+      }
+
+      // Create worktree
+      await this.execGit(`worktree add ${worktreePath} ${branchName}`);
+
+      console.log(`Created user worktree: ${branchName} at ${worktreePath}`);
+      return { branchName, worktreePath };
     } catch (error) {
-      throw new Error(`Failed to create feature branch: ${error.message}`);
+      throw new Error(`Failed to create user worktree: ${error.message}`);
     }
   }
 
   /**
-   * Commit changes to current branch
+   * Create a new worktree for a feature/chat session
+   * @param {string} username - User's name
+   * @param {string} featureSlug - URL-friendly feature description
+   * @param {string} sessionId - Session ID
+   * @returns {Promise<{branchName: string, worktreePath: string}>}
+   */
+  async createFeatureWorktree(username, featureSlug, sessionId) {
+    const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const sanitizedFeature = featureSlug.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const uniqueId = sessionId.slice(0, 8);
+    const branchName = `feature-${sanitizedUsername}-${sanitizedFeature}-${uniqueId}`;
+    const worktreePath = path.join(this.worktreesBasePath, branchName);
+
+    try {
+      // Create directory if it doesn't exist
+      await fs.mkdir(this.worktreesBasePath, { recursive: true });
+
+      // Create worktree from user's branch (or main if user branch doesn't exist)
+      const userBranch = `user-${sanitizedUsername}`;
+      let baseBranch = 'main';
+
+      try {
+        await this.execGit(`show-ref --verify refs/heads/${userBranch}`);
+        baseBranch = userBranch;
+        console.log(`Creating feature from user branch: ${userBranch}`);
+      } catch {
+        console.log(`User branch not found, creating feature from main`);
+      }
+
+      // Create worktree with new branch
+      await this.execGit(`worktree add -b ${branchName} ${worktreePath} ${baseBranch}`);
+
+      console.log(`Created feature worktree: ${branchName} at ${worktreePath}`);
+      return { branchName, worktreePath };
+    } catch (error) {
+      throw new Error(`Failed to create feature worktree: ${error.message}`);
+    }
+  }
+
+  /**
+   * List all worktrees
+   * @returns {Promise<Array<{path: string, branch: string, commit: string}>>}
+   */
+  async listWorktrees() {
+    try {
+      const { stdout } = await this.execGit('worktree list --porcelain');
+      const worktrees = [];
+      const lines = stdout.split('\n');
+
+      let current = {};
+      for (const line of lines) {
+        if (line.startsWith('worktree ')) {
+          if (current.path) worktrees.push(current);
+          current = { path: line.substring(9) };
+        } else if (line.startsWith('branch ')) {
+          current.branch = line.substring(7).replace('refs/heads/', '');
+        } else if (line.startsWith('HEAD ')) {
+          current.commit = line.substring(5);
+        }
+      }
+      if (current.path) worktrees.push(current);
+
+      return worktrees;
+    } catch (error) {
+      throw new Error(`Failed to list worktrees: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get worktree path for a branch
+   * @param {string} branchName
+   * @returns {Promise<string|null>}
+   */
+  async getWorktreePath(branchName) {
+    const worktrees = await this.listWorktrees();
+    const worktree = worktrees.find(w => w.branch === branchName);
+    return worktree?.path || null;
+  }
+
+  /**
+   * Remove a worktree
+   * @param {string} branchName - Branch name
+   */
+  async removeWorktree(branchName) {
+    try {
+      const worktreePath = await this.getWorktreePath(branchName);
+
+      if (!worktreePath) {
+        console.log(`Worktree not found for branch: ${branchName}`);
+        return false;
+      }
+
+      // Remove worktree
+      await this.execGit(`worktree remove ${worktreePath} --force`);
+
+      // Delete branch
+      await this.execGit(`branch -D ${branchName}`);
+
+      console.log(`Removed worktree and branch: ${branchName}`);
+      return true;
+    } catch (error) {
+      throw new Error(`Failed to remove worktree: ${error.message}`);
+    }
+  }
+
+  /**
+   * Commit changes in a specific worktree
+   * @param {string} worktreePath - Path to worktree
    * @param {string} message - Commit message
    * @param {string} username - User's name for commit attribution
    */
-  async commitChanges(message, username) {
+  async commitChanges(worktreePath, message, username) {
     try {
       // Stage all changes
-      await this.execGit('add .');
+      await this.execGitInPath('add .', worktreePath);
 
       // Check if there are changes to commit
-      const { stdout: status } = await this.execGit('status --porcelain');
+      const { stdout: status } = await this.execGitInPath('status --porcelain', worktreePath);
       if (!status.trim()) {
         console.log('No changes to commit');
         return null;
@@ -65,9 +179,9 @@ export class GitService {
 
       // Commit with message
       const commitMessage = `${message}\n\nRequested-by: ${username}`;
-      await this.execGit(`commit -m "${commitMessage.replace(/"/g, '\\"')}"`);
+      await this.execGitInPath(`commit -m "${commitMessage.replace(/"/g, '\\"')}"`, worktreePath);
 
-      console.log(`Committed changes: ${message}`);
+      console.log(`Committed changes in ${worktreePath}: ${message}`);
       return true;
     } catch (error) {
       throw new Error(`Failed to commit changes: ${error.message}`);
@@ -75,82 +189,106 @@ export class GitService {
   }
 
   /**
-   * Merge a feature branch into main
+   * Merge a feature branch into user's branch
+   * @param {string} featureBranch - Feature branch to merge
+   * @param {string} targetBranch - Target branch (user's branch)
+   */
+  async mergeToUserBranch(featureBranch, targetBranch) {
+    try {
+      const targetWorktree = await this.getWorktreePath(targetBranch);
+      if (!targetWorktree) {
+        throw new Error(`Target worktree not found: ${targetBranch}`);
+      }
+
+      // Merge feature branch into target
+      await this.execGitInPath(`merge ${featureBranch} --no-ff -m "Apply feature: ${featureBranch}"`, targetWorktree);
+
+      console.log(`Merged ${featureBranch} into ${targetBranch}`);
+      return true;
+    } catch (error) {
+      // If merge fails, abort
+      try {
+        const targetWorktree = await this.getWorktreePath(targetBranch);
+        if (targetWorktree) {
+          await this.execGitInPath('merge --abort', targetWorktree);
+        }
+      } catch {}
+
+      throw new Error(`Failed to merge feature: ${error.message}`);
+    }
+  }
+
+  /**
+   * Merge a branch into main (admin approval)
    * @param {string} branchName - Branch to merge
    * @param {string} approvedBy - Admin who approved
    */
-  async mergeBranch(branchName, approvedBy) {
+  async mergeToMain(branchName, approvedBy) {
     try {
-      // Checkout main
-      await this.execGit('checkout main');
+      // Main worktree is the repo path
+      await this.execGitInPath('checkout main', this.repoPath);
 
       // Pull latest only if origin exists
       try {
-        await this.execGit('remote get-url origin');
-        await this.execGit('pull origin main');
+        await this.execGitInPath('remote get-url origin', this.repoPath);
+        await this.execGitInPath('pull origin main', this.repoPath);
       } catch {
-        // No origin configured, skip pull
         console.log('No remote origin configured, skipping pull');
       }
 
       // Merge feature branch
-      await this.execGit(`merge ${branchName} --no-ff -m "Merge ${branchName} (approved by ${approvedBy})"`);
+      await this.execGitInPath(`merge ${branchName} --no-ff -m "Merge ${branchName} (approved by ${approvedBy})"`, this.repoPath);
 
       console.log(`Merged branch ${branchName} into main`);
       return true;
     } catch (error) {
-      // If merge fails, abort and return to main
+      // If merge fails, abort
       try {
-        await this.execGit('merge --abort');
+        await this.execGitInPath('merge --abort', this.repoPath);
       } catch {}
 
-      throw new Error(`Failed to merge branch: ${error.message}`);
+      throw new Error(`Failed to merge to main: ${error.message}`);
     }
   }
 
   /**
-   * Delete a feature branch
-   * @param {string} branchName - Branch to delete
+   * Sync user's branch with main (pull approved changes)
+   * @param {string} userBranch - User's branch name
    */
-  async deleteBranch(branchName) {
+  async syncWithMain(userBranch) {
     try {
-      // Ensure we're not on the branch we're deleting
-      const { stdout: currentBranch } = await this.execGit('branch --show-current');
-      if (currentBranch.trim() === branchName) {
-        await this.execGit('checkout main');
+      const userWorktree = await this.getWorktreePath(userBranch);
+      if (!userWorktree) {
+        throw new Error(`User worktree not found: ${userBranch}`);
       }
 
-      // Delete branch
-      await this.execGit(`branch -D ${branchName}`);
+      // Merge main into user's branch
+      await this.execGitInPath('merge main -m "Sync with main"', userWorktree);
 
-      console.log(`Deleted branch: ${branchName}`);
+      console.log(`Synced ${userBranch} with main`);
       return true;
     } catch (error) {
-      throw new Error(`Failed to delete branch: ${error.message}`);
+      // If merge fails, abort
+      try {
+        const userWorktree = await this.getWorktreePath(userBranch);
+        if (userWorktree) {
+          await this.execGitInPath('merge --abort', userWorktree);
+        }
+      } catch {}
+
+      throw new Error(`Failed to sync with main: ${error.message}`);
     }
   }
 
   /**
-   * Checkout a specific branch
-   * @param {string} branchName - Branch to checkout
-   */
-  async checkoutBranch(branchName) {
-    try {
-      await this.execGit(`checkout ${branchName}`);
-      console.log(`Checked out branch: ${branchName}`);
-      return true;
-    } catch (error) {
-      throw new Error(`Failed to checkout branch: ${error.message}`);
-    }
-  }
-
-  /**
-   * Get current branch name
+   * Get current branch name for a worktree
+   * @param {string} worktreePath
    * @returns {Promise<string>}
    */
-  async getCurrentBranch() {
+  async getCurrentBranch(worktreePath = null) {
     try {
-      const { stdout } = await this.execGit('branch --show-current');
+      const targetPath = worktreePath || this.repoPath;
+      const { stdout } = await this.execGitInPath('branch --show-current', targetPath);
       return stdout.trim();
     } catch (error) {
       throw new Error(`Failed to get current branch: ${error.message}`);
@@ -158,29 +296,14 @@ export class GitService {
   }
 
   /**
-   * Get list of all feature branches
-   * @returns {Promise<string[]>}
-   */
-  async getFeatureBranches() {
-    try {
-      const { stdout } = await this.execGit('branch --list "user-*"');
-      return stdout
-        .split('\n')
-        .map(b => b.trim().replace('* ', ''))
-        .filter(b => b.length > 0);
-    } catch (error) {
-      throw new Error(`Failed to get feature branches: ${error.message}`);
-    }
-  }
-
-  /**
-   * Get diff between main and a branch
-   * @param {string} branchName - Branch to compare
+   * Get diff between two branches
+   * @param {string} baseBranch - Base branch
+   * @param {string} compareBranch - Branch to compare
    * @returns {Promise<string>} - Diff output
    */
-  async getDiff(branchName) {
+  async getDiff(baseBranch, compareBranch) {
     try {
-      const { stdout } = await this.execGit(`diff main...${branchName}`);
+      const { stdout } = await this.execGit(`diff ${baseBranch}...${compareBranch}`);
       return stdout;
     } catch (error) {
       throw new Error(`Failed to get diff: ${error.message}`);
@@ -188,13 +311,14 @@ export class GitService {
   }
 
   /**
-   * Get list of changed files in a branch
-   * @param {string} branchName - Branch to check
+   * Get list of changed files between branches
+   * @param {string} baseBranch - Base branch
+   * @param {string} compareBranch - Branch to compare
    * @returns {Promise<string[]>} - List of file paths
    */
-  async getChangedFiles(branchName) {
+  async getChangedFiles(baseBranch, compareBranch) {
     try {
-      const { stdout } = await this.execGit(`diff --name-only main...${branchName}`);
+      const { stdout } = await this.execGit(`diff --name-only ${baseBranch}...${compareBranch}`);
       return stdout
         .split('\n')
         .filter(f => f.trim().length > 0);
@@ -234,12 +358,23 @@ export class GitService {
   }
 
   /**
-   * Execute a git command
+   * Execute a git command in the main repo
    * @private
    */
   async execGit(command) {
     return await execAsync(`git ${command}`, {
       cwd: this.repoPath,
+      timeout: 30000,
+    });
+  }
+
+  /**
+   * Execute a git command in a specific path (worktree)
+   * @private
+   */
+  async execGitInPath(command, targetPath) {
+    return await execAsync(`git ${command}`, {
+      cwd: targetPath,
       timeout: 30000,
     });
   }
