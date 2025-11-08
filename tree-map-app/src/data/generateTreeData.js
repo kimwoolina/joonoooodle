@@ -34,20 +34,128 @@ const seoulDistricts = [
   { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: ['Magok-dong', 'Balsan-dong', 'Gaehwa-dong', 'Banghwa-dong'] }
 ];
 
-// Common tree species in Seoul
+// Common tree species in Seoul with matching photos
 const treeSpecies = [
-  { common: 'Korean Red Pine', common_ko: '소나무', scientific: 'Pinus densiflora' },
-  { common: 'Ginkgo', common_ko: '은행나무', scientific: 'Ginkgo biloba' },
-  { common: 'Zelkova', common_ko: '느티나무', scientific: 'Zelkova serrata' },
-  { common: 'Korean Mountain Ash', common_ko: '마가목', scientific: 'Sorbus alnifolia' },
-  { common: 'Cherry', common_ko: '벚나무', scientific: 'Prunus serrulata' },
-  { common: 'Japanese Maple', common_ko: '단풍나무', scientific: 'Acer palmatum' },
-  { common: 'Dawn Redwood', common_ko: '메타세쿼이아', scientific: 'Metasequoia glyptostroboides' },
-  { common: 'Korean Oak', common_ko: '참나무', scientific: 'Quercus mongolica' },
-  { common: 'Persimmon', common_ko: '감나무', scientific: 'Diospyros kaki' },
-  { common: 'Magnolia', common_ko: '목련', scientific: 'Magnolia kobus' },
-  { common: 'Crape Myrtle', common_ko: '배롱나무', scientific: 'Lagerstroemia indica' },
-  { common: 'Hackberry', common_ko: '팽나무', scientific: 'Celtis sinensis' },
+  {
+    common: 'Korean Red Pine',
+    common_ko: '소나무',
+    scientific: 'Pinus densiflora',
+    photos: [
+      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80', // Pine tree 1
+      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Pine tree 2
+      'https://images.unsplash.com/photo-1520699287272-9c0f21e112f1?w=800&q=80'  // Pine tree 3
+    ]
+  },
+  {
+    common: 'Ginkgo',
+    common_ko: '은행나무',
+    scientific: 'Ginkgo biloba',
+    photos: [
+      'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&q=80', // Ginkgo 1
+      'https://images.unsplash.com/photo-1533371452382-d45a9da51ad9?w=800&q=80', // Ginkgo autumn 2
+      'https://images.unsplash.com/photo-1604357209793-fca5dca89f97?w=800&q=80'  // Ginkgo 3
+    ]
+  },
+  {
+    common: 'Zelkova',
+    common_ko: '느티나무',
+    scientific: 'Zelkova serrata',
+    photos: [
+      'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80', // Large tree 1
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80', // Zelkova 2
+      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80'  // Oak-like tree 3
+    ]
+  },
+  {
+    common: 'Korean Mountain Ash',
+    common_ko: '마가목',
+    scientific: 'Sorbus alnifolia',
+    photos: [
+      'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // Mountain tree 1
+      'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&q=80', // Mountain tree 2
+      'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80'  // Tall tree 3
+    ]
+  },
+  {
+    common: 'Cherry',
+    common_ko: '벚나무',
+    scientific: 'Prunus serrulata',
+    photos: [
+      'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80', // Cherry blossom 1
+      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80', // Cherry blossom 2
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80'  // Cherry blossom 3
+    ]
+  },
+  {
+    common: 'Japanese Maple',
+    common_ko: '단풍나무',
+    scientific: 'Acer palmatum',
+    photos: [
+      'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&q=80', // Maple 1
+      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Maple 2
+      'https://images.unsplash.com/photo-1533371452382-d45a9da51ad9?w=800&q=80'  // Autumn maple 3
+    ]
+  },
+  {
+    common: 'Dawn Redwood',
+    common_ko: '메타세쿼이아',
+    scientific: 'Metasequoia glyptostroboides',
+    photos: [
+      'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80', // Tall redwood 1
+      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=80', // Redwood trunk 2
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80'  // Forest 3
+    ]
+  },
+  {
+    common: 'Korean Oak',
+    common_ko: '참나무',
+    scientific: 'Quercus mongolica',
+    photos: [
+      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80', // Oak 1
+      'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80', // Oak canopy 2
+      'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80'  // Oak 3
+    ]
+  },
+  {
+    common: 'Persimmon',
+    common_ko: '감나무',
+    scientific: 'Diospyros kaki',
+    photos: [
+      'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', // Fruit tree 1
+      'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80', // Nature tree 2
+      'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80'  // Spring tree 3
+    ]
+  },
+  {
+    common: 'Magnolia',
+    common_ko: '목련',
+    scientific: 'Magnolia kobus',
+    photos: [
+      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80', // Magnolia blossom 1
+      'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=800&q=80', // Magnolia 2
+      'https://images.unsplash.com/photo-1520763185298-1b434c919102?w=800&q=80'  // White flowers 3
+    ]
+  },
+  {
+    common: 'Crape Myrtle',
+    common_ko: '배롱나무',
+    scientific: 'Lagerstroemia indica',
+    photos: [
+      'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&q=80', // Flowering tree 1
+      'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // Green tree 2
+      'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80'  // Tree 3
+    ]
+  },
+  {
+    common: 'Hackberry',
+    common_ko: '팽나무',
+    scientific: 'Celtis sinensis',
+    photos: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', // Landscape tree 1
+      'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&q=80', // Tree 2
+      'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80'  // Large tree 3
+    ]
+  },
 ];
 
 const healthConditions = {
@@ -86,30 +194,6 @@ const inspectionNotes = [
   'Dense foliage, thriving condition',
   'Root system appears stable',
   'Seasonal variation normal'
-];
-
-// Pool of diverse tree photos from Unsplash
-const treePhotoPool = [
-  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80', // Forest trees
-  'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Single tree
-  'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80', // Tree canopy
-  'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80', // Tall tree
-  'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=80', // Tree trunk
-  'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80', // Nature tree
-  'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&q=80', // Mountain tree
-  'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&q=80', // Park tree
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', // Landscape tree
-  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // Green tree
-  'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', // Natural tree
-  'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80', // Beautiful tree
-  'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80', // Oak tree
-  'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80', // Pine tree
-  'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&q=80', // Willow tree
-  'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&q=80', // Birch tree
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', // Cherry blossom
-  'https://images.unsplash.com/photo-1533371452382-d45a9da51ad9?w=800&q=80', // Autumn tree
-  'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80', // Spring tree
-  'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&q=80'  // Maple tree
 ];
 
 // Helper functions
@@ -186,8 +270,8 @@ function generateTree(id, district) {
     new Date()
   );
 
-  // Photos - randomly select 3 unique photos from the pool
-  const photos = randomChoices(treePhotoPool, 3);
+  // Photos - use the species-specific photos
+  const photos = species.photos;
 
   return {
     id: `TREE-${String(id).padStart(4, '0')}`,
