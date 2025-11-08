@@ -27,7 +27,8 @@ export class GitService {
       const existing = worktrees.find(w => w.branch === branchName);
       if (existing) {
         console.log(`User worktree already exists: ${branchName}`);
-        return { branchName, worktreePath: existing.path };
+        const mainSitePath = path.join(existing.path, 'agent-code-site', 'main-site');
+        return { branchName, worktreePath: mainSitePath };
       }
 
       // Create directory if it doesn't exist
@@ -47,7 +48,9 @@ export class GitService {
       await this.execGit(`worktree add ${worktreePath} ${branchName}`);
 
       console.log(`Created user worktree: ${branchName} at ${worktreePath}`);
-      return { branchName, worktreePath };
+      // Return path to the main-site directory within the worktree
+      const mainSitePath = path.join(worktreePath, 'agent-code-site', 'main-site');
+      return { branchName, worktreePath: mainSitePath };
     } catch (error) {
       throw new Error(`Failed to create user worktree: ${error.message}`);
     }
@@ -87,7 +90,9 @@ export class GitService {
       await this.execGit(`worktree add -b ${branchName} ${worktreePath} ${baseBranch}`);
 
       console.log(`Created feature worktree: ${branchName} at ${worktreePath}`);
-      return { branchName, worktreePath };
+      // Return path to the main-site directory within the worktree
+      const mainSitePath = path.join(worktreePath, 'agent-code-site', 'main-site');
+      return { branchName, worktreePath: mainSitePath };
     } catch (error) {
       throw new Error(`Failed to create feature worktree: ${error.message}`);
     }
