@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joonoooodle Project Workflow Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                fontSize: '14px',
+                fontFamily: 'Arial, sans-serif'
+            }
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .nav-menu {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .nav-menu h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .diagram-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .diagram-section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .diagram-section p {
+            color: #4a5568;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .mermaid {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .download-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .download-btn:hover {
+            background: #38a169;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .nav-menu, .download-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌳 Joonoooodle Project Workflow</h1>
+            <p class="subtitle">Comprehensive System Architecture & Data Flow Diagrams</p>
+        </header>
+
+        <div class="nav-menu">
+            <h3>📑 Quick Navigation</h3>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="scrollTo('section1')">1. System Architecture</button>
+                <button class="nav-btn" onclick="scrollTo('section2')">2. Agent Code Workflow</button>
+                <button class="nav-btn" onclick="scrollTo('section3')">3. Support Site Flow</button>
+                <button class="nav-btn" onclick="scrollTo('section4')">4. Tree Map Data Flow</button>
+                <button class="nav-btn" onclick="scrollTo('section5')">5. Git Workflow</button>
+                <button class="nav-btn" onclick="scrollTo('section6')">6. Tech Stack</button>
+                <button class="nav-btn" onclick="scrollTo('section7')">7. System Data Flow</button>
+                <button class="nav-btn" onclick="scrollTo('section8')">8. Communication Matrix</button>
+            </div>
+        </div>
+
+        <div id="section1" class="diagram-section">
+            <h2>1. Overall System Architecture</h2>
+            <p>전체 시스템의 아키텍처를 보여주는 다이어그램입니다. 3개의 주요 애플리케이션(Agent Code Site, Tree Map App, Tree Support Site)과 Main Site가 어떻게 연결되어 있는지 확인할 수 있습니다.</p>
+            <div class="mermaid">
+graph TB
+    subgraph "User Interactions"
+        U1[General Users]
+        U2[Admin Users]
+        U3[Developers/AI Agents]
+    end
+
+    subgraph "1. Agent Code Site - AI Code Modification System"
+        ACS_UI[Chat Interface<br/>React + Vite]
+        ACS_Preview[Live Preview<br/>iframe]
+        ACS_Server[Express Server<br/>+ Socket.io]
+        ACS_Claude[Claude Service<br/>AI Agent]
+        ACS_File[File Service<br/>CRUD Operations]
+        ACS_Demo[Demo Site Files<br/>HTML/JS/CSS]
+
+        ACS_UI <-->|WebSocket| ACS_Server
+        ACS_Preview -->|HTTP GET| ACS_Server
+        ACS_Server --> ACS_Claude
+        ACS_Claude --> ACS_File
+        ACS_File <--> ACS_Demo
+        ACS_Server -.->|file:changed| ACS_Preview
+    end
+
+    subgraph "2. Tree Map App - Interactive Seoul Tree Map"
+        TM_UI[React Frontend<br/>Leaflet Map]
+        TM_Map[Interactive Map<br/>700 Trees]
+        TM_Details[Tree Details Panel]
+        TM_Search[Address Search<br/>Autocomplete]
+        TM_Data[(trees.json<br/>Tree Database)]
+
+        TM_UI --> TM_Map
+        TM_UI --> TM_Search
+        TM_Map --> TM_Details
+        TM_Map --> TM_Data
+        TM_Search --> TM_Data
+    end
+
+    subgraph "3. Tree Support Site - Customer Support System"
+        TS_Home[Home Page<br/>Request Form]
+        TS_Admin[Admin Dashboard<br/>Request Management]
+        TS_API[Express REST API]
+        TS_Controller[Request Controller]
+        TS_Storage[(requests.json<br/>Database)]
+        TS_Confirm[Confirmation Page]
+
+        TS_Home -->|Submit Request| TS_API
+        TS_API --> TS_Controller
+        TS_Controller <--> TS_Storage
+        TS_Admin -->|Get/Update| TS_API
+        TS_API -.->|Request ID| TS_Confirm
+    end
+
+    subgraph "4. Main Site - Seoul Tree Support System"
+        MS_UI[Main Website<br/>HTML/JS]
+        MS_Server[Express Server]
+        MS_Map[Tree Map View]
+        MS_Git[Git Service<br/>Branch Info]
+        MS_Trees[(trees.json<br/>Tree Data)]
+
+        MS_UI --> MS_Server
+        MS_Server --> MS_Git
+        MS_Server --> MS_Trees
+        MS_UI --> MS_Map
+    end
+
+    subgraph "External Services"
+        Anthropic[Anthropic API<br/>Claude Sonnet 4.5]
+        OSM[OpenStreetMap<br/>Map Tiles]
+        Unsplash[Unsplash<br/>Tree Photos]
+    end
+
+    subgraph "Version Control"
+        Git[Git Repository<br/>Branch Management]
+        Branches[Feature Branches<br/>claude/*]
+    end
+
+    U1 -->|Use Map| TM_UI
+    U1 -->|Submit Issue| TS_Home
+    U1 -->|View Site| MS_UI
+    U2 -->|Manage Requests| TS_Admin
+    U3 -->|Chat with AI| ACS_UI
+
+    ACS_Claude <-->|API Calls| Anthropic
+    TM_Map -->|Load Tiles| OSM
+    TM_Details -->|Load Images| Unsplash
+
+    ACS_File -.->|Commits| Git
+    Git --> Branches
+
+    style ACS_Claude fill:#fff4e1
+    style Anthropic fill:#ffe1f5
+    style TM_Map fill:#e1ffe1
+    style TS_Storage fill:#ffe1e1
+    style Git fill:#e1f5ff
+            </div>
+        </div>
+
+        <div id="section2" class="diagram-section">
+            <h2>2. Agent Code Site - Detailed Workflow</h2>
+            <p>AI 코드 에이전트가 사용자의 요청을 받아 실시간으로 코드를 수정하는 전체 프로세스를 보여줍니다. WebSocket을 통한 스트리밍, Claude API 호출, 도구 실행, 그리고 라이브 프리뷰 업데이트까지의 흐름을 확인할 수 있습니다.</p>
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant ChatUI
+    participant Socket
+    participant Server
+    participant Claude
+    participant API as Anthropic API
+    participant FileService
+    participant Git
+    participant Preview
+
+    User->>ChatUI: Type message request
+    ChatUI->>Socket: message:send
+    Socket->>Server: WebSocket event
+    Server->>Claude: processMessage()
+
+    Claude->>API: Stream request with tools
+    API-->>Claude: content_block_start
+
+    loop Streaming Response
+        API-->>Claude: text delta
+        Claude->>Socket: message:stream
+        Socket->>ChatUI: Display streaming text
+    end
+
+    API-->>Claude: tool_use (Read/Write/Edit/Bash)
+    Claude->>Claude: executeTool()
+
+    alt Read Tool
+        Claude->>FileService: readFile()
+        FileService-->>Claude: file contents
+    else Write Tool
+        Claude->>FileService: writeFile()
+        FileService->>Git: Stage changes
+        FileService-->>Claude: success
+        FileService->>Server: file:changed
+    else Edit Tool
+        Claude->>FileService: editFile()
+        FileService->>Git: Stage changes
+        FileService-->>Claude: success
+        FileService->>Server: file:changed
+    else Bash Tool
+        Claude->>FileService: exec command
+        FileService-->>Claude: output
+    end
+
+    Claude->>Socket: tool:executed
+    Socket->>ChatUI: Show notification
+
+    Server->>Socket: file:changed
+    Socket->>Preview: Trigger refresh
+    Preview->>Server: GET /demo
+    Server-->>Preview: Updated files
+
+    Claude->>API: Continue with tool_result
+    API-->>Claude: Final response
+    Claude->>Socket: message:complete
+    Socket->>ChatUI: Display final message
+            </div>
+        </div>
+
+        <div id="section3" class="diagram-section">
+            <h2>3. Tree Support Site - User Flow</h2>
+            <p>나무 지원 사이트의 사용자 플로우입니다. 일반 사용자가 지원 요청을 제출하는 과정과 관리자가 요청을 확인하고 상태를 업데이트하는 과정을 보여줍니다.</p>
+            <div class="mermaid">
+flowchart TD
+    Start([User Visits Site]) --> Home[Home Page]
+    Home --> Choose{Choose Action}
+
+    Choose -->|Submit Request| Form[Fill Request Form]
+    Choose -->|View as Admin| Login[Admin Dashboard]
+
+    Form --> SelectType[Select Emergency Type<br/>Fallen/Leaning/Branch/Root]
+    SelectType --> FillContact[Fill Contact Info<br/>Name/Email/Phone]
+    FillContact --> FillLocation[Enter Location<br/>District/Address/Details]
+    FillLocation --> AddDesc[Optional Description]
+    AddDesc --> Validate{Form Valid?}
+
+    Validate -->|No| Error[Show Validation Errors]
+    Error --> Form
+
+    Validate -->|Yes| Submit[Submit to API]
+    Submit --> SaveDB[(Save to requests.json)]
+    SaveDB --> GenID[Generate Request ID]
+    GenID --> Confirm[Show Confirmation Page]
+    Confirm --> End1([End])
+
+    Login --> ViewRequests[View All Requests<br/>Sorted by Date]
+    ViewRequests --> ActionChoice{Admin Action}
+
+    ActionChoice -->|Toggle Status| UpdateStatus[PATCH /api/requests/:id/status]
+    UpdateStatus --> UpdateDB[(Update requests.json)]
+    UpdateDB --> Refresh[Refresh Request List]
+    Refresh --> ViewRequests
+
+    ActionChoice -->|Exit| End2([End])
+
+    style Form fill:#e1f5ff
+    style SaveDB fill:#ffe1e1
+    style Confirm fill:#e1ffe1
+    style UpdateDB fill:#ffe1e1
+            </div>
+        </div>
+
+        <div id="section4" class="diagram-section">
+            <h2>4. Tree Map App - Data Flow</h2>
+            <p>나무 지도 앱의 데이터 흐름을 보여줍니다. 700개의 나무 데이터를 로드하고, 건강 상태에 따라 색상을 지정하며, 사용자 인터랙션을 처리하는 과정을 확인할 수 있습니다.</p>
+            <div class="mermaid">
+flowchart LR
+    subgraph "Data Source"
+        JSON[(trees.json<br/>700 Trees)]
+    end
+
+    subgraph "App Initialization"
+        Load[Load App] --> Parse[Parse Tree Data]
+        Parse --> InitMap[Initialize Leaflet Map]
+    end
+
+    subgraph "Map Rendering"
+        InitMap --> Cluster[Create Marker Clusters]
+        Cluster --> Markers[Render Tree Markers<br/>Color by Health]
+        Markers --> Colors{Health Score}
+
+        Colors -->|9-10| Green[Green Marker]
+        Colors -->|7-8| Yellow[Yellow Marker]
+        Colors -->|5-6| Orange[Orange Marker]
+        Colors -->|1-4| Red[Red Marker]
+    end
+
+    subgraph "User Interactions"
+        Click[User Clicks Marker] --> Popup[Show Popup<br/>Basic Info]
+        Popup --> ViewDetails[Click 'View Details']
+        ViewDetails --> Panel[Slide-out Detail Panel]
+
+        Panel --> ShowInfo[Display Species Info<br/>Physical Data<br/>Health Metrics]
+        Panel --> Gallery[Photo Gallery<br/>from Unsplash]
+
+        Search[Use Search Bar] --> Filter[Filter by Address]
+        Filter --> Match[Show Matching Trees]
+        Match --> ZoomTo[Zoom to Location]
+    end
+
+    JSON --> Parse
+
+    style JSON fill:#ffe1e1
+    style Green fill:#90EE90
+    style Yellow fill:#FFEB3B
+    style Orange fill:#FF9800
+    style Red fill:#F44336
+    style Panel fill:#e1f5ff
+            </div>
+        </div>
+
+        <div id="section5" class="diagram-section">
+            <h2>5. Git Workflow Integration</h2>
+            <p>Git 브랜치 관리 워크플로우입니다. Claude가 생성한 변경사항이 feature 브랜치에 커밋되고, 관리자의 승인을 거쳐 main 브랜치에 병합되는 과정을 보여줍니다.</p>
+            <div class="mermaid">
+gitGraph
+    commit id: "Initial Setup"
+    commit id: "Add Agent Code Site"
+    branch claude/feature-branch-1
+    checkout claude/feature-branch-1
+    commit id: "User Request: Add dark mode"
+    commit id: "Claude: Modify styles.css"
+    commit id: "Claude: Update index.html"
+    checkout main
+    merge claude/feature-branch-1 tag: "Admin Approved"
+
+    branch claude/feature-branch-2
+    checkout claude/feature-branch-2
+    commit id: "User Request: Fix header"
+    commit id: "Claude: Edit header styles"
+    checkout main
+    merge claude/feature-branch-2 tag: "Auto Merge"
+
+    branch claude/final-code-project
+    checkout claude/final-code-project
+    commit id: "Add Tree Map App"
+    commit id: "Add Tree Support Site"
+    commit id: "Integrate all systems"
+            </div>
+        </div>
+
+        <div id="section6" class="diagram-section">
+            <h2>6. Technology Stack Overview</h2>
+            <p>프로젝트에서 사용된 전체 기술 스택을 마인드맵 형태로 보여줍니다. Frontend, Backend, External APIs, Dev Tools로 구분되어 있습니다.</p>
+            <div class="mermaid">
+mindmap
+  root((Joonoooodle<br/>Project))
+    Frontend
+      React 18
+        Vite Build Tool
+        React Router
+      Leaflet Maps
+        react-leaflet
+        Marker Clustering
+      Socket.io Client
+        WebSocket
+        Real-time Updates
+      Styling
+        CSS Modules
+        Custom CSS
+    Backend
+      Node.js
+        Express Server
+        REST API
+      Socket.io Server
+        WebSocket Events
+        File Watching
+      Services
+        Claude Service
+        File Service
+        Git Service
+        Queue Service
+      Storage
+        JSON Files
+        Chokidar Watcher
+    External APIs
+      Anthropic API
+        Claude Sonnet 4.5
+        Tool Use
+        Streaming
+      OpenStreetMap
+        Map Tiles
+        Geocoding
+      Unsplash
+        Tree Photos
+        CDN
+    Dev Tools
+      Git
+        Branch Management
+        Version Control
+      Jest
+        Unit Tests
+        Integration Tests
+      npm
+        Package Management
+        Scripts
+            </div>
+        </div>
+
+        <div id="section7" class="diagram-section">
+            <h2>7. System Data Flow</h2>
+            <p>전체 시스템의 데이터 흐름을 보여줍니다. 각 애플리케이션의 데이터 소스와 처리 과정, 그리고 Git 통합까지의 전체 흐름을 확인할 수 있습니다.</p>
+            <div class="mermaid">
+flowchart TB
+    subgraph "Data Sources"
+        TreeData[(Tree Data<br/>trees.json)]
+        RequestData[(Support Requests<br/>requests.json)]
+        QueueData[(Agent Queue<br/>queue.json)]
+        DemoFiles[Demo Site Files<br/>index.html, script.js, styles.css]
+    end
+
+    subgraph "Agent Code Site Processing"
+        UserMsg[User Message] --> ClaudeAPI[Claude API]
+        ClaudeAPI --> Tools[Tool Execution<br/>Read/Write/Edit/Bash]
+        Tools --> FileOps[File Operations]
+        FileOps --> DemoFiles
+        DemoFiles --> Preview[Live Preview]
+    end
+
+    subgraph "Tree Map Processing"
+        TreeData --> MapRender[Map Rendering]
+        MapRender --> UserView[User Viewing Trees]
+        Search[Address Search] --> FilterLogic[Filter Logic]
+        FilterLogic --> TreeData
+    end
+
+    subgraph "Support Site Processing"
+        FormSubmit[Form Submission] --> Validate[Validation]
+        Validate --> APIEndpoint[REST API]
+        APIEndpoint --> Controller[Request Controller]
+        Controller --> RequestData
+        RequestData --> AdminDash[Admin Dashboard]
+        AdminDash --> StatusUpdate[Status Updates]
+        StatusUpdate --> RequestData
+    end
+
+    subgraph "Git Integration"
+        FileOps -.-> GitStage[Git Staging]
+        GitStage -.-> Branch[Feature Branch]
+        Branch -.-> Review[Admin Review]
+        Review -.-> Merge[Merge to Main]
+    end
+
+    style TreeData fill:#e1ffe1
+    style RequestData fill:#ffe1e1
+    style QueueData fill:#fff4e1
+    style ClaudeAPI fill:#ffe1f5
+    style Preview fill:#e1f5ff
+            </div>
+        </div>
+
+        <div id="section8" class="diagram-section">
+            <h2>8. Component Communication Matrix</h2>
+            <p>시스템 컴포넌트 간의 통신 프로토콜을 보여줍니다. WebSocket, HTTP/REST, File System, External API 등 다양한 통신 방식이 사용되고 있습니다.</p>
+            <div class="mermaid">
+graph LR
+    subgraph "Communication Protocols"
+        WS[WebSocket<br/>Socket.io<br/>Real-time bidirectional]
+        HTTP[HTTP/REST<br/>Request/Response<br/>Stateless]
+        FS[File System<br/>Direct I/O<br/>File watching]
+        API[External API<br/>Streaming<br/>Tool-based]
+    end
+
+    subgraph "Components"
+        C1[Agent Chat UI]
+        C2[Agent Server]
+        C3[Tree Map UI]
+        C4[Support Form UI]
+        C5[Support Admin UI]
+        C6[Support API]
+        C7[Main Site UI]
+        C8[Main Site Server]
+        C9[Claude Service]
+        C10[File Service]
+    end
+
+    C1 -->|WebSocket| WS
+    WS -->|WebSocket| C2
+    C2 -->|API Call| API
+    API -->|Stream| C9
+    C9 -->|Tool Call| C10
+    C10 -->|Read/Write| FS
+
+    C3 -->|HTTP GET| HTTP
+    C4 -->|HTTP POST| HTTP
+    C5 -->|HTTP GET/PATCH| HTTP
+    HTTP -->|Response| C6
+
+    C7 -->|HTTP GET| HTTP
+    HTTP -->|Response| C8
+    C8 -->|Read| FS
+
+    style WS fill:#e1f5ff
+    style HTTP fill:#ffe1e1
+    style FS fill:#e1ffe1
+    style API fill:#ffe1f5
+            </div>
+        </div>
+
+        <footer>
+            <p>📊 Generated for Joonoooodle Project | 2024</p>
+            <p>Use browser's print function (Ctrl+P / Cmd+P) to save individual diagrams as PDF</p>
+        </footer>
+    </div>
+
+    <script>
+        function scrollTo(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+</body>
+</html>
