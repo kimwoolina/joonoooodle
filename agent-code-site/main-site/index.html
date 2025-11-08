@@ -1,96 +1,89 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">서울 나무 민원 시스템</title>
+    <title>Seoul Tree Support System</title>
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+        }
+
+        :root {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+            font-weight: 400;
+            color: #212529;
+            background-color: #f5f5f5;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #f5f7fa;
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
         }
 
-        /* 헤더 */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d6a4f;
             color: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .header-title h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-
-        .header-title p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .header-actions {
+        .header-logo {
             display: flex;
-            gap: 15px;
             align-items: center;
-        }
-
-        .lang-selector {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 6px;
-            padding: 8px 12px;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .lang-selector:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .new-request-btn {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            gap: 0.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
+        }
+
+        .tree-icon {
+            font-size: 2rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
             cursor: pointer;
-            font-size: 14px;
-            transition: transform 0.2s;
+            background: none;
+            border: none;
+            font-size: 1rem;
         }
 
-        .new-request-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .nav-link:hover {
+            opacity: 0.8;
         }
 
-        /* 컨테이너 */
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        /* 페이지 뷰 */
+        /* Page Views */
         .page-view {
             display: none;
         }
@@ -99,146 +92,139 @@
             display: block;
         }
 
-        /* 민원 목록 페이지 */
-        .requests-list-page {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
+        /* Request List Container */
+        .request-list-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
 
         .list-header {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            border-bottom: 2px solid #e9ecef;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 2rem;
         }
 
-        .list-header h2 {
-            font-size: 24px;
-            color: #333;
+        .list-header h1 {
+            color: #2d6a4f;
+            margin: 0;
+            font-size: 2rem;
         }
 
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-        }
-
-        .filter-tab {
-            padding: 8px 16px;
-            border: 1px solid #dee2e6;
+        .request-count {
             background: white;
+            padding: 0.5rem 1rem;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
+            color: #495057;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .filter-tab:hover {
-            background: #f8f9fa;
+        .request-count strong {
+            color: #2d6a4f;
+            font-size: 1.2rem;
         }
 
-        .filter-tab.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+        .request-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
-        /* 카드 리스트 스타일 */
-        .request-cards-container {
-            padding: 20px;
-        }
-
+        /* Request Card */
         .request-card {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
-            margin-bottom: 20px;
+            transition: box-shadow 0.2s ease;
             cursor: pointer;
             display: flex;
             flex-direction: row;
         }
 
         .request-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .card-content {
             flex: 1;
-            padding: 20px;
         }
 
-        .card-title-row {
+        .card-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .card-title {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .request-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
-
-        .request-tree-id {
-            font-size: 13px;
-            color: #6c757d;
-            background: #f8f9fa;
-            padding: 4px 10px;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-
-        .card-meta {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .meta-item {
-            display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            color: #6c757d;
+            margin-bottom: 0.5rem;
         }
 
-        .card-description {
+        .request-id {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2d6a4f;
+        }
+
+        .emergency-type {
+            font-weight: 600;
             color: #495057;
-            font-size: 14px;
+            font-size: 0.95rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .info-section {
+            margin-bottom: 1rem;
+        }
+
+        .info-section:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .info-section h4 {
+            margin: 0 0 0.5rem 0;
+            color: #2d6a4f;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .info-section p {
+            margin: 0.25rem 0;
+            color: #495057;
             line-height: 1.5;
-            margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        .info-section p strong {
+            color: #212529;
+            margin-right: 0.5rem;
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid #f1f3f5;
+            padding-top: 1rem;
+            border-top: 1px solid #dee2e6;
         }
 
-        .card-location {
-            font-size: 13px;
+        .submit-date {
             color: #6c757d;
+            font-size: 0.9rem;
         }
 
         .card-map {
-            width: 280px;
-            min-width: 280px;
-            height: 200px;
+            width: 300px;
+            min-width: 300px;
+            height: 250px;
             position: relative;
         }
 
@@ -247,171 +233,187 @@
             height: 100%;
         }
 
-        @media (max-width: 768px) {
-            .request-card {
-                flex-direction: column;
-            }
-
-            .card-map {
-                width: 100%;
-                height: 180px;
-            }
-        }
-
+        /* Status Badge */
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-processing { background: #dbeafe; color: #1e40af; }
-        .status-completed { background: #d1fae5; color: #065f46; }
-        .status-rejected { background: #fee2e2; color: #991b1b; }
-
-        /* 민원 상세 페이지 */
-        .detail-page {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .detail-header {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            border-bottom: 2px solid #e9ecef;
+        .status-processing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Detail Page */
+        .detail-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
 
         .back-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
             background: #6c757d;
             color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
 
         .back-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             background: #5a6268;
         }
 
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .detail-header-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
         .detail-title {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 10px;
+            color: #2d6a4f;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
         }
 
         .detail-meta {
             display: flex;
-            gap: 20px;
-            font-size: 14px;
+            gap: 2rem;
+            flex-wrap: wrap;
             color: #6c757d;
-        }
-
-        .detail-body {
-            padding: 30px;
+            font-size: 0.95rem;
         }
 
         .detail-section {
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
         }
 
         .detail-section h3 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f1f5f9;
+            color: #2d6a4f;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
 
         .detail-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
         .detail-item {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 0.25rem;
         }
 
         .detail-label {
             font-weight: 600;
-            color: #475569;
-            font-size: 13px;
+            color: #495057;
+            font-size: 0.9rem;
         }
 
         .detail-value {
-            color: #1e293b;
-            font-size: 14px;
+            color: #212529;
+            font-size: 1rem;
         }
 
         .detail-description {
             background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 1.5rem;
+            border-radius: 6px;
             line-height: 1.6;
-            color: #333;
+            color: #495057;
         }
 
-        /* 민원 작성 페이지 (기존 스타일 유지) */
-        .main-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .card-header h2 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .card-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .card-body {
-            padding: 30px;
-        }
-
-        /* 지도 위젯 */
-        .map-widget {
-            margin-bottom: 30px;
-            border: 2px solid #e9ecef;
+        .detail-map-container {
+            width: 100%;
+            height: 350px;
             border-radius: 8px;
             overflow: hidden;
+            border: 2px solid #dee2e6;
+            margin-top: 1rem;
         }
 
-        .map-widget-header {
-            background: #f8f9fa;
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
+        /* Request Form */
+        .request-form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
 
-        .map-widget-header h3 {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 5px;
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
-        .map-widget-header p {
-            font-size: 13px;
-            color: #666;
+        .form-header h1 {
+            color: #2d6a4f;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .request-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .map-section h3 {
+            color: #2d6a4f;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .map-widget {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
         }
 
         #map {
@@ -421,176 +423,191 @@
 
         .search-bar {
             padding: 10px;
-            background: white;
-            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
         }
 
         .search-bar input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #2d6a4f;
         }
 
         .selected-tree-banner {
-            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-            border: 2px solid #3b82f6;
+            background: #d1f4e0;
+            border: 2px solid #2d6a4f;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 25px;
+            padding: 1rem;
         }
 
-        .selected-tree-banner h4 {
-            color: #1e40af;
-            font-size: 16px;
-            margin-bottom: 10px;
+        .selected-tree-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .selected-tree-header h4 {
+            color: #1b4332;
+            margin: 0;
+        }
+
+        .clear-btn {
+            padding: 0.375rem 0.75rem;
+            background: white;
+            border: 1px solid #2d6a4f;
+            color: #2d6a4f;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .clear-btn:hover {
+            background: #2d6a4f;
+            color: white;
         }
 
         .tree-info-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .tree-info-item {
-            font-size: 13px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            font-size: 0.95rem;
         }
 
         .tree-info-label {
-            color: #475569;
             font-weight: 600;
+            color: #1b4332;
         }
 
         .tree-info-value {
-            color: #1e293b;
-        }
-
-        .form-section {
-            margin-bottom: 30px;
-        }
-
-        .form-section h3 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f1f5f9;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #475569;
-            font-size: 14px;
-        }
-
-        .required {
-            color: #ef4444;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .form-hint {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 5px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+            color: #2d6a4f;
         }
 
         .no-tree-notice {
             background: #f8f9fa;
-            border: 2px dashed #cbd5e1;
+            border: 2px dashed #dee2e6;
             border-radius: 8px;
-            padding: 30px;
+            padding: 2rem;
             text-align: center;
-            color: #64748b;
-            margin-bottom: 25px;
+            color: #6c757d;
         }
 
         .no-tree-notice .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
         }
 
-        .health-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 1.25rem;
         }
 
-        .health-excellent { background: #d4edda; color: #155724; }
-        .health-good { background: #d1ecf1; color: #0c5460; }
-        .health-fair { background: #fff3cd; color: #856404; }
-        .health-poor { background: #f8d7da; color: #721c24; }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.95rem;
+        }
 
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
+        .required {
+            color: #dc3545;
+            margin-left: 0.25rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2d6a4f;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #1b4332;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
             border-radius: 8px;
-            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .alert-warning {
-            background: #fff3cd;
-            color: #664d03;
-            border: 1px solid #ffecb5;
+        .empty-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 1rem;
         }
 
-        /* 범례 */
+        .empty-state h2 {
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+        }
+
+        /* Legend */
         .legend {
             position: absolute;
             bottom: 10px;
@@ -624,227 +641,206 @@
             box-shadow: 0 0 0 1px #333;
         }
 
-        /* 푸터 */
-        .footer {
-            background: #2d3748;
-            color: #cbd5e1;
-            padding: 20px;
-            text-align: center;
-            margin-top: 50px;
+        /* Health Badge */
+        .health-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
         }
 
-        .footer p {
-            font-size: 14px;
+        .health-excellent { background: #d1fae5; color: #065f46; }
+        .health-good { background: #d1ecf1; color: #0c5460; }
+        .health-fair { background: #fff3cd; color: #856404; }
+        .health-poor { background: #fee2e2; color: #991b1b; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-nav {
+                gap: 1rem;
+            }
+
+            .request-card {
+                flex-direction: column;
+            }
+
+            .card-map {
+                width: 100%;
+                height: 200px;
+            }
+
+            .list-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 헤더 -->
-    <div class="header">
+    <!-- Header -->
+    <header class="header">
         <div class="header-content">
-            <div class="header-title">
-                <h1 id="header-title">🌳 서울 나무 민원 시스템</h1>
-                <p id="header-subtitle">Tree Support Request System</p>
+            <div class="header-logo">
+                <span class="tree-icon">🌳</span>
+                <span>Seoul Tree Support</span>
             </div>
-            <div class="header-actions">
-                <select class="lang-selector" id="langSelector" onchange="changeLanguage(this.value)">
-                    <option value="ko">한국어 (Korean)</option>
-                    <option value="en">English</option>
-                </select>
-                <button class="new-request-btn" id="newRequestBtn" onclick="showPage('create')">
-                    <span class="text-new-request">민원 작성</span>
-                </button>
+            <nav class="header-nav">
+                <button class="nav-link" onclick="showPage('list')">View Requests</button>
+                <button class="nav-link" onclick="showPage('create')">Submit Request</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Request List Page -->
+    <div id="listPage" class="page-view active">
+        <div class="request-list-container">
+            <div class="list-header">
+                <h1>Support Requests</h1>
+                <div class="request-count">
+                    Total: <strong id="requestCount">0</strong>
+                </div>
+            </div>
+            <div class="request-list" id="requestList">
+                <!-- Request cards will be inserted here -->
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <!-- 민원 목록 페이지 -->
-        <div id="listPage" class="page-view active">
-            <div class="requests-list-page">
-                <div class="list-header">
-                    <h2 id="list-title">민원 목록</h2>
-                    <div class="filter-tabs">
-                        <button class="filter-tab active" onclick="filterRequests('all')">
-                            <span class="text-all">전체</span>
-                        </button>
-                        <button class="filter-tab" onclick="filterRequests('pending')">
-                            <span class="text-pending">접수 대기</span>
-                        </button>
-                        <button class="filter-tab" onclick="filterRequests('processing')">
-                            <span class="text-processing">처리 중</span>
-                        </button>
-                        <button class="filter-tab" onclick="filterRequests('completed')">
-                            <span class="text-completed">완료</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="request-cards-container" id="requestCardsContainer">
-                    <!-- 민원 카드 목록이 여기에 표시됩니다 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 민원 상세 페이지 -->
-        <div id="detailPage" class="page-view">
-            <div class="detail-page">
-                <div class="detail-header">
-                    <button class="back-btn" onclick="showPage('list')">
-                        <span class="text-back">← 목록으로</span>
-                    </button>
-                    <h2 class="detail-title" id="detailTitle"></h2>
+    <!-- Request Detail Page -->
+    <div id="detailPage" class="page-view">
+        <div class="detail-container">
+            <button class="back-btn" onclick="showPage('list')">← Back to Requests</button>
+            <div class="detail-card">
+                <div class="detail-header-section">
+                    <h1 class="detail-title" id="detailTitle"></h1>
                     <div class="detail-meta">
                         <span id="detailDate"></span>
                         <span id="detailAuthor"></span>
                         <span id="detailStatus"></span>
                     </div>
                 </div>
-                <div class="detail-body">
-                    <div class="detail-section">
-                        <h3 class="text-section-tree-info">나무 정보</h3>
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                            <div style="flex: 1; min-width: 300px;">
-                                <div class="detail-grid" id="detailTreeInfo">
-                                    <!-- 나무 정보가 여기에 표시됩니다 -->
-                                </div>
-                            </div>
-                            <div style="flex: 0 0 350px; height: 250px; border-radius: 8px; overflow: hidden; border: 2px solid #e9ecef;">
-                                <div id="detailMap" style="width: 100%; height: 100%;"></div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="detail-section">
-                        <h3 class="text-section-request-info">민원 내용</h3>
-                        <div class="detail-description" id="detailDescription"></div>
+                <div class="detail-section">
+                    <h3>Tree Information</h3>
+                    <div class="detail-grid" id="detailTreeInfo"></div>
+                    <div class="detail-map-container">
+                        <div id="detailMap" style="width: 100%; height: 100%;"></div>
                     </div>
+                </div>
 
-                    <div class="detail-section">
-                        <h3 class="text-section-contact">연락처</h3>
-                        <div class="detail-grid" id="detailContact">
-                            <!-- 연락처 정보가 여기에 표시됩니다 -->
-                        </div>
-                    </div>
+                <div class="detail-section">
+                    <h3>Request Description</h3>
+                    <div class="detail-description" id="detailDescription"></div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Contact Information</h3>
+                    <div class="detail-grid" id="detailContact"></div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 민원 작성 페이지 -->
-        <div id="createPage" class="page-view">
-            <div class="main-card">
-                <div class="card-header">
-                    <button class="back-btn" onclick="showPage('list')">
-                        <span class="text-back">← 목록으로</span>
-                    </button>
-                    <h2 class="text-create-title">민원 작성</h2>
-                    <p class="text-create-subtitle">나무 관리, 유지보수, 긴급 조치 등의 민원을 접수합니다</p>
-                </div>
+    <!-- Create Request Page -->
+    <div id="createPage" class="page-view">
+        <div class="request-form-container">
+            <div class="form-header">
+                <h1>Submit Tree Support Request</h1>
+                <p>Report tree issues, request maintenance, or emergency support</p>
+            </div>
 
-                <div class="card-body">
-                    <!-- 지도 위젯 -->
+            <form class="request-form" id="requestForm" onsubmit="submitRequest(event)">
+                <!-- Map Selection Section -->
+                <div class="map-section">
+                    <h3>📍 Select a Tree</h3>
                     <div class="map-widget">
-                        <div class="map-widget-header">
-                            <h3 class="text-map-title">📍 나무 선택</h3>
-                            <p class="text-map-subtitle">지도에서 나무를 클릭하여 민원 대상 나무를 선택하세요</p>
-                        </div>
                         <div class="search-bar">
-                            <input type="text" id="search" class="text-search-placeholder" placeholder="나무 ID 또는 주소로 검색..." />
+                            <input type="text" id="treeSearch" placeholder="Search by tree ID or location..." />
                         </div>
                         <div style="position: relative;">
                             <div id="map"></div>
                             <div class="legend">
-                                <h4 class="text-legend-title">건강 상태</h4>
+                                <h4>Tree Health</h4>
                                 <div class="legend-item">
-                                    <div class="legend-color" style="background: #28a745;"></div>
-                                    <span class="text-legend-excellent">우수 (9-10)</span>
+                                    <div class="legend-color" style="background: #10b981;"></div>
+                                    <span>Excellent (8-10)</span>
                                 </div>
                                 <div class="legend-item">
-                                    <div class="legend-color" style="background: #17a2b8;"></div>
-                                    <span class="text-legend-good">양호 (7-8)</span>
+                                    <div class="legend-color" style="background: #06b6d4;"></div>
+                                    <span>Good (6-7)</span>
                                 </div>
                                 <div class="legend-item">
-                                    <div class="legend-color" style="background: #ffc107;"></div>
-                                    <span class="text-legend-fair">보통 (5-6)</span>
+                                    <div class="legend-color" style="background: #f59e0b;"></div>
+                                    <span>Fair (4-5)</span>
                                 </div>
                                 <div class="legend-item">
-                                    <div class="legend-color" style="background: #dc3545;"></div>
-                                    <span class="text-legend-poor">불량 (1-4)</span>
+                                    <div class="legend-color" style="background: #ef4444;"></div>
+                                    <span>Poor (1-3)</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 선택된 나무 정보 -->
-                    <div id="tree-selection-area">
-                        <div class="no-tree-notice">
-                            <div class="icon">🗺️</div>
-                            <h4 class="text-no-tree-title">나무를 선택해주세요</h4>
-                            <p class="text-no-tree-subtitle">위 지도에서 나무를 클릭하면 해당 나무 정보가 자동으로 입력됩니다</p>
-                        </div>
+                    <div id="treeSelection">
+                        <!-- Selected tree info or notice will appear here -->
                     </div>
-
-                    <!-- 민원 작성 폼 -->
-                    <form id="requestForm" onsubmit="submitRequest(event)">
-                        <div class="form-section">
-                            <h3 class="text-form-request-info">민원 정보</h3>
-
-                            <div class="form-group">
-                                <label class="text-label-type">민원 유형 <span class="required">*</span></label>
-                                <select id="requestType" required>
-                                    <option value="" class="text-select-placeholder">선택하세요</option>
-                                    <option value="maintenance" class="text-type-maintenance">일반 유지보수</option>
-                                    <option value="emergency" class="text-type-emergency">긴급 조치 필요</option>
-                                    <option value="disease" class="text-type-disease">병충해 의심</option>
-                                    <option value="pruning" class="text-type-pruning">가지치기 요청</option>
-                                    <option value="removal" class="text-type-removal">제거 요청</option>
-                                    <option value="other" class="text-type-other">기타</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="text-label-description">상세 설명 <span class="required">*</span></label>
-                                <textarea id="description" required class="text-description-placeholder" placeholder="문제 상황을 자세히 설명해주세요..."></textarea>
-                                <div class="form-hint text-hint-description">가능한 한 자세히 설명해 주시면 빠른 처리에 도움이 됩니다</div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h3 class="text-form-contact">연락처 정보</h3>
-
-                            <div class="form-group">
-                                <label class="text-label-name">이름 <span class="required">*</span></label>
-                                <input type="text" id="contactName" required class="text-name-placeholder" placeholder="홍길동" />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="text-label-phone">전화번호 <span class="required">*</span></label>
-                                <input type="tel" id="contactPhone" required class="text-phone-placeholder" placeholder="010-1234-5678" />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="text-label-email">이메일</label>
-                                <input type="email" id="contactEmail" class="text-email-placeholder" placeholder="example@email.com (선택사항)" />
-                            </div>
-                        </div>
-
-                        <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                            <span class="text-submit">민원 제출하기</span>
-                        </button>
-                    </form>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 푸터 -->
-    <div class="footer">
-        <p id="footer-text">© 2025 Seoul Tree Support System. All rights reserved.</p>
+                <!-- Request Type -->
+                <div class="form-group">
+                    <label class="form-label">Request Type <span class="required">*</span></label>
+                    <select class="form-select" id="requestType" required>
+                        <option value="">Select a type...</option>
+                        <option value="pruning">Pruning</option>
+                        <option value="disease">Disease/Pest</option>
+                        <option value="hazard">Hazard</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">Description <span class="required">*</span></label>
+                    <textarea class="form-textarea" id="description" required placeholder="Please describe the issue or request in detail..."></textarea>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="form-group">
+                    <label class="form-label">Your Name <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="contactName" required placeholder="Full name" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="contactPhone" required placeholder="010-1234-5678" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="contactEmail" placeholder="email@example.com (optional)" />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="submitBtn" disabled>
+                    Submit Request
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="script.js"></script>
 </body>
 </html>
