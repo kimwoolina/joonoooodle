@@ -7,17 +7,20 @@ function AddressSearch({ trees, onSearch }) {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchMessage, setSearchMessage] = useState('');
   const searchRef = useRef(null);
 
   useEffect(() => {
     // Update suggestions when query changes
-    if (query.length >= 2) {
-      const newSuggestions = getAddressSuggestions(query, trees, 5);
+    if (query.length >= 1) {
+      const newSuggestions = getAddressSuggestions(query, trees, 10);
       setSuggestions(newSuggestions);
       setShowSuggestions(true);
+      setSearchMessage(''); // Clear any previous search messages
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
+      setSearchMessage('');
     }
   }, [query, trees]);
 
@@ -35,6 +38,7 @@ function AddressSearch({ trees, onSearch }) {
 
   const handleSearch = (searchQuery) => {
     setIsSearching(true);
+    setSearchMessage('');
 
     // Geocode the address
     const location = geocodeAddress(searchQuery, trees);
@@ -48,10 +52,17 @@ function AddressSearch({ trees, onSearch }) {
         1
       );
 
-      onSearch(nearbyTrees, [location.lat, location.lng]);
+      if (nearbyTrees.length > 0) {
+        onSearch(nearbyTrees, [location.lat, location.lng]);
+        setSearchMessage(`${nearbyTrees.length}개의 나무를 찾았습니다`);
+      } else {
+        onSearch([], [location.lat, location.lng]);
+        setSearchMessage('해당 지역에서 나무를 찾을 수 없습니다');
+      }
     } else {
-      // No location found, show all trees
+      // No location found
       onSearch([], null);
+      setSearchMessage('검색 결과가 없습니다');
     }
 
     setIsSearching(false);
@@ -74,6 +85,7 @@ function AddressSearch({ trees, onSearch }) {
     setQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
+    setSearchMessage('');
     onSearch([], null);
   };
 
@@ -114,22 +126,41 @@ function AddressSearch({ trees, onSearch }) {
         </div>
 
         {/* Suggestions dropdown */}
-        {showSuggestions && suggestions.length > 0 && (
+        {showSuggestions && (
           <div className="suggestions-dropdown">
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                type="button"
-                className="suggestion-item"
-                onClick={() => handleSuggestionClick(suggestion)}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                {suggestion}
-              </button>
-            ))}
+            {suggestions.length > 0 ? (
+              suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className="suggestion-item"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  {suggestion}
+                </button>
+              ))
+            ) : (
+              query.length >= 1 && (
+                <div className="no-suggestions">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4M12 16h.01" />
+                  </svg>
+                  <span>검색 결과가 없습니다</span>
+                </div>
+              )
+            )}
+          </div>
+        )}
+
+        {/* Search result message */}
+        {searchMessage && (
+          <div className={`search-message ${searchMessage.includes('없습니다') ? 'error' : 'success'}`}>
+            {searchMessage}
           </div>
         )}
       </form>

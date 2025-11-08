@@ -76,24 +76,61 @@ export function filterTrees(trees, filters) {
 }
 
 // Get autocomplete suggestions for addresses
-export function getAddressSuggestions(query, trees, limit = 5) {
-  if (!query || query.length < 2) return [];
+export function getAddressSuggestions(query, trees, limit = 10) {
+  if (!query || query.length < 1) return [];
 
   const lowerQuery = query.toLowerCase();
-  const suggestions = new Set();
+  const suggestions = new Map(); // Use Map to track priority
 
   trees.forEach(tree => {
-    // Add district suggestions
-    if (tree.location.district.toLowerCase().includes(lowerQuery) ||
-        tree.location.district_ko.includes(query)) {
-      suggestions.add(tree.location.district_ko);
+    const districtKo = tree.location.district_ko;
+    const districtEn = tree.location.district.toLowerCase();
+    const neighborhood = tree.location.neighborhood.toLowerCase();
+    const neighborhoodKo = tree.location.neighborhood;
+
+    // Check if district matches (Korean or English)
+    const districtStartsWithKo = districtKo.startsWith(query);
+    const districtIncludesKo = districtKo.includes(query);
+    const districtStartsWithEn = districtEn.startsWith(lowerQuery);
+    const districtIncludesEn = districtEn.includes(lowerQuery);
+
+    // Check if neighborhood matches
+    const neighborhoodStartsWith = neighborhood.startsWith(lowerQuery);
+    const neighborhoodIncludes = neighborhood.includes(lowerQuery);
+
+    // Priority 1: Starts with query (highest priority)
+    if (districtStartsWithKo && !suggestions.has(districtKo)) {
+      suggestions.set(districtKo, { text: districtKo, priority: 1 });
     }
 
-    // Add neighborhood suggestions
-    if (tree.location.neighborhood.toLowerCase().includes(lowerQuery)) {
-      suggestions.add(`${tree.location.neighborhood}, ${tree.location.district_ko}`);
+    // Priority 2: Neighborhood starts with query
+    const neighborhoodText = `${neighborhoodKo}, ${districtKo}`;
+    if (neighborhoodStartsWith && !suggestions.has(neighborhoodText)) {
+      suggestions.set(neighborhoodText, { text: neighborhoodText, priority: 2 });
+    }
+
+    // Priority 3: District contains query
+    if (districtIncludesKo && !suggestions.has(districtKo)) {
+      suggestions.set(districtKo, { text: districtKo, priority: 3 });
+    }
+
+    // Priority 4: Neighborhood contains query
+    if (neighborhoodIncludes && !suggestions.has(neighborhoodText)) {
+      suggestions.set(neighborhoodText, { text: neighborhoodText, priority: 4 });
+    }
+
+    // Also check English matches
+    if (districtStartsWithEn && !suggestions.has(districtKo)) {
+      suggestions.set(districtKo, { text: districtKo, priority: 1 });
+    }
+    if (districtIncludesEn && !suggestions.has(districtKo)) {
+      suggestions.set(districtKo, { text: districtKo, priority: 3 });
     }
   });
 
-  return Array.from(suggestions).slice(0, limit);
+  // Sort by priority and return
+  return Array.from(suggestions.values())
+    .sort((a, b) => a.priority - b.priority)
+    .map(item => item.text)
+    .slice(0, limit);
 }
