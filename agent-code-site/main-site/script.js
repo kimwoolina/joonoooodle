@@ -245,34 +245,119 @@ function initializeFakeData() {
 
 // Display requests list
 function displayRequestsList() {
-    const tbody = document.getElementById('requestsTableBody');
-    tbody.innerHTML = '';
+    const container = document.getElementById('requestCardsContainer');
+    container.innerHTML = '';
 
     const filteredRequests = requestsData.filter(req => {
         if (currentFilter === 'all') return true;
         return req.status === currentFilter;
     });
 
+    if (filteredRequests.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+                <h3>민원이 없습니다</h3>
+                <p>해당 상태의 민원이 없습니다.</p>
+            </div>
+        `;
+        return;
+    }
+
     filteredRequests.forEach(request => {
-        const row = document.createElement('tr');
-        row.onclick = () => showRequestDetail(request.id);
-        row.style.cursor = 'pointer';
+        const card = document.createElement('div');
+        card.className = 'request-card';
+        card.onclick = () => showRequestDetail(request.id);
 
         const typeLabel = getRequestTypeLabel(request.type);
         const statusLabel = getStatusLabel(request.status);
         const statusClass = request.status;
         const date = formatDate(request.timestamp);
 
-        row.innerHTML = `
-            <td>${request.title}</td>
-            <td><span class="type-badge">${typeLabel}</span></td>
-            <td><span class="status-badge status-${statusClass}">${statusLabel}</span></td>
-            <td>${date}</td>
-            <td>${request.contact.name}</td>
+        // Create unique map ID for this card
+        const mapId = `card-map-${request.id}`;
+
+        card.innerHTML = `
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h3 class="request-title">${request.title}</h3>
+                    <span class="request-tree-id">${request.treeId}</span>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-item">
+                        <span style="font-weight: 600;">유형:</span>
+                        <span class="type-badge">${typeLabel}</span>
+                    </span>
+                    <span class="meta-item">
+                        <span style="font-weight: 600;">상태:</span>
+                        <span class="status-badge status-${statusClass}">${statusLabel}</span>
+                    </span>
+                    <span class="meta-item">
+                        <span>📅</span>
+                        <span>${date}</span>
+                    </span>
+                    <span class="meta-item">
+                        <span>👤</span>
+                        <span>${request.contact.name}</span>
+                    </span>
+                </div>
+                <div class="card-description">
+                    ${request.description}
+                </div>
+                <div class="card-footer">
+                    <span class="card-location">
+                        📍 ${request.treeInfo.location}
+                    </span>
+                </div>
+            </div>
+            <div class="card-map">
+                <div id="${mapId}" class="card-map-small"></div>
+            </div>
         `;
 
-        tbody.appendChild(row);
+        container.appendChild(card);
+
+        // Initialize small map for this card
+        setTimeout(() => {
+            initCardMap(mapId, request);
+        }, 100);
     });
+}
+
+// Initialize small map for card
+function initCardMap(mapId, request) {
+    try {
+        // Find tree data for this request
+        const tree = treesData.find(t => t.id === request.treeId);
+        if (!tree) return;
+
+        const cardMap = L.map(mapId, {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            touchZoom: false
+        }).setView([tree.location.coordinates.lat, tree.location.coordinates.lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(cardMap);
+
+        const healthScore = tree.condition.healthScore;
+        const color = healthScore >= 8 ? '#10b981' :
+                     healthScore >= 6 ? '#06b6d4' :
+                     healthScore >= 4 ? '#f59e0b' : '#ef4444';
+
+        L.circleMarker([tree.location.coordinates.lat, tree.location.coordinates.lng], {
+            radius: 8,
+            fillColor: color,
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9
+        }).addTo(cardMap);
+    } catch (error) {
+        console.error('Error initializing card map:', error);
+    }
 }
 
 // Filter requests by status
@@ -293,26 +378,110 @@ function showRequestDetail(requestId) {
     const request = requestsData.find(r => r.id === requestId);
     if (!request) return;
 
-    document.getElementById('detailTreeId').textContent = request.treeId;
-    document.getElementById('detailSpecies').textContent = request.treeInfo.species;
-    document.getElementById('detailLocation').textContent = request.treeInfo.location;
+    // Update detail info
+    document.getElementById('detailTitle').textContent = request.title;
+    document.getElementById('detailDate').textContent = formatDate(request.timestamp);
+    document.getElementById('detailAuthor').textContent = request.contact.name;
+    document.getElementById('detailStatus').innerHTML = `<span class="status-badge status-${request.status}">${getStatusLabel(request.status)}</span>`;
 
+    // Update tree info
     const healthClass = getHealthClass(request.treeInfo.health);
     const healthLabel = currentLang === 'ko'
         ? (request.treeInfo.health >= 8 ? '매우 좋음' : request.treeInfo.health >= 6 ? '좋음' : request.treeInfo.health >= 4 ? '보통' : '나쁨')
         : (request.treeInfo.health >= 8 ? 'Excellent' : request.treeInfo.health >= 6 ? 'Good' : request.treeInfo.health >= 4 ? 'Fair' : 'Poor');
 
-    document.getElementById('detailHealth').innerHTML = `<span class="health-badge ${healthClass}">${healthLabel} (${request.treeInfo.health}/10)</span>`;
+    document.getElementById('detailTreeInfo').innerHTML = `
+        <div class="detail-item">
+            <span class="detail-label">나무 ID</span>
+            <span class="detail-value">${request.treeId}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">수종</span>
+            <span class="detail-value">${request.treeInfo.species}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">위치</span>
+            <span class="detail-value">${request.treeInfo.location}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">건강도</span>
+            <span class="detail-value">
+                <span class="health-badge ${healthClass}">${healthLabel} (${request.treeInfo.health}/10)</span>
+            </span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">민원 유형</span>
+            <span class="detail-value">
+                <span class="type-badge">${getRequestTypeLabel(request.type)}</span>
+            </span>
+        </div>
+    `;
 
-    document.getElementById('detailType').innerHTML = `<span class="type-badge">${getRequestTypeLabel(request.type)}</span>`;
-    document.getElementById('detailStatus').innerHTML = `<span class="status-badge status-${request.status}">${getStatusLabel(request.status)}</span>`;
-    document.getElementById('detailDate').textContent = formatDate(request.timestamp);
     document.getElementById('detailDescription').textContent = request.description;
-    document.getElementById('detailName').textContent = request.contact.name;
-    document.getElementById('detailPhone').textContent = request.contact.phone;
-    document.getElementById('detailEmail').textContent = request.contact.email;
+
+    document.getElementById('detailContact').innerHTML = `
+        <div class="detail-item">
+            <span class="detail-label">이름</span>
+            <span class="detail-value">${request.contact.name}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">전화번호</span>
+            <span class="detail-value">${request.contact.phone}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">이메일</span>
+            <span class="detail-value">${request.contact.email || '-'}</span>
+        </div>
+    `;
+
+    // Initialize detail map
+    initDetailMap(request);
 
     showPage('detail');
+}
+
+// Initialize detail page map
+function initDetailMap(request) {
+    // Remove existing map if any
+    const detailMapDiv = document.getElementById('detailMap');
+    detailMapDiv.innerHTML = '';
+
+    try {
+        // Find tree data for this request
+        const tree = treesData.find(t => t.id === request.treeId);
+        if (!tree) return;
+
+        const detailMap = L.map('detailMap', {
+            zoomControl: true,
+            attributionControl: false,
+        }).setView([tree.location.coordinates.lat, tree.location.coordinates.lng], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(detailMap);
+
+        const healthScore = tree.condition.healthScore;
+        const color = healthScore >= 8 ? '#10b981' :
+                     healthScore >= 6 ? '#06b6d4' :
+                     healthScore >= 4 ? '#f59e0b' : '#ef4444';
+
+        L.circleMarker([tree.location.coordinates.lat, tree.location.coordinates.lng], {
+            radius: 10,
+            fillColor: color,
+            color: '#fff',
+            weight: 3,
+            opacity: 1,
+            fillOpacity: 0.9
+        }).bindPopup(`
+            <strong>${tree.species.common_ko}</strong><br>
+            ${tree.location.district_ko} ${tree.location.neighborhood_ko}
+        `).addTo(detailMap);
+
+        // Fix map rendering
+        setTimeout(() => {
+            detailMap.invalidateSize();
+        }, 100);
+    } catch (error) {
+        console.error('Error initializing detail map:', error);
+    }
 }
 
 // Show page
@@ -336,6 +505,9 @@ function showPage(page) {
             initMap();
             loadTreeData();
         }
+
+        // Initialize tree selection display
+        displaySelectedTree();
     }
 }
 
@@ -396,79 +568,88 @@ function selectTree(tree) {
 
 // Display selected tree info
 function displaySelectedTree() {
+    const treeSelectionArea = document.getElementById('tree-selection-area');
+    const submitBtn = document.getElementById('submitBtn');
+
     if (!selectedTree) {
-        document.getElementById('selectedTreeInfo').style.display = 'none';
-        document.getElementById('treeSelectPrompt').style.display = 'block';
+        treeSelectionArea.innerHTML = `
+            <div class="no-tree-notice">
+                <div class="icon">🗺️</div>
+                <h4 class="text-no-tree-title">나무를 선택해주세요</h4>
+                <p class="text-no-tree-subtitle">위 지도에서 나무를 클릭하면 해당 나무 정보가 자동으로 입력됩니다</p>
+            </div>
+        `;
+        submitBtn.disabled = true;
         return;
     }
 
-    document.getElementById('treeSelectPrompt').style.display = 'none';
-    document.getElementById('selectedTreeInfo').style.display = 'block';
+    submitBtn.disabled = false;
 
     const healthClass = getHealthClass(selectedTree.condition.healthScore);
     const healthLabel = currentLang === 'ko'
         ? (selectedTree.condition.healthScore >= 8 ? '매우 좋음' : selectedTree.condition.healthScore >= 6 ? '좋음' : selectedTree.condition.healthScore >= 4 ? '보통' : '나쁨')
         : (selectedTree.condition.healthScore >= 8 ? 'Excellent' : selectedTree.condition.healthScore >= 6 ? 'Good' : selectedTree.condition.healthScore >= 4 ? 'Fair' : 'Poor');
 
-    document.getElementById('selectedTreeId').textContent = selectedTree.id;
-    document.getElementById('selectedSpecies').textContent = `${selectedTree.species.common_ko} (${selectedTree.species.common})`;
-    document.getElementById('selectedLocation').textContent = `${selectedTree.location.district_ko} ${selectedTree.location.neighborhood_ko}`;
-    document.getElementById('selectedHealth').innerHTML = `<span class="health-badge ${healthClass}">${healthLabel} (${selectedTree.condition.healthScore}/10)</span>`;
-
-    // Show request history for this tree
-    displayRequestHistory(selectedTree.id);
-}
-
-// Display request history for selected tree
-function displayRequestHistory(treeId) {
-    const historyDiv = document.getElementById('requestHistory');
-    const history = requestsData.filter(req => req.treeId === treeId);
-
-    if (history.length === 0) {
-        historyDiv.innerHTML = `<p style="color: #6b7280; text-align: center; padding: 20px;" class="text-no-history">${translations[currentLang]['text-no-history']}</p>`;
-        return;
-    }
-
-    historyDiv.innerHTML = history.map(req => {
-        const typeLabel = getRequestTypeLabel(req.type);
-        const statusLabel = getStatusLabel(req.status);
-        const date = formatDate(req.timestamp);
-
-        return `
-            <div class="history-item">
-                <div class="history-header">
-                    <span class="type-badge">${typeLabel}</span>
-                    <span class="status-badge status-${req.status}">${statusLabel}</span>
+    treeSelectionArea.innerHTML = `
+        <div class="selected-tree-banner">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0;">✓ 선택된 나무</h4>
+                <button type="button" onclick="clearSelectedTree()" style="background: white; border: 1px solid #3b82f6; color: #3b82f6; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                    다른 나무 선택
+                </button>
+            </div>
+            <div class="tree-info-grid">
+                <div class="tree-info-item">
+                    <span class="tree-info-label">나무 ID: </span>
+                    <span class="tree-info-value">${selectedTree.id}</span>
                 </div>
-                <h4>${req.title}</h4>
-                <p>${req.description}</p>
-                <div class="history-footer">
-                    <span>${req.contact.name}</span>
-                    <span>${date}</span>
+                <div class="tree-info-item">
+                    <span class="tree-info-label">수종: </span>
+                    <span class="tree-info-value">${selectedTree.species.common_ko}</span>
+                </div>
+                <div class="tree-info-item">
+                    <span class="tree-info-label">건강도: </span>
+                    <span class="health-badge ${healthClass}">${healthLabel}</span>
                 </div>
             </div>
-        `;
-    }).join('');
+            <div style="margin-top: 10px;">
+                <span class="tree-info-label">위치: </span>
+                <span class="tree-info-value">${selectedTree.location.district_ko} ${selectedTree.location.neighborhood_ko}</span>
+            </div>
+        </div>
+    `;
 }
 
+// Clear selected tree
+function clearSelectedTree() {
+    selectedTree = null;
+    displaySelectedTree();
+}
+
+
 // Submit request
-function submitRequest() {
+function submitRequest(event) {
+    event.preventDefault();
+
     if (!selectedTree) {
         alert(currentLang === 'ko' ? '먼저 지도에서 나무를 선택해주세요.' : 'Please select a tree on the map first.');
         return;
     }
 
     const type = document.getElementById('requestType').value;
-    const title = document.getElementById('requestTitle').value;
-    const description = document.getElementById('requestDescription').value;
+    const description = document.getElementById('description').value;
     const name = document.getElementById('contactName').value;
     const phone = document.getElementById('contactPhone').value;
     const email = document.getElementById('contactEmail').value;
 
-    if (!type || !title || !description || !name || !phone) {
+    if (!type || !description || !name || !phone) {
         alert(currentLang === 'ko' ? '모든 필수 항목을 입력해주세요.' : 'Please fill in all required fields.');
         return;
     }
+
+    // Generate a simple title from type
+    const typeLabel = getRequestTypeLabel(type);
+    const title = `${typeLabel} - ${selectedTree.species.common_ko} (${selectedTree.id})`;
 
     // Create new request
     const newRequest = {
