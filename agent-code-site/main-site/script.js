@@ -172,24 +172,26 @@ function displayRequestsList() {
                     <div class="emergency-type">${typeLabel}</div>
                 </div>
                 <div class="card-body">
-                    <div class="info-section">
-                        <h4>Request</h4>
-                        <p><strong>Title:</strong> ${request.title}</p>
-                        <p><strong>Description:</strong> ${request.description}</p>
+                    <div class="card-body-content">
+                        <div class="info-section">
+                            <h4>Request</h4>
+                            <p><strong>Title:</strong> ${request.title}</p>
+                            <p><strong>Description:</strong> ${request.description}</p>
+                        </div>
+                        <div class="info-section">
+                            <h4>Tree Information</h4>
+                            <p><strong>ID:</strong> ${request.treeId}</p>
+                            <p><strong>Species:</strong> ${request.treeInfo.species}</p>
+                            <p><strong>Location:</strong> ${request.treeInfo.location}</p>
+                        </div>
+                        <div class="card-footer">
+                            <span class="submit-date">Submitted: ${date}</span>
+                        </div>
                     </div>
-                    <div class="info-section">
-                        <h4>Tree Information</h4>
-                        <p><strong>ID:</strong> ${request.treeId}</p>
-                        <p><strong>Species:</strong> ${request.treeInfo.species}</p>
-                        <p><strong>Location:</strong> ${request.treeInfo.location}</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="submit-date">Submitted: ${date}</span>
+                    <div class="card-map">
+                        <div id="${mapId}" class="card-map-small"></div>
                     </div>
                 </div>
-            </div>
-            <div class="card-map">
-                <div id="${mapId}" class="card-map-small"></div>
             </div>
         `;
 
