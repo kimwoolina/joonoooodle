@@ -424,3 +424,25 @@ function submitForApproval() {
         description: description || 'Website modification request'
     });
 }
+
+function viewPreview() {
+    if (!currentBranch) {
+        alert('No preview available');
+        return;
+    }
+
+    // Set the branch name in the modal
+    document.getElementById('previewBranchName').textContent = currentBranch;
+
+    // Load the preview in the iframe
+    const previewUrl = `http://localhost:3000/preview/${currentBranch}/index.html`;
+    document.getElementById('previewFrame').src = previewUrl;
+
+    // Show the modal
+    document.getElementById('previewModal').classList.remove('hidden');
+}
+
+function closePreview() {
+    document.getElementById('previewModal').classList.add('hidden');
+    document.getElementById('previewFrame').src = '';
+}

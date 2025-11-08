@@ -367,7 +367,10 @@
                 <div class="preview-content">
                     <p><strong>🎉 Preview Ready!</strong></p>
                     <p>Your changes are ready to view.</p>
-                    <button onclick="submitForApproval()" class="submit-button">Submit for Approval</button>
+                    <div class="preview-actions-row">
+                        <button onclick="viewPreview()" class="preview-btn">View Preview</button>
+                        <button onclick="submitForApproval()" class="submit-button">Submit for Approval</button>
+                    </div>
                 </div>
             </div>
 
@@ -401,6 +404,18 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="preview-modal hidden">
+        <div class="preview-modal-backdrop" onclick="closePreview()"></div>
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <h3>📋 Preview - <span id="previewBranchName"></span></h3>
+                <button class="close-button-modal" onclick="closePreview()">✕</button>
+            </div>
+            <iframe id="previewFrame" class="preview-frame"></iframe>
         </div>
     </div>
 
