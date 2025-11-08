@@ -204,22 +204,26 @@ export class GitService {
    */
   async mergeToUserBranch(featureBranch, targetBranch) {
     try {
-      const targetWorktree = await this.getWorktreePath(targetBranch);
+      // Get the raw worktree path (not the subdirectory)
+      const worktrees = await this.listWorktrees();
+      const targetWorktree = worktrees.find(w => w.branch === targetBranch);
+
       if (!targetWorktree) {
         throw new Error(`Target worktree not found: ${targetBranch}`);
       }
 
-      // Merge feature branch into target
-      await this.execGitInPath(`merge ${featureBranch} --no-ff -m "Apply feature: ${featureBranch}"`, targetWorktree);
+      // Merge feature branch into target (must run in worktree root)
+      await this.execGitInPath(`merge ${featureBranch} --no-ff -m "Apply feature: ${featureBranch}"`, targetWorktree.path);
 
       console.log(`Merged ${featureBranch} into ${targetBranch}`);
       return true;
     } catch (error) {
       // If merge fails, abort
       try {
-        const targetWorktree = await this.getWorktreePath(targetBranch);
+        const worktrees = await this.listWorktrees();
+        const targetWorktree = worktrees.find(w => w.branch === targetBranch);
         if (targetWorktree) {
-          await this.execGitInPath('merge --abort', targetWorktree);
+          await this.execGitInPath('merge --abort', targetWorktree.path);
         }
       } catch {}
 
