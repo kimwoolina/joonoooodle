@@ -88,6 +88,30 @@ const inspectionNotes = [
   'Seasonal variation normal'
 ];
 
+// Pool of diverse tree photos from Unsplash
+const treePhotoPool = [
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80', // Forest trees
+  'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80', // Single tree
+  'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80', // Tree canopy
+  'https://images.unsplash.com/photo-1469227221030-492c98c89d45?w=800&q=80', // Tall tree
+  'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=80', // Tree trunk
+  'https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&q=80', // Nature tree
+  'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&q=80', // Mountain tree
+  'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&q=80', // Park tree
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', // Landscape tree
+  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // Green tree
+  'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', // Natural tree
+  'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80', // Beautiful tree
+  'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80', // Oak tree
+  'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80', // Pine tree
+  'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&q=80', // Willow tree
+  'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&q=80', // Birch tree
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', // Cherry blossom
+  'https://images.unsplash.com/photo-1533371452382-d45a9da51ad9?w=800&q=80', // Autumn tree
+  'https://images.unsplash.com/photo-1438109491414-7198515b166b?w=800&q=80', // Spring tree
+  'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&q=80'  // Maple tree
+];
+
 // Helper functions
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -162,13 +186,8 @@ function generateTree(id, district) {
     new Date()
   );
 
-  // Photos (placeholder URLs)
-  const treeId = `tree-${String(id).padStart(4, '0')}`;
-  const photos = [
-    `https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80`,
-    `https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&q=80`,
-    `https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80`
-  ];
+  // Photos - randomly select 3 unique photos from the pool
+  const photos = randomChoices(treePhotoPool, 3);
 
   return {
     id: `TREE-${String(id).padStart(4, '0')}`,
