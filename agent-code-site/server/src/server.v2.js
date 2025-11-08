@@ -77,14 +77,32 @@ app.get('/preview/:branchName*', async (req, res) => {
 
     // Serve the requested file from that branch
     const fileFullPath = path.join(mainSitePath, filePath);
-    res.sendFile(fileFullPath, (err) => {
-      // Switch back to original branch
-      gitService.checkoutBranch(currentBranch);
-      if (err && !res.headersSent) {
+
+    // If serving HTML, inject base tag for proper relative URL resolution
+    if (filePath.endsWith('.html')) {
+      const fs = require('fs').promises;
+      try {
+        let html = await fs.readFile(fileFullPath, 'utf8');
+        const baseTag = `<base href="/preview/${branchName}/">`;
+        html = html.replace('<head>', `<head>\n    ${baseTag}`);
+        await gitService.checkoutBranch(currentBranch);
+        res.setHeader('Content-Type', 'text/html');
+        res.send(html);
+      } catch (err) {
+        await gitService.checkoutBranch(currentBranch);
         console.error(`Failed to serve ${filePath}:`, err.message);
         res.status(404).send('File not found');
       }
-    });
+    } else {
+      // For non-HTML files, serve directly
+      res.sendFile(fileFullPath, (err) => {
+        gitService.checkoutBranch(currentBranch);
+        if (err && !res.headersSent) {
+          console.error(`Failed to serve ${filePath}:`, err.message);
+          res.status(404).send('File not found');
+        }
+      });
+    }
   } catch (error) {
     console.error('Preview error:', error);
     res.status(500).json({ error: 'Failed to load preview' });

@@ -28,6 +28,7 @@ export class ClaudeService {
 
     let fullResponse = '';
     let currentToolUse = null;
+    let currentContentBlockType = null;
 
     try {
       const stream = await this.client.messages.create({
@@ -49,6 +50,7 @@ export class ClaudeService {
         }
 
         if (event.type === 'content_block_start') {
+          currentContentBlockType = event.content_block.type;
           if (event.content_block.type === 'tool_use') {
             currentToolUse = {
               id: event.content_block.id,
@@ -86,7 +88,14 @@ export class ClaudeService {
               this.socket.emit('error', { error: error.message });
             }
             currentToolUse = null;
+          } else if (currentContentBlockType === 'text') {
+            // Text block complete - finalize this message
+            this.socket.emit('message:stream', {
+              text: '',
+              isComplete: true,
+            });
           }
+          currentContentBlockType = null;
         } else if (event.type === 'message_stop') {
           this.socket.emit('message:stream', {
             text: '',
@@ -154,6 +163,7 @@ export class ClaudeService {
     });
 
     let currentToolUse = null;
+    let currentContentBlockType = null;
 
     for await (const event of stream) {
       if (abortController.signal.aborted) {
@@ -161,6 +171,7 @@ export class ClaudeService {
       }
 
       if (event.type === 'content_block_start') {
+        currentContentBlockType = event.content_block.type;
         if (event.content_block.type === 'tool_use') {
           currentToolUse = {
             id: event.content_block.id,
@@ -192,7 +203,14 @@ export class ClaudeService {
             console.error('Tool execution error:', error);
           }
           currentToolUse = null;
+        } else if (currentContentBlockType === 'text') {
+          // Text block complete - finalize this message
+          this.socket.emit('message:stream', {
+            text: '',
+            isComplete: true,
+          });
         }
+        currentContentBlockType = null;
       } else if (event.type === 'message_stop') {
         this.socket.emit('message:stream', {
           text: '',
