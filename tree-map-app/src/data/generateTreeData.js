@@ -34,16 +34,16 @@ const seoulDistricts = [
   { name: 'Gangseo-gu', name_ko: '강서구', lat: 37.5509, lng: 126.8495, neighborhoods: ['Magok-dong', 'Balsan-dong', 'Gaehwa-dong', 'Banghwa-dong'] }
 ];
 
-// Common tree species in Seoul with placeholder images showing tree names
+// Common tree species in Seoul with real tree photos from Pexels
 const treeSpecies = [
   {
     common: 'Korean Red Pine',
     common_ko: '소나무',
     scientific: 'Pinus densiflora',
     photos: [
-      'https://placehold.co/800x600/228B22/white?text=Korean+Red+Pine+%EC%86%8C%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/2F4F2F/white?text=Pinus+densiflora',
-      'https://placehold.co/800x600/006400/white?text=%EC%86%8C%EB%82%98%EB%AC%B4+Pine'
+      'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/572937/pexels-photo-572937.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1179225/pexels-photo-1179225.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -51,9 +51,9 @@ const treeSpecies = [
     common_ko: '은행나무',
     scientific: 'Ginkgo biloba',
     photos: [
-      'https://placehold.co/800x600/FFD700/black?text=Ginkgo+%EC%9D%80%ED%96%89%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/FFA500/white?text=Ginkgo+biloba',
-      'https://placehold.co/800x600/DAA520/white?text=%EC%9D%80%ED%96%89%EB%82%98%EB%AC%B4+Ginkgo'
+      'https://images.pexels.com/photos/6348128/pexels-photo-6348128.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/3861458/pexels-photo-3861458.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/15208632/pexels-photo-15208632.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -61,9 +61,9 @@ const treeSpecies = [
     common_ko: '느티나무',
     scientific: 'Zelkova serrata',
     photos: [
-      'https://placehold.co/800x600/8B4513/white?text=Zelkova+%EB%8A%90%ED%8B%B0%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/A0522D/white?text=Zelkova+serrata',
-      'https://placehold.co/800x600/654321/white?text=%EB%8A%90%ED%8B%B0%EB%82%98%EB%AC%B4+Zelkova'
+      'https://images.pexels.com/photos/1179221/pexels-photo-1179221.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/572688/pexels-photo-572688.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -71,9 +71,9 @@ const treeSpecies = [
     common_ko: '마가목',
     scientific: 'Sorbus alnifolia',
     photos: [
-      'https://placehold.co/800x600/556B2F/white?text=Mountain+Ash+%EB%A7%88%EA%B0%80%EB%AA%A9',
-      'https://placehold.co/800x600/6B8E23/white?text=Sorbus+alnifolia',
-      'https://placehold.co/800x600/808000/white?text=%EB%A7%88%EA%B0%80%EB%AA%A9+Sorbus'
+      'https://images.pexels.com/photos/1179218/pexels-photo-1179218.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1179207/pexels-photo-1179207.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -81,9 +81,9 @@ const treeSpecies = [
     common_ko: '벚나무',
     scientific: 'Prunus serrulata',
     photos: [
-      'https://placehold.co/800x600/FFB6C1/black?text=Cherry+%EB%B2%9A%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/FFC0CB/black?text=Prunus+serrulata',
-      'https://placehold.co/800x600/FF69B4/white?text=%EB%B2%9A%EB%82%98%EB%AC%B4+Cherry'
+      'https://images.pexels.com/photos/2166456/pexels-photo-2166456.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1407305/pexels-photo-1407305.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -91,9 +91,9 @@ const treeSpecies = [
     common_ko: '단풍나무',
     scientific: 'Acer palmatum',
     photos: [
-      'https://placehold.co/800x600/DC143C/white?text=Japanese+Maple+%EB%8B%A8%ED%92%8D%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/8B0000/white?text=Acer+palmatum',
-      'https://placehold.co/800x600/B22222/white?text=%EB%8B%A8%ED%92%8D%EB%82%98%EB%AC%B4+Maple'
+      'https://images.pexels.com/photos/56875/tree-dawn-nature-bucovina.jpg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/158976/autumn-leaves-maple-leaf-fall-leaf-158976.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1649411/pexels-photo-1649411.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -101,9 +101,9 @@ const treeSpecies = [
     common_ko: '메타세쿼이아',
     scientific: 'Metasequoia glyptostroboides',
     photos: [
-      'https://placehold.co/800x600/8B4513/white?text=Dawn+Redwood+%EB%A9%94%ED%83%80%EC%84%B8%EC%BF%BC%EC%9D%B4%EC%95%84',
-      'https://placehold.co/800x600/A0522D/white?text=Metasequoia',
-      'https://placehold.co/800x600/CD853F/white?text=%EB%A9%94%ED%83%80%EC%84%B8%EC%BF%BC%EC%9D%B4%EC%95%84'
+      'https://images.pexels.com/photos/573299/pexels-photo-573299.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/572937/pexels-photo-572937.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -111,9 +111,9 @@ const treeSpecies = [
     common_ko: '참나무',
     scientific: 'Quercus mongolica',
     photos: [
-      'https://placehold.co/800x600/6B8E23/white?text=Korean+Oak+%EC%B0%B8%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/556B2F/white?text=Quercus+mongolica',
-      'https://placehold.co/800x600/8FBC8F/black?text=%EC%B0%B8%EB%82%98%EB%AC%B4+Oak'
+      'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1179207/pexels-photo-1179207.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -121,9 +121,9 @@ const treeSpecies = [
     common_ko: '감나무',
     scientific: 'Diospyros kaki',
     photos: [
-      'https://placehold.co/800x600/FF8C00/white?text=Persimmon+%EA%B0%90%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/FF6347/white?text=Diospyros+kaki',
-      'https://placehold.co/800x600/FFA07A/white?text=%EA%B0%90%EB%82%98%EB%AC%B4+Persimmon'
+      'https://images.pexels.com/photos/1179221/pexels-photo-1179221.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/572688/pexels-photo-572688.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1179225/pexels-photo-1179225.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -131,9 +131,9 @@ const treeSpecies = [
     common_ko: '목련',
     scientific: 'Magnolia kobus',
     photos: [
-      'https://placehold.co/800x600/F8F8FF/black?text=Magnolia+%EB%AA%A9%EB%A0%A8',
-      'https://placehold.co/800x600/FFFAF0/black?text=Magnolia+kobus',
-      'https://placehold.co/800x600/FFE4E1/black?text=%EB%AA%A9%EB%A0%A8+Magnolia'
+      'https://images.pexels.com/photos/1407305/pexels-photo-1407305.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/2166456/pexels-photo-2166456.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -141,9 +141,9 @@ const treeSpecies = [
     common_ko: '배롱나무',
     scientific: 'Lagerstroemia indica',
     photos: [
-      'https://placehold.co/800x600/DB7093/white?text=Crape+Myrtle+%EB%B0%B0%EB%A1%B1%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/C71585/white?text=Lagerstroemia',
-      'https://placehold.co/800x600/FF1493/white?text=%EB%B0%B0%EB%A1%B1%EB%82%98%EB%AC%B4+Myrtle'
+      'https://images.pexels.com/photos/2166456/pexels-photo-2166456.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1407305/pexels-photo-1407305.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
   {
@@ -151,9 +151,9 @@ const treeSpecies = [
     common_ko: '팽나무',
     scientific: 'Celtis sinensis',
     photos: [
-      'https://placehold.co/800x600/2E8B57/white?text=Hackberry+%ED%8C%BD%EB%82%98%EB%AC%B4',
-      'https://placehold.co/800x600/3CB371/white?text=Celtis+sinensis',
-      'https://placehold.co/800x600/20B2AA/white?text=%ED%8C%BD%EB%82%98%EB%AC%B4+Hackberry'
+      'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1179207/pexels-photo-1179207.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=800'
     ]
   },
 ];
