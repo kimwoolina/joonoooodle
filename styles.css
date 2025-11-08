@@ -975,7 +975,7 @@ footer {
 }
 
 .send-button {
-    background: orange;
+    background: linear-gradient(135deg, #00c853 0%, #00a03e 100%);
     color: white;
     flex: 1;
 }
