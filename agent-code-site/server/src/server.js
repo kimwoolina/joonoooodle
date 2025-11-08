@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
 import { ClaudeService } from './services/claudeService.js';
 import { FileService } from './services/fileService.js';
 
@@ -28,9 +29,13 @@ app.use(express.json());
 
 // Get demo site path
 const demoSitePath = path.resolve(__dirname, '../../demo-site');
+const mainSitePath = path.resolve(__dirname, '../../main-site');
 
 // Serve demo site files statically for preview
 app.use('/demo', express.static(demoSitePath));
+
+// Serve main site (integrated tree map + support system)
+app.use('/', express.static(mainSitePath));
 
 // File service for managing demo site files
 const fileService = new FileService(demoSitePath);
@@ -38,6 +43,19 @@ const fileService = new FileService(demoSitePath);
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Get tree data for integrated map
+app.get('/api/trees', async (req, res) => {
+  try {
+    const treesPath = path.join(mainSitePath, 'data', 'trees.json');
+    const data = await fs.readFile(treesPath, 'utf-8');
+    const trees = JSON.parse(data);
+    res.json(trees);
+  } catch (error) {
+    console.error('Error loading trees:', error);
+    res.status(500).json({ error: 'Failed to load tree data' });
+  }
 });
 
 // Get file tree
