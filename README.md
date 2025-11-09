@@ -5,7 +5,15 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [Architecture](#️-architecture)
+- [Technology Stack](#-technology-stack)
+- [Getting Started](#️-getting-started)
+- [Use Cases](#-use-cases)
+- [Security Considerations](#-security-considerations)
 
 ## 🎯 Overview
 
@@ -22,8 +30,6 @@ This simple request typically requires:
 - Dealing with communication overhead
 
 With PaGenie, the same change happens **instantly** through natural language.
-
----
 
 ## 🚀 Key Features
 
@@ -49,8 +55,6 @@ With PaGenie, the same change happens **instantly** through natural language.
 - WebSocket-based instant updates
 - Multi-user support with session management
 
----
-
 ## 🏗️ Architecture
 
 ### System Components
@@ -70,29 +74,30 @@ pagenie/
     └── server/               # Node.js API for request management
 ```
 
-### Technology Stack
+## 💻 Technology Stack
 
-#### Frontend
-- **React 18** - UI framework
-- **Vite** - Build tool and dev server
-- **Leaflet** - Interactive maps
-- **Socket.io Client** - Real-time communication
-- **React Router** - Navigation
-- **React Hook Form** - Form management
+### Frontend
 
-#### Backend
-- **Node.js** - Runtime environment
-- **Express** - HTTP server
-- **Socket.io** - WebSocket server
-- **Anthropic Claude AI SDK** - AI agent integration
-- **Chokidar** - File system watching
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet&logoColor=white)](https://leafletjs.com/)
+[![Socket.io](https://img.shields.io/badge/Socket.io-4.7-010101?logo=socket.io&logoColor=white)](https://socket.io/)
+[![React Router](https://img.shields.io/badge/React_Router-6-CA4245?logo=react-router&logoColor=white)](https://reactrouter.com/)
+[![React Hook Form](https://img.shields.io/badge/React_Hook_Form-7-EC5990?logo=reacthookform&logoColor=white)](https://react-hook-form.com/)
 
-#### AI & Tools
-- **Claude Sonnet 4.5** - Natural language understanding and code generation
-- **Custom Tool System** - Read, Write, Edit, Bash, Glob, Grep tools
-- **Real-time Streaming** - Instant AI response delivery
+### Backend
 
----
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.18-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Socket.io](https://img.shields.io/badge/Socket.io-4.7-010101?logo=socket.io&logoColor=white)](https://socket.io/)
+[![Chokidar](https://img.shields.io/badge/Chokidar-3.5-orange)](https://github.com/paulmillr/chokidar)
+
+### AI & Tools
+
+[![Anthropic Claude](https://img.shields.io/badge/Anthropic-Claude_Sonnet_4.5-191919)](https://www.anthropic.com/)
+[![AI SDK](https://img.shields.io/badge/Anthropic_AI_SDK-0.30-191919)](https://www.npmjs.com/package/@anthropic-ai/sdk)
+
+**Custom Tool System**: Read, Write, Edit, Bash, Glob, Grep tools with real-time streaming
 
 ## 🛠️ Getting Started
 
@@ -164,8 +169,6 @@ pagenie/
 5. **Review preview**: See changes in real-time
 6. **Deploy**: Approve changes through admin dashboard
 
----
-
 ## 🎓 Use Cases
 
 ### Government & Municipalities
@@ -183,8 +186,6 @@ pagenie/
 - **Donation Drives**: Modify campaign messaging and progress
 - **Volunteer Coordination**: Update schedules and opportunities
 
----
-
 ## 🔒 Security Considerations
 
 - **File System Isolation**: AI operations restricted to designated directories
@@ -193,7 +194,5 @@ pagenie/
 - **Session Management**: User identification and activity tracking
 - **API Key Protection**: Environment variables, never committed to repository
 - **CORS Configuration**: Restricted to specified client URLs
-
----
 
 **Built with Claude AI 🤖 | Made for Everyone 🌍**
