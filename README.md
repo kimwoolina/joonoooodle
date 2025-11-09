@@ -16,15 +16,16 @@
 
 ## 📑 Table of Contents
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#️-architecture)
-- [Getting Started](#️-getting-started)
-- [Use Cases](#-use-cases)
-- [Security](#-security)
+- [🎯 Overview](#overview)
+- [🚀 Key Features](#key-features)
+- [💻 Technology Stack](#technology-stack)
+- [🌐 Architecture](#-architecture)
+- [🛠️ Getting Started](#️-getting-started)
+- [🎓 Use Cases](#use-cases)
+- [🔒 Security](#security)
 
 <br/>
+<a name="overview"></a>
 
 ## 🎯 Overview
 
@@ -53,6 +54,7 @@ Instead of hiring a developer, waiting days, and paying hundreds of dollars—Pa
 <br/>
 <br/>
 
+<a name="key-features"></a>
 ## 🚀 Key Features
 
 ### 🎨 **Natural Language Website Editing**
@@ -96,7 +98,8 @@ Built for modern workflows:
 <br/>
 <br/>
 
-## 💻 Technology Stack
+<a name="technology-stack"></a>
+## 💻 TechStack
 
 ### Frontend Technologies
 
@@ -135,7 +138,11 @@ Built for modern workflows:
 <br/>
 <br/>
 
-## 🏗️ Architecture
+
+
+## 🌐 Architecture
+
+
 
 ### System Overview
 
@@ -181,6 +188,10 @@ pagenie/
         └── package.json
 ```
 
+### Workflow
+<img width="1588" height="1364" alt="image" src="https://github.com/user-attachments/assets/1770f70f-bcb0-48cc-8d60-811327009757" />
+
+
 <br/>
 
 ### Key Components
@@ -196,6 +207,7 @@ pagenie/
 <br/>
 <br/>
 
+<a name="getting-started"></a>
 ## 🛠️ Getting Started
 
 ### Prerequisites
@@ -294,6 +306,7 @@ npm run dev
 <br/>
 <br/>
 
+<a name="use-cases"></a>
 ## 🎓 Use Cases
 
 ### 🏛️ Government & Municipalities
@@ -354,6 +367,7 @@ npm run dev
 <br/>
 <br/>
 
+<a name="security"></a>
 ## 🔒 Security
 
 PaGenie implements comprehensive security measures to ensure safe operation:
